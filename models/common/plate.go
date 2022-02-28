@@ -320,7 +320,7 @@ func (con PlateModel) Detail(y, m, d, h, i, s, gender int) map[string]interface{
 		"cangGan":  cangan,
 		"xingYun":  xingYun,
 		"ziZuo":    ziZuo,
-		"lunar":    fmt.Sprintf("%s", lunar) + " " + "hr" + "时",
+		"lunar":    fmt.Sprintf("%s", lunar) + " " + LunarModel{}.HourChinese(h) + "时",
 		"shiShen":  shiShen,
 		"naYin":    nayin,
 		"xunKong":  xunkong,

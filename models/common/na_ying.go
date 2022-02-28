@@ -9,6 +9,12 @@
 
 package common
 
+import (
+	"gin/ay"
+	"gin/models"
+	"log"
+)
+
 type NaYinModel struct {
 }
 
@@ -19,21 +25,27 @@ var (
 )
 
 func (con NaYinModel) Get(gz string) string {
-	z1 := 0
-	for k, v := range gzu {
-		if v == gz {
-			z1 = k
-		}
-	}
-	if z1 == 0 {
-		z2 := 0
-		for k, v := range zzu {
-			if v == gz {
-				z2 = k
-			}
-		}
-		return nyzu[z2]
-	} else {
-		return nyzu[z1]
-	}
+
+	var nayin models.JiaZi
+	ay.Db.First(&nayin, "jiazi = ?", gz)
+
+	log.Println(nayin)
+	return nayin.NaYin
+	//z1 := 0
+	//for k, v := range gzu {
+	//	if v == gz {
+	//		z1 = k
+	//	}
+	//}
+	//if z1 == 0 {
+	//	z2 := 0
+	//	for k, v := range zzu {
+	//		if v == gz {
+	//			z2 = k
+	//		}
+	//	}
+	//	return nyzu[z2]
+	//} else {
+	//	return nyzu[z1]
+	//}
 }
