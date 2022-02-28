@@ -1,0 +1,119 @@
+/*
+ * *
+ *  @Author anderyly
+ *  @email admin@aaayun.cc
+ *  @link http://blog.aaayun.cc/
+ *  @copyright Copyright (c) 2022
+ *  *
+ */
+
+package common
+
+type SolarTermsModel struct {
+}
+
+func (con SolarTermsModel) Get24(yy int) {
+	$jq = [];
+
+	dj = $this->getAdjustedJQ($yy - 1, 21, 23); //求出含指定年立春開始之3個節氣JD值,以前一年的年值代入
+	foreach ($dj as $k => $v) {
+	if ($k < 21) {
+	continue;
+	}
+	if ($k > 23) {
+	continue;
+	}
+	$jq[] = Julian::instance()->Solar($dj[$k]); //21立春;22雨水;23惊蛰
+	}
+
+	$dj = $this->getAdjustedJQ($yy, 0, 20); //求出指定年節氣之JD值,從春分開始
+	foreach ($dj as $k => $v) {
+	$jq[] = Julian::instance()->Solar($dj[$k]);
+	}
+
+	return $jq;
+}
+
+/**
+ * 获取指定年的春分开始作Perturbaton调整后的24节气,可以多取2个
+ * @param int $yy
+ * @param int $start 0-25
+ * @param int $end 0-25
+ * @return array
+ */
+func(con SolarTermsModel) GetAdjustedJQ(yy ,start, end int) {
+if ($start < 0 || $start > 25) {
+return [];
+}
+if ($end < 0 || $end > 25) {
+return [];
+}
+
+$jq = [];
+
+$jqjd = $this->getYearJQ($yy); // 获取该年春分开始的24节气时间点
+foreach ($jqjd as $k => $jd) {
+if ($k < $start) {
+continue;
+}
+if ($k > $end) {
+continue;
+}
+$ptb = $this->Perturbation($jd); // 取得受perturbation影响所需微调
+$dt = $this->DeltaT($yy, intval(floor(($k + 1) / 2) + 3)); // 修正dynamical time to Universal time
+$jq[$k] = $jd + $ptb - $dt / 60 / 24; // 加上摄动调整值ptb,减去对应的Delta T值(分钟转换为日)
+$jq[$k] = $jq[$k] + 1 / 3; // 因中国(北京、重庆、上海)时间比格林威治时间先行8小时，即1/3日
+}
+return $jq;
+}
+
+/**
+ * 获取指定年的春分开始的24节气,另外多取2个确保覆盖完一个公历年
+ * @param int $yy [年]
+ * @return array
+ */
+private function getYearJQ(int $yy): array
+{
+if (!$jd = $this->VE($yy)) { // 该年的春分點
+return [];
+}
+$ty = $this->VE($yy + 1) - $jd; // 该年的回归年长
+
+$num = 24 + 2; //另外多取2个确保覆盖完一个公历年
+
+$ath = 2 * pi() / 24;
+$tx = ($jd - 2451545) / 365250;
+$e = 0.0167086342 - 0.0004203654 * $tx - 0.0000126734 * $tx * $tx + 0.0000001444 * $tx * $tx * $tx - 0.0000000002 * $tx * $tx * $tx * $tx + 0.0000000003 * $tx * $tx * $tx * $tx * $tx;
+$tt = $yy / 1000;
+$vp = 111.25586939 - 17.0119934518333 * $tt - 0.044091890166673 * $tt * $tt - 4.37356166661345E-04 * $tt * $tt * $tt + 8.16716666602386E-06 * $tt * $tt * $tt * $tt;
+$rvp = $vp * 2 * pi() / 360;
+$peri = array();
+for ($i = 0; $i < $num; $i++) {
+$flag = 0;
+$th = $ath * $i + $rvp;
+if ($th > pi() && $th <= 3 * pi()) {
+$th = 2 * pi() - $th;
+$flag = 1;
+}
+if ($th > 3 * pi()) {
+$th = 4 * pi() - $th;
+$flag = 2;
+}
+$f1 = 2 * atan((sqrt((1 - $e) / (1 + $e)) * tan($th / 2)));
+$f2 = ($e * sqrt(1 - $e * $e) * sin($th)) / (1 + $e * cos($th));
+$f = ($f1 - $f2) * $ty / 2 / pi();
+if ($flag == 1) {
+$f = $ty - $f;
+}
+if ($flag == 2) {
+$f = 2 * $ty - $f;
+}
+$peri[$i] = $f;
+}
+$jq = [];
+for ($i = 0; $i < $num; $i++) {
+$jq[$i] = $jd + $peri[$i] - $peri[0];
+}
+
+return $jq;
+}
