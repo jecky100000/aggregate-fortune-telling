@@ -29,7 +29,7 @@ func main() {
 
 	r = routers.GinRouter(r)
 
-	err := r.Run(":8081")
+	err := r.Run(":8082")
 	if err != nil {
 		panic(err.Error())
 	}

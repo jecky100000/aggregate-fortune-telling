@@ -67,6 +67,7 @@ func (con AskController) Main(c *gin.Context) {
 			"user_avatar":   ay.Domain + user.Avatar,
 			"user_nickname": user.NickName,
 			"created_at":    v.CreatedAt.Format("2006-01-02 15:04:05"),
+			"content":       v.Content,
 
 			"master_id":        re.Id,
 			"master_name":      re.Name,
@@ -78,7 +79,7 @@ func (con AskController) Main(c *gin.Context) {
 	fw := []string{
 		"婚恋情感", "事业财运", "命运详批", "事业指点",
 	}
-	var dynamic []string
+	var dynamic []map[string]string
 	var phone string
 	var name string
 
@@ -93,7 +94,12 @@ func (con AskController) Main(c *gin.Context) {
 	for i := 0; i < 10; i++ {
 		phone = MakePhone()
 		name = res[rand.Intn(len(res))].Name
-		dynamic = append(dynamic, phone+" 购买了 "+name+" 的"+fw[rand.Intn(len(fw)-1)]+"服务")
+		//dynamic = append(dynamic, phone+" 购买了 "+name+" 的"+fw[rand.Intn(len(fw)-1)]+"服务")
+		dynamic = append(dynamic, map[string]string{
+			"phone": phone,
+			"name":  name,
+			"info":  fw[rand.Intn(len(fw))],
+		})
 	}
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
