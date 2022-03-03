@@ -14,7 +14,7 @@ type ConfigModel struct {
 
 type Config struct {
 	Id                int64   `gorm:"primaryKey" json:"id"`
-	Amount            float64 `gorm:"column:amount" json:"amount"`
+	HaulAmount        float64 `gorm:"column:haul_amount" json:"haul_amount"`
 	Coupon            int     `gorm:"column:coupon" json:"coupon"`
 	CouponName        string  `gorm:"column:coupon_name" json:"coupon_name"`
 	CouponSubName     string  `gorm:"column:coupon_sub_name" json:"coupon_sub_name"`
@@ -32,6 +32,7 @@ type Config struct {
 	Rate              float64 `gorm:"column:rate" json:"rate"`
 	MasterLink        string  `gorm:"column:master_link" json:"master_link"`
 	UserRegCoupon     int     `gorm:"column:user_reg_coupon" json:"user_reg_coupon"`
+	HaulDiscount      string  `gorm:"column:haul_discount" json:"haul_discount"`
 }
 
 func (Config) TableName() string {

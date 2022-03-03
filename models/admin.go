@@ -15,7 +15,7 @@ type AdminModel struct {
 type Admin struct {
 	Id       int64
 	Account  string
-	Password int
+	Password string
 }
 
 func (Admin) TableName() string {

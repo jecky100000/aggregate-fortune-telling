@@ -245,11 +245,7 @@ func (con PlateModel) Detail(y, m, d, h, i, s, gender int) map[string]interface{
 		"小寒",
 	}
 
-	log.Println(jq[0])
-
 	liuYueArr := liuNianArr[0].GetLiuYue()
-	log.Println(daYunNum)
-	log.Println(liuNianNum)
 
 	solar1 := calendar.NewSolarFromYmd(liuNianArr[liuNianNum].GetYear(), 2, 4)
 	lunar1 := solar1.GetLunar()

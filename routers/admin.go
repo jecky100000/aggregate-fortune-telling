@@ -20,4 +20,6 @@ func AdminRouters(r *gin.RouterGroup) {
 	// 登入
 	adminGroup.POST("user/login", admin.Controller{}.Login)
 
+	adminGroup.GET("account/list", admin.AccountController{}.List)
+
 }

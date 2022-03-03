@@ -42,6 +42,7 @@ type Order struct {
 	Json       string  `gorm:"column:json" json:"-"`
 	PayTime    string  `gorm:"column:pay_time" json:"-"`
 	Birthday   string  `gorm:"column:birthday" json:"birthday"`
+	Discount   float64 `gorm:"column:discount" json:"discount"`
 }
 
 func (Order) TableName() string {

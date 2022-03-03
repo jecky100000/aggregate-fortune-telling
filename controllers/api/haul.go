@@ -70,8 +70,8 @@ func (con HaulController) Submit(c *gin.Context) {
 		return
 	}
 
-	// 优惠价
-	//coupon := ay.MakeCoupon(config.Coupon)
+	// 返回支付优惠
+	coupon := ay.MakeCoupon(config.HaulDiscount)
 
 	des := getForm.UserName + "的2022虎年运程"
 
@@ -80,7 +80,7 @@ func (con HaulController) Submit(c *gin.Context) {
 		Type:       1,
 		Ip:         GetRequestIP(c),
 		Des:        des,
-		Amount:     config.Amount,
+		Amount:     config.HaulAmount - coupon,
 		Uid:        user.Id,
 		Status:     0,
 		UserName:   getForm.UserName,
@@ -92,10 +92,10 @@ func (con HaulController) Submit(c *gin.Context) {
 		M:          getForm.M,
 		D:          getForm.D,
 		H:          getForm.H,
-		//Coupon:     coupon,
-		Line:      line,
-		Op:        2,
-		OldAmount: config.Amount,
+		Discount:   coupon,
+		Line:       line,
+		Op:         2,
+		OldAmount:  config.HaulAmount,
 	}
 
 	ay.Db.Create(order)
@@ -179,6 +179,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	var line []common.Line
 	_ = json.Unmarshal([]byte(order.Line), &line)
 	res["line"] = line
+	res["coupon"] = order.Discount
 
 	// 获取价格
 	var config models.Config
@@ -191,6 +192,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	}
 
 	res["amount"] = amount
+	res["return_amount"] = config.HaulAmount
 
 	if order.Status == 0 {
 		res["isPay"] = false

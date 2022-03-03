@@ -22,9 +22,10 @@ type PayController struct {
 }
 
 type GetPayDoForm struct {
-	AmountId int64  `form:"amount_id" binding:"required"`
+	AmountId int64  `form:"amount_id"`
 	Oid      string `form:"oid" binding:"required"`
 	Coupon   int64  `form:"coupon"`
+	Return   int    `form:"return"`
 }
 
 func (con PayController) Do(c *gin.Context) {
@@ -54,17 +55,35 @@ func (con PayController) Do(c *gin.Context) {
 		return
 	}
 
-	var haulAmount models.HaulAmount
-	ay.Db.First(&haulAmount, "id = ?", getForm.AmountId)
+	var config models.Config
+	ay.Db.First(&config, 1)
 
-	if haulAmount.Id == 0 {
-		ay.Json{}.Msg(c, "400", "金额错误", gin.H{})
-		return
+	// 获取金额
+	VAmount := 0.00
+	if getForm.Return == 0 {
+		var haulAmount models.HaulAmount
+		ay.Db.First(&haulAmount, "id = ?", getForm.AmountId)
+
+		if haulAmount.Id == 0 {
+			ay.Json{}.Msg(c, "400", "金额错误", gin.H{})
+			return
+		}
+		VAmount = haulAmount.Amount
+	} else {
+		// 八字
+		if order.Type == 1 {
+			VAmount = config.HaulAmount
+		} else {
+			ay.Json{}.Msg(c, "400", "此红包不适用于此订单", gin.H{})
+			return
+		}
 	}
-	order.OldAmount = haulAmount.Amount
+
+	// 历史金额
+	order.OldAmount = VAmount
 
 	couponAmount := 0.00
-	if getForm.Coupon != 0 {
+	if getForm.Coupon != 0 && getForm.Return == 0 {
 		var coupon models.Coupon
 		ay.Db.First(&coupon, "id = ? and uid = ?", getForm.Coupon, user.Id)
 
@@ -87,7 +106,7 @@ func (con PayController) Do(c *gin.Context) {
 			return
 		}
 
-		if coupon.AmountThan > haulAmount.Amount {
+		if coupon.AmountThan > VAmount {
 			ay.Json{}.Msg(c, "400", "优惠卷不适用于此产品，金额错误", gin.H{})
 			return
 		}
@@ -100,7 +119,12 @@ func (con PayController) Do(c *gin.Context) {
 		couponAmount = coupon.Amount
 	}
 
-	amount := haulAmount.Amount - couponAmount
+	amount := 0.00
+	if getForm.Return == 0 {
+		amount = VAmount - couponAmount
+	} else {
+		amount = VAmount - order.Discount
+	}
 
 	order.Amount = amount
 
