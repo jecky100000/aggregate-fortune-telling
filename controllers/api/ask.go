@@ -46,6 +46,8 @@ func (con AskController) Main(c *gin.Context) {
 			Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_master.avatar,sm_master.rate").
 			Joins("left join sm_master on sm_user.master_id=sm_master.id").
 			Where("sm_user.id = ?", v.MasterId).
+			Order("RAND()").
+			Limit(10).
 			First(&re)
 
 		if re.Id == 0 {
@@ -144,7 +146,7 @@ type GetAskSubmitForm struct {
 	UserName string  `form:"username" binding:"required"`
 	Gender   int     `form:"gender" binding:"required"`
 	Birth    string  `form:"birth" binding:"required"`
-	Type     int     `form:"type" binding:"required"`
+	Type     int     `form:"type"`
 	Content  string  `form:"content" binding:"required"`
 	Amount   float64 `form:"amount"`
 	IsFree   int     `form:"is_free"`
