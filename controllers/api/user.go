@@ -173,7 +173,7 @@ func (con UserController) Upload(c *gin.Context) {
 	}
 
 	filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
-	_ = c.SaveUploadedFile(file, filepath)
+	c.SaveUploadedFile(file, filepath)
 	ay.Json{}.Msg(c, "200", "上传成功!", gin.H{
 		"url": filepath,
 	})
@@ -578,17 +578,7 @@ func (con UserController) Log(c *gin.Context) {
 
 }
 
-type GetUserControllerAsk struct {
-	Page int `form:"page" binding:"required"`
-}
-
 func (con UserController) Ask(c *gin.Context) {
-
-	var getForm GetUserControllerAsk
-	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
-		return
-	}
 
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
@@ -599,7 +589,7 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	var order []models.Order
-	ay.Db.Where("type = 3 and uid = ?", user.Id).Limit(10).Offset((getForm.Page - 1) * 10).Find(&order)
+	ay.Db.Where("type = 3 and uid = ?", user.Id).Find(&order)
 
 	var res []map[string]interface{}
 

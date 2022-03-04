@@ -149,7 +149,7 @@ type GetAskSubmitForm struct {
 	Type     int     `form:"type"`
 	Content  string  `form:"content" binding:"required"`
 	Amount   float64 `form:"amount"`
-	AreAId   int     `form:"area_id"`
+	IsFree   int     `form:"is_free"`
 }
 
 func (con AskController) Submit(c *gin.Context) {
@@ -169,7 +169,7 @@ func (con AskController) Submit(c *gin.Context) {
 
 	amount := getForm.Amount
 
-	if amount != 0 {
+	if getForm.IsFree == 0 {
 		if amount < 5 {
 			ay.Json{}.Msg(c, "400", "悬赏金额需要大于5元", gin.H{})
 			return
@@ -205,7 +205,6 @@ func (con AskController) Submit(c *gin.Context) {
 		OldAmount:  getForm.Amount,
 		Birthday:   getForm.Birth,
 		Json:       getForm.Content,
-		AreaId:     getForm.AreAId,
 	}
 
 	ay.Db.Create(order)
