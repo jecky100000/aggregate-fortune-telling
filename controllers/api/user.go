@@ -578,8 +578,17 @@ func (con UserController) Log(c *gin.Context) {
 
 }
 
-func (con UserController) Ask(c *gin.Context) {
+type GetUserAsk struct {
+	Page int `form:"page"`
+}
 
+// Ask 提问记录
+func (con UserController) Ask(c *gin.Context) {
+	var getForm GetUserAsk
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
@@ -589,7 +598,7 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	var order []models.Order
-	ay.Db.Where("type = 3 and uid = ?", user.Id).Find(&order)
+	ay.Db.Where("type = 3 and uid = ?", user.Id).Limit(10).Offset((getFrom.Page) * 10).Find(&order)
 
 	var res []map[string]interface{}
 
