@@ -301,6 +301,7 @@ func (con AskController) Detail(c *gin.Context) {
 		"nickname":   user.NickName,
 		"amount":     order.Amount,
 		"reply":      count,
+		"content":    order.Json,
 		"type":       order.Des,
 		"created_at": order.CreatedAt.Format("2006/01/02"),
 	})

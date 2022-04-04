@@ -12,7 +12,6 @@ package common
 import (
 	"gin/ay"
 	"gin/models"
-	"log"
 )
 
 type NaYinModel struct {
@@ -29,7 +28,7 @@ func (con NaYinModel) Get(gz string) string {
 	var nayin models.JiaZi
 	ay.Db.First(&nayin, "jiazi = ?", gz)
 
-	log.Println(nayin)
+	// log.Println(nayin)
 	return nayin.NaYin
 	//z1 := 0
 	//for k, v := range gzu {

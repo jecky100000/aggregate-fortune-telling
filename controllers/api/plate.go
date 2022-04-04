@@ -67,6 +67,7 @@ func (con PlateController) Submit(c *gin.Context) {
 
 	if uid == 0 {
 		ay.Json{}.Msg(c, "401", "token错误", gin.H{})
+		return
 	}
 
 	des := getForm.UserName + "的排盘"

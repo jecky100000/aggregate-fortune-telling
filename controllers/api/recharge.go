@@ -69,11 +69,11 @@ func (con RechargeController) Main(c *gin.Context) {
 		if code == 1 {
 			if getForm.Type == 1 {
 				ay.Json{}.Msg(c, "200", "success", gin.H{
-					"url": ay.Domain + "pay/alipay?oid=" + order,
+					"url": ay.Domain + "/pay/alipay?oid=" + order,
 				})
 			} else {
 				ay.Json{}.Msg(c, "200", "success", gin.H{
-					"url": ay.Domain + "pay/wechat?oid=" + order,
+					"url": ay.Domain + "/pay/wechat?oid=" + order,
 				})
 			}
 
@@ -100,10 +100,10 @@ func (con RechargeController) Web(oid string, payType int, amount float64, retur
 			return 0, err.Error()
 		}
 		client.SetLocation(alipay.LocationShanghai).
-			SetCharset(alipay.UTF8).                      // 设置字符编码，不设置默认 utf-8
-			SetSignType(alipay.RSA2).                     // 设置签名类型，不设置默认 RSA2
-			SetReturnUrl(returnUrl).                      // 设置返回URL
-			SetNotifyUrl(ay.Domain + "api/notify/alipay") // 设置异步通知URL
+			SetCharset(alipay.UTF8).                       // 设置字符编码，不设置默认 utf-8
+			SetSignType(alipay.RSA2).                      // 设置签名类型，不设置默认 RSA2
+			SetReturnUrl(returnUrl).                       // 设置返回URL
+			SetNotifyUrl(ay.Domain + "/api/notify/alipay") // 设置异步通知URL
 
 		bm := make(gopay.BodyMap)
 		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
@@ -141,7 +141,7 @@ func (con RechargeController) Web(oid string, payType int, amount float64, retur
 			Set("out_trade_no", oid).
 			Set("total_fee", amount*100).
 			Set("spbill_create_ip", ip).
-			Set("notify_url", ay.Domain+"api/notify/wechat").
+			Set("notify_url", ay.Domain+"/api/notify/wechat").
 			Set("trade_type", "MWEB").
 			Set("device_info", "WEB").
 			Set("sign_type", "MD5").

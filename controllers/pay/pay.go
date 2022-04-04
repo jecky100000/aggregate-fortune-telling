@@ -98,7 +98,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 		Set("out_trade_no", order.OutTradeNo).
 		Set("total_fee", order.Amount*100).
 		Set("spbill_create_ip", api.GetRequestIP(c)).
-		Set("notify_url", ay.Domain+"api/notify/wechat").
+		Set("notify_url", ay.Domain+"/api/notify/wechat").
 		Set("trade_type", "JSAPI").
 		Set("sign_type", "MD5").
 		Set("openid", openid)
@@ -167,7 +167,7 @@ func (con Controller) Wechat(c *gin.Context) {
 	ay.Db.First(&pay, "id = ?", 6)
 
 	if con.IsWechat(c) {
-		redirect_uri := url.QueryEscape(ay.Domain + "pay/open?oid=" + c.Query("oid"))
+		redirect_uri := url.QueryEscape(ay.Domain + "/pay/open?oid=" + c.Query("oid"))
 		urlx := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + pay.Appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect"
 		c.Redirect(http.StatusTemporaryRedirect, urlx)
 		//c.Header("Content-Type", "text/html; charset=utf-8")

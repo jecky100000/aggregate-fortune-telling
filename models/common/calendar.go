@@ -42,7 +42,8 @@ func (con CalendarModel) Get(y, m, d int) map[string]interface{} {
 	solar := calendar.NewSolarFromYmd(y, m, d)
 	solarLunar := solar.GetLunar()
 
-	lunar := calendar.NewLunarFromYmd(y, m, d)
+	//lunar := calendar.NewLunarFromYmd(y, m, d)
+	lunar := solar.GetLunar()
 
 	// 节日
 	jieri := con.GetJieRi(solar)

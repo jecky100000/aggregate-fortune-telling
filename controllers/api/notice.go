@@ -91,6 +91,7 @@ func (con NoticeController) Search(c *gin.Context) {
 			search[k].Collect = 1
 		}
 		search[k].Time = ay.LastTime(int(v.CreatedAt.Unix()))
+		search[k].Cover = ay.Domain + v.Cover
 	}
 
 	if search == nil {
@@ -131,6 +132,10 @@ func (con NoticeController) Detail(c *gin.Context) {
 	var ancient []models.AncientClass
 
 	ay.Db.Where("aid = ?", getForm.Aid).Order("id asc").Find(&ancient)
+
+	for k, v := range ancient {
+		ancient[k].Link = ay.Domain + v.Link
+	}
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"list": ancient,

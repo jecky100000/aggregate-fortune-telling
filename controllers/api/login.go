@@ -107,7 +107,7 @@ func (con LoginController) web(phone, code string) (int, string) {
 			Appid:    0,
 			Openid:   "",
 			NickName: "用户" + strconv.Itoa(rand.Intn(90000)),
-			Avatar:   "static/user/default.png",
+			Avatar:   "/static/user/default.png",
 			Type:     0,
 		}
 		ay.Db.Create(&ss)

@@ -84,6 +84,7 @@ func (con PayController) Do(c *gin.Context) {
 
 	couponAmount := 0.00
 	if getForm.Coupon != 0 && getForm.Return == 0 {
+		// 穷逼优惠卷支付
 		var coupon models.Coupon
 		ay.Db.First(&coupon, "id = ? and uid = ?", getForm.Coupon, user.Id)
 

@@ -30,9 +30,15 @@ type List struct {
 func (con HexapodController) Index(c *gin.Context) {
 
 	list := make([]List, 0)
+	//list1 := make([]List, 0)
 
-	for k, v := range common.HexapodName {
-		list = append(list, List{Image: ay.Domain + "static/image/hexapod/simple/" + strconv.Itoa(k) + ".png", Name: v})
+	for _, v1 := range common.HexapodName {
+
+		for k, v := range common.HexapodWuName {
+			if v1 == v {
+				list = append(list, List{Image: ay.Domain + "/static/image/hexapod/desc/" + strconv.Itoa(k) + ".png", Name: v})
+			}
+		}
 	}
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
@@ -55,9 +61,9 @@ func (con HexapodController) Get(c *gin.Context) {
 
 	_, name := common.HexapodModel{}.Hexapod(getForm.Data)
 	image := ""
-	for k, v := range common.HexapodWuName {
+	for k, v := range common.HexapodName {
 		if v == name {
-			image = ay.Domain + "static/image/hexapod/desc/" + strconv.Itoa(k) + ".png"
+			image = ay.Domain + "/static/image/hexapod/simple/" + strconv.Itoa(k) + ".png"
 		}
 	}
 

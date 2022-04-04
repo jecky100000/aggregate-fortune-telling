@@ -453,7 +453,7 @@ func (con PlateModel) GetLiuYue(y, m, d, h, i, s, gender, key, index int) []inte
 		"小寒",
 	}
 
-	log.Println(jq[0])
+	// log.Println(jq[0])
 
 	liuNianArr := daYunArr[index].GetLiuNian()
 	liuYueArr := liuNianArr[key].GetLiuYue()
