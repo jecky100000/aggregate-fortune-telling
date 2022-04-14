@@ -89,7 +89,7 @@ func (con MasterController) List(c *gin.Context) {
 		})
 	}
 
-	if res == nil {
+	if row == nil {
 		ay.Json{}.Msg(c, "200", "success", gin.H{
 			"list": []string{},
 		})
