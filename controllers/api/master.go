@@ -1,10 +1,8 @@
 /*
- * *
- *  @Author anderyly
- *  @email admin@aaayun.cc
- *  @link http://blog.aaayun.cc/
- *  @copyright Copyright (c) 2022
- *  *
+ * @Author anderyly
+ * @email admin@aaayun.cc
+ * @link http://blog.aaayun.cc/
+ * @copyright Copyright (c) 2022
  */
 
 package api
@@ -116,27 +114,102 @@ func (con MasterController) Detail(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", getForm.Id)
 	if user.MasterId == 0 {
 		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		return
 	}
 	var res models.Master
 	ay.Db.Where("id = ?", user.MasterId).First(&res)
 
 	if res.Id == 0 {
 		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		return
 	}
 
 	res.Avatar = ay.Domain + res.Avatar
 
 	res.Id = user.Id
 
+	// 粉丝
 	var count int64
 	ay.Db.Model(models.Collect{}).Where("type = 1 and cid = ?", res.Id).Count(&count)
 	res.Fans = 50000 + count
 
+	// 回复
 	var count1 int64
 	ay.Db.Model(models.AskReply{}).Where("master_id = ?", res.Id).Count(&count1)
 	res.Reply = 20000 + count1
 
+	// 当前用户
+	uid := GetToken(Token)
+
+	// 推荐
+	var recommendMaster models.UserRecommendMaster
+	ay.Db.Where("uid = ? AND master_id = ?", uid, res.Id).First(&recommendMaster)
+
+	isRecommend, isCollect := 0, 0
+
+	if recommendMaster.Id != 0 {
+		isRecommend = 1
+	}
+
+	// 收藏
+	var collect models.Collect
+	ay.Db.First(&collect, "uid = ? and type = ? and cid = ?", uid, 1, res.Id)
+
+	if collect.Id != 0 {
+		isCollect = 1
+	}
+
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"info": res,
+		"user": gin.H{
+			"is_recommend": isRecommend,
+			"is_collect":   isCollect,
+		},
 	})
+}
+
+// Recommend 用户大师推荐
+func (con MasterController) Recommend(c *gin.Context) {
+	var getForm GetMasterDetailForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+
+	if user.Id == 0 {
+		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		return
+	}
+
+	var master models.User
+	ay.Db.First(&master, "id = ?", getForm.Id)
+	if master.MasterId == 0 {
+		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		return
+	}
+	var res models.Master
+	ay.Db.Where("id = ?", master.MasterId).First(&res)
+
+	if res.Id == 0 {
+		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		return
+	}
+
+	var masterRecommend models.UserRecommendMaster
+	ay.Db.First(&masterRecommend, "uid = ? AND master_id = ?", user.Id, getForm.Id)
+
+	if masterRecommend.Id == 0 {
+		ss := models.UserRecommendMaster{
+			Uid:      user.Id,
+			MasterId: getForm.Id,
+		}
+		ay.Db.Create(&ss)
+		ay.Json{}.Msg(c, "200", "推荐成功", gin.H{})
+	} else {
+		ay.Db.Delete(&masterRecommend)
+		ay.Json{}.Msg(c, "200", "取消推荐", gin.H{})
+	}
 }

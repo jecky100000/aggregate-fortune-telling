@@ -1,10 +1,8 @@
 /*
- * *
- *  @Author anderyly
- *  @email admin@aaayun.cc
- *  @link http://blog.aaayun.cc/
- *  @copyright Copyright (c) 2022
- *  *
+ * @Author anderyly
+ * @email admin@aaayun.cc
+ * @link http://blog.aaayun.cc/
+ * @copyright Copyright (c) 2022
  */
 
 package api
@@ -137,8 +135,6 @@ func (con UserController) Info(c *gin.Context) {
 
 // Upload 上传头像
 func (con UserController) Upload(c *gin.Context) {
-
-	log.Println(Token)
 
 	file, err := c.FormFile("file")
 	if err != nil {

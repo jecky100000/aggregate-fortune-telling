@@ -1,10 +1,8 @@
 /*
- * *
- *  @Author anderyly
- *  @email admin@aaayun.cc
- *  @link http://blog.aaayun.cc/
- *  @copyright Copyright (c) 2022
- *  *
+ * @Author anderyly
+ * @email admin@aaayun.cc
+ * @link http://blog.aaayun.cc/
+ * @copyright Copyright (c) 2022
  */
 
 package models
@@ -23,7 +21,7 @@ type Master struct {
 	Years     int     `json:"years"`
 	Online    int     `json:"online"`
 	Rate      float64 `json:"rate"`
-	Num       int     `json:"num"`
+	AskNum    int     `json:"ask_num"`
 	Uid       int64   `json:"-"`
 	Fans      int64   `json:"fans"`
 	Reply     int64   `json:"reply"`

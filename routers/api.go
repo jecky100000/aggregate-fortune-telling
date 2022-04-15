@@ -1,10 +1,8 @@
 /*
- * *
- *  @Author anderyly
- *  @email admin@aaayun.cc
- *  @link http://blog.aaayun.cc/
- *  @copyright Copyright (c) 2022
- *  *
+ * @Author anderyly
+ * @email admin@aaayun.cc
+ * @link http://blog.aaayun.cc/
+ * @copyright Copyright (c) 2022
  */
 
 package routers
@@ -83,6 +81,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.GET("master/type", api.MasterController{}.Type)
 	apiGroup.POST("master/list", api.MasterController{}.List)
 	apiGroup.POST("master/detail", api.MasterController{}.Detail)
+	apiGroup.POST("master/recommend", api.MasterController{}.Recommend)
 
 	// 支付
 	apiGroup.POST("pay/recharge", api.RechargeController{}.Main)
