@@ -1,0 +1,54 @@
+_id: req_53047a76d403446a9749fa1008083c7d
+type: Request
+parentId: fld_64f8d3a974cf457484153ceca2cac0a8
+modified: 1650005881879
+created: 1650005881879
+url: "{{url}}/api/user/edit"
+name: 修改信息
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: nickname
+      disabled: false
+      value: "1"
+      id: pair_06f0beec38cf49309fe8f2e6544c4620
+    - type: text
+      name: avatar
+      disabled: false
+      value: /ass.png
+      id: pair_311e030ddf6c48739e71ce2a192454a0
+    - type: text
+      name: gender
+      disabled: false
+      value: "1"
+      id: pair_8c2f4b89bdeb418092d53cbfcb2d6939
+    - type: text
+      name: birthday
+      disabled: false
+      value: 2010-01-12
+      id: pair_ac3a93f79f2e41ba93382521efae3b17
+    - type: text
+      name: area_id
+      disabled: false
+      value: "1"
+      id: pair_f2f879386f014a9296f6117d40374976
+parameters: []
+headers:
+  - name: Authorization
+    value: 80jGqOyHbp-0sQQGeWoKha1yaL5TsxFOkezE_Jg==
+    id: pair_0bc01463233747118c24adc86d01e1e4
+  - name: From
+    value: "1"
+    id: pair_e7b9790cf4aa40c1a150880b7e65a500
+authentication: {}
+metaSortKey: -1650003387887
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

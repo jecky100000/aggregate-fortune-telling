@@ -1,0 +1,39 @@
+_id: req_259ed4dd6c3b49b1bdf7f3f3b81e04e8
+type: Request
+parentId: fld_64f8d3a974cf457484153ceca2cac0a8
+modified: 1650005881869
+created: 1650005881869
+url: "{{url}}/api/user/log"
+name: 历史记录
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "2"
+      id: pair_66d7bf82b0754a1980974b4a184f8cfe
+    - type: text
+      name: page
+      disabled: false
+      value: "1"
+      id: pair_849249b6c1804d9397bc02a7a4d50c6f
+parameters: []
+headers:
+  - name: Authorization
+    value: dgC_7G6J8Gy08uVGxnZydMhYI3k90EofaEf8tAQ==
+    id: pair_472b9a5dd536488f9f709314d842036a
+  - name: From
+    value: "1"
+    id: pair_978fb0fa030f40a48a7a3c707ea32519
+authentication: {}
+metaSortKey: -1650003387848
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

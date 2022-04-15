@@ -1,0 +1,28 @@
+_id: req_aff0a777cd484776b52714e86b257bbf
+type: Request
+parentId: fld_c3622681359c47aa9943b3af42734175
+modified: 1650005881842
+created: 1650005881842
+url: "{{url}}/api/news/type"
+name: 所有分类
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: id
+      disabled: false
+      value: "0"
+      id: pair_701a4add9d6845f7920096a4c10c6917
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387805
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

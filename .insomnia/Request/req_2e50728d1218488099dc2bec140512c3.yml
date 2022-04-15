@@ -1,0 +1,28 @@
+_id: req_2e50728d1218488099dc2bec140512c3
+type: Request
+parentId: fld_c3622681359c47aa9943b3af42734175
+modified: 1650005881839
+created: 1650005881839
+url: "{{url}}/api/news/recommend"
+name: 获取推荐文章
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "1"
+      id: pair_3f24d92c269940c7b8dd1173d925925b
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387801
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

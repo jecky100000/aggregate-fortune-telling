@@ -1,0 +1,14 @@
+_id: env_bb33f3afd96e4d4e9ada27ccc86de4a1
+type: Environment
+parentId: env_04f5efe9adc34df8a864599bfbb0cd33
+modified: 1650005881808
+created: 1650005881808
+name: 测试环境
+data:
+  url: http://127.0.0.1:8080
+dataPropertyOrder:
+  "&":
+    - url
+color: null
+isPrivate: false
+metaSortKey: 1650003661206

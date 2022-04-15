@@ -1,0 +1,39 @@
+_id: req_86060b2c4c0548268b084dd196a3c797
+type: Request
+parentId: fld_64f8d3a974cf457484153ceca2cac0a8
+modified: 1650005881873
+created: 1650005881873
+url: "{{url}}/api/user/collect"
+name: 收藏
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "1"
+      id: pair_237f720289294ab680d1eab64532f294
+    - type: text
+      name: page
+      disabled: false
+      value: "1"
+      id: pair_c9454b54338f430e82aeca819b56edf4
+parameters: []
+headers:
+  - name: Authorization
+    value: 59fDBznXLUmYful23c_ob4ZDowsg1HPk43T_p7Q==
+    id: pair_d9f99abe52314faa80381b08d7512004
+  - name: From
+    value: "1"
+    id: pair_b2fc8406854b448087e4343df4e18a74
+authentication: {}
+metaSortKey: -1650003387854
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

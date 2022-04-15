@@ -1,0 +1,38 @@
+_id: req_776c5c11729b497ab234fd051e1840dd
+type: Request
+parentId: fld_6a0a83803eca41819b628976e6f443e9
+modified: 1650005881852
+created: 1650005881852
+url: "{{url}}/api/plate/month"
+name: 获取流月
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: oid
+      disabled: false
+      value: "202202191636563960400001"
+      id: pair_f2e2d067da954bda9c63d9de4277b5f8
+    - type: text
+      name: key
+      disabled: false
+      value: "1"
+      id: pair_e369c1aeed1246c5bcf1e329dc11148a
+    - type: text
+      name: index
+      disabled: false
+      value: "1"
+      id: pair_1dfff329113744f6b470dec82c7ade67
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387821
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,28 @@
+_id: req_593c7ef6bd0c44a4b73f0c2674d7a2a2
+type: Request
+parentId: fld_6a0a83803eca41819b628976e6f443e9
+modified: 1650005881856
+created: 1650005881856
+url: "{{url}}/api/plate/detail"
+name: 详情
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: oid
+      disabled: false
+      value: "202202260956518246120006"
+      id: pair_fae367bd445446748095def6c01d681e
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387828
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

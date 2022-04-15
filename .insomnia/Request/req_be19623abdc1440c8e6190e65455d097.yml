@@ -1,0 +1,44 @@
+_id: req_be19623abdc1440c8e6190e65455d097
+type: Request
+parentId: fld_fd106e183ca5473494cdf7a8338916e1
+modified: 1650005881829
+created: 1650005881829
+url: "{{url}}/api/pay/recharge"
+name: 充值
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "1"
+      id: pair_ae5593d621be48a291f5aa07abf98f43
+    - type: text
+      name: amount
+      disabled: false
+      value: "1"
+      id: pair_30eb104cc1d547b9b29b9e50d782e3d0
+    - type: text
+      name: return_url
+      disabled: false
+      value: http://baidu.com
+      id: pair_846a748fa7e7443fab30eaa33507725c
+parameters: []
+headers:
+  - name: Authorization
+    value: fJN35LRPCvY8fru0MDmwqUaIltJCQYn260a0t5A==
+    id: pair_258671448cc84289aa83fae1c50deee9
+  - name: From
+    value: "1"
+    id: pair_1bad06a2bf8b42489d5d00439e61e4fc
+authentication: {}
+metaSortKey: -1650003387787
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

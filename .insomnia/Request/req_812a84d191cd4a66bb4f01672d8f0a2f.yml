@@ -1,0 +1,28 @@
+_id: req_812a84d191cd4a66bb4f01672d8f0a2f
+type: Request
+parentId: fld_c9de34c6dbf748dea057015e0e3da52e
+modified: 1650008265185
+created: 1650005881896
+url: "{{url}}/api/divination/get"
+name: 详情
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: data
+      disabled: false
+      value: 1,1,1,1,1,1
+      id: pair_beb3d8f34ff5499fadaa6c403993762c
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003388021
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,53 @@
+_id: req_9dfcc6d5178c4941a94da7b6ea8df1ac
+type: Request
+parentId: fld_6a0a83803eca41819b628976e6f443e9
+modified: 1650005881855
+created: 1650005881855
+url: "{{url}}/api/plate/info"
+name: 首页信息
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: y
+      disabled: false
+      value: "2000"
+      id: pair_d0953cfa2a30471680090b074ffded0d
+    - type: text
+      name: m
+      disabled: false
+      value: "1"
+      id: pair_490e783e0d1444fb94aea050617e482d
+    - type: text
+      name: d
+      disabled: false
+      value: "2"
+      id: pair_53e177cae2544970b64544d3d401b062
+    - type: text
+      name: h
+      disabled: false
+      value: "3"
+      id: pair_6137af6acdff4470a6d738d2be38945d
+    - type: text
+      name: i
+      disabled: false
+      value: "4"
+      id: pair_f84af8ca909d4f678a350204bbb8e2d6
+    - type: text
+      name: area_id
+      disabled: false
+      value: "5"
+      id: pair_abb573efa1544f3c9cc93d96f64fa5b6
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387826
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

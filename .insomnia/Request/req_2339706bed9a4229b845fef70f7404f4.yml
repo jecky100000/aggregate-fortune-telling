@@ -1,0 +1,28 @@
+_id: req_2339706bed9a4229b845fef70f7404f4
+type: Request
+parentId: fld_4fb9d65c01084c45886be9a218f11bf3
+modified: 1650005881891
+created: 1650005881891
+url: "{{url}}/api/dream/search"
+name: 搜索
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: title
+      disabled: false
+      value: 八
+      id: pair_826ccf12bfd5444386b74872d911b5eb
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387983
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

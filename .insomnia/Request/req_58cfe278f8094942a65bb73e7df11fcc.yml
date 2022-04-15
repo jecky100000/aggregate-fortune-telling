@@ -1,0 +1,39 @@
+_id: req_58cfe278f8094942a65bb73e7df11fcc
+type: Request
+parentId: fld_2c348965fb73474ca39e02e8975cb196
+modified: 1650005881848
+created: 1650005881848
+url: "{{url}}/api/user/login"
+name: 手机登入
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: phone
+      disabled: false
+      value: "13225162964"
+      id: pair_a5adb9add93d4f00afc1d24647cdab41
+    - type: text
+      name: code
+      disabled: false
+      value: "123456"
+      id: pair_c307e7bea0ad42a7a317622385a77c03
+parameters: []
+headers:
+  - name: From
+    value: "1"
+    id: pair_683719aa3f9f41118e6001ee5ba506ab
+  - name: Authorization
+    value: ""
+    id: pair_4f762d5e549f489bb80d5b997c82d7c5
+authentication: {}
+metaSortKey: -1650003387817
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

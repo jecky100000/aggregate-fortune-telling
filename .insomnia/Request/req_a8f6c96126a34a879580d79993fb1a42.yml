@@ -1,0 +1,28 @@
+_id: req_a8f6c96126a34a879580d79993fb1a42
+type: Request
+parentId: fld_29ba55336cf1490baff933b70e539cb1
+modified: 1650005881864
+created: 1650005881864
+url: "{{url}}/api/ancient/detail"
+name: 古籍详情
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: aid
+      disabled: false
+      value: "13"
+      id: pair_f145c7c8b61b4f8b9497f294cb5efe1d
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387843
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

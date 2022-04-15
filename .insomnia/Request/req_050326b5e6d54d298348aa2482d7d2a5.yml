@@ -1,0 +1,28 @@
+_id: req_050326b5e6d54d298348aa2482d7d2a5
+type: Request
+parentId: fld_2c348965fb73474ca39e02e8975cb196
+modified: 1650005881846
+created: 1650005881846
+url: "{{url}}/api/user/send"
+name: 发送验证码
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: phone
+      disabled: false
+      value: "13225162964"
+      id: pair_d17163a4d36b4cdf94bc403795d65524
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387811
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

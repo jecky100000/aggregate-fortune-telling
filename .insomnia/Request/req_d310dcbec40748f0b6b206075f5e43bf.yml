@@ -1,0 +1,28 @@
+_id: req_d310dcbec40748f0b6b206075f5e43bf
+type: Request
+parentId: fld_4fb9d65c01084c45886be9a218f11bf3
+modified: 1650005881889
+created: 1650005881889
+url: "{{url}}/api/dream/detail"
+name: 解梦详情
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: id
+      disabled: false
+      value: "2"
+      id: pair_e37cdbbad61c491181145548fa49d213
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387973
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

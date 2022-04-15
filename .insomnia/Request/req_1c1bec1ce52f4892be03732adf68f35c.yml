@@ -1,0 +1,41 @@
+_id: req_1c1bec1ce52f4892be03732adf68f35c
+type: Request
+parentId: fld_29ba55336cf1490baff933b70e539cb1
+modified: 1650005881862
+created: 1650005881862
+url: "{{url}}/api/notice/search"
+name: 搜索
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "2"
+      id: pair_f4a1962ce7994698aaa9a37837166593
+    - type: text
+      name: title
+      disabled: false
+      value: 三
+      id: pair_e25a8a48b9394346b7b3e39b6ca85c54
+    - type: text
+      name: page
+      disabled: false
+      value: "1"
+      id: pair_299b3f69a20e467fa0b996b152ba35a7
+parameters: []
+headers:
+  - name: Authorization
+    value: 2gvtC6ahlC6bJSmaHD5ZnEkBAoLN-QMWTcozTLw==
+    id: pair_fd690dbf3e8747a7abb2c6c989817d3e
+authentication: {}
+metaSortKey: -1650003387838
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

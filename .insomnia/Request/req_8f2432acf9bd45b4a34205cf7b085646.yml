@@ -1,0 +1,39 @@
+_id: req_8f2432acf9bd45b4a34205cf7b085646
+type: Request
+parentId: fld_d108ba03e72140c2b2f36b1673a7d6b8
+modified: 1650005881900
+created: 1650005881900
+url: "{{url}}/api/collect/set"
+name: 收藏/取消收藏
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: type
+      disabled: false
+      value: "2"
+      id: pair_1b50ed8e7a464b2699e999fe6d4f4fcd
+    - type: text
+      name: id
+      disabled: false
+      value: "1"
+      id: pair_946f8f5322a740c5aa31d5cd48d43275
+parameters: []
+headers:
+  - name: Authorization
+    value: 35ZkmaK-jm8spdwKi7EW-mfi4YjgtG7nrdVOLYg==
+    id: pair_ceb3c701d6e74df1a52a254aa342def6
+  - name: From
+    value: "1"
+    id: pair_9c4c6354f0174d1a8ecdaa87b279c355
+authentication: {}
+metaSortKey: -1650003387769
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

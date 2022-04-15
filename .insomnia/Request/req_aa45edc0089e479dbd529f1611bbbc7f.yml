@@ -1,0 +1,42 @@
+_id: req_aa45edc0089e479dbd529f1611bbbc7f
+type: Request
+parentId: fld_64f8d3a974cf457484153ceca2cac0a8
+modified: 1650005881876
+created: 1650005881876
+url: "{{url}}/api/user/upload"
+name: 上传头像
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: file
+      name: file
+      disabled: false
+      fileName: /home/anderyly/Pictures/avatar.jpg
+      id: pair_661d290f3bc74e8c8b1bdd1a140264a2
+    - type: text
+      name: filename
+      disabled: false
+      value: 123.png
+      id: pair_381bd9627d2949bea967047be11131fa
+parameters: []
+headers:
+  - name: Authorization
+    value: 35ZkmaK-jm8spdwKi7EW-mfi4YjgtG7nrdVOLYg==
+    id: pair_e9a20b5d93a94038a7433e8fb7169728
+  - name: From
+    value: "1"
+    id: pair_91394efea7fa432ebb8c0178cf97bfdc
+  - name: Content-Type
+    value: multipart/form-data
+    id: pair_af4df72715b84596932f087325ec4da6
+authentication: {}
+metaSortKey: -1650003387860
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

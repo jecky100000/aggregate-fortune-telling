@@ -1,0 +1,28 @@
+_id: req_457c2a279aa24ad69501c57834dcfc1a
+type: Request
+parentId: fld_d108ba03e72140c2b2f36b1673a7d6b8
+modified: 1650005881902
+created: 1650005881902
+url: "{{url}}/api/area/get"
+name: 获取地区
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: id
+      disabled: false
+      value: "1"
+      id: pair_ba30324513c14256974acfe30a21b309
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1650003387771
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

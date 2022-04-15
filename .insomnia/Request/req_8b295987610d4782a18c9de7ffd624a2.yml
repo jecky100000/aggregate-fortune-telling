@@ -1,0 +1,34 @@
+_id: req_8b295987610d4782a18c9de7ffd624a2
+type: Request
+parentId: fld_22c2a4fd29b343968510a3f53cdd8d18
+modified: 1650005881832
+created: 1650005881832
+url: "{{url}}/api/master/recommend"
+name: 推荐大师
+description: ""
+method: POST
+body:
+  mimeType: multipart/form-data
+  params:
+    - type: text
+      name: id
+      disabled: false
+      value: "1"
+      id: pair_61c16fd2139649278e380715bfc7e0b1
+parameters: []
+headers:
+  - name: Authorization
+    value: 35ZkmaK-jm8spdwKi7EW-mfi4YjgtG7nrdVOLYg==
+    id: pair_a3e38ddda384459289067cf21c005424
+  - name: From
+    value: "1"
+    id: pair_f3769b4ab912418eba0e5bad8fac8d2a
+authentication: {}
+metaSortKey: -1650003387790
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
