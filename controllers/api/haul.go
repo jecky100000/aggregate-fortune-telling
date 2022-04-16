@@ -57,8 +57,7 @@ func (con HaulController) Submit(c *gin.Context) {
 	oid := ay.MakeOrder(time.Now())
 
 	// 获取价格
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
@@ -180,8 +179,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	res["coupon"] = order.Discount
 
 	// 获取价格
-	var config models.Config
-	ay.Db.First(&config, "id = ?", 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var amount []models.HaulAmount
 	ay.Db.Order("sort asc").Find(&amount)
@@ -241,8 +239,7 @@ func (con HaulController) Coupon(c *gin.Context) {
 
 // Main 初始化
 func (con HaulController) Main(c *gin.Context) {
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var order []models.Order
 	ay.Db.Where("type = 1 and status = 1 and amount > 5").Limit(20).Order("RAND()").Find(&order)
@@ -282,8 +279,7 @@ func (con HaulController) Main(c *gin.Context) {
 func (con HaulController) Notice(c *gin.Context) {
 	c.Header("Access-Control-Allow-Origin", "*")
 	// 获取价格
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var order []models.Order
 	ay.Db.Where("type = 1 and status = 1 and amount > 5").Limit(20).Order("RAND()").Find(&order)

@@ -7,6 +7,11 @@
 
 package models
 
+import "gin/ay"
+
+type ConsultModel struct {
+}
+
 type Consult struct {
 	BaseModel
 	Type int    `json:"-"`
@@ -17,4 +22,9 @@ type Consult struct {
 
 func (Consult) TableName() string {
 	return "sm_consult"
+}
+
+func (con ConsultModel) GetType(val int) (res []Consult) {
+	ay.Db.Where("type = ?", val).Order("sort asc").Find(&res)
+	return
 }

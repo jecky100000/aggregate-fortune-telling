@@ -110,9 +110,7 @@ func (con UserController) Coupon(c *gin.Context) {
 // Info 用户信息
 func (con UserController) Info(c *gin.Context) {
 
-	var config models.Config
-
-	ay.Db.First(&config, "id = ?", 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
@@ -342,9 +340,7 @@ func (con UserController) History(c *gin.Context) {
 
 	var history []ReturnHistory
 
-	var config models.Config
-
-	ay.Db.First(&config, "id = ?", 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	for _, v := range order {
 		loc, _ := time.LoadLocation("Local")

@@ -124,8 +124,7 @@ func (con LoginController) web(phone, code string) (int, string) {
 // SetCoupon 注册发放优惠卷
 func (con LoginController) SetCoupon(uid int64) {
 
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	if config.UserRegCoupon == 1 {
 		ss := models.Coupon{

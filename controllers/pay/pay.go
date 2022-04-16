@@ -59,8 +59,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	order.OutTradeNo = out_trade_no
 	ay.Db.Save(&order)
 
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	var pay models.Pay
 	ay.Db.First(&pay, "id = ?", 6)

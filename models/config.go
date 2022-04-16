@@ -7,6 +7,8 @@
 
 package models
 
+import "gin/ay"
+
 type ConfigModel struct {
 }
 
@@ -35,4 +37,9 @@ type Config struct {
 
 func (Config) TableName() string {
 	return "sm_config"
+}
+
+func (con ConfigModel) GetId(id int) (res Config) {
+	ay.Db.First(&res, id)
+	return
 }

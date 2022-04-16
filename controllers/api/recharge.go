@@ -83,8 +83,7 @@ func (con RechargeController) Main(c *gin.Context) {
 
 func (con RechargeController) Web(oid string, payType int, amount float64, returnUrl string, ip string) (int, string) {
 
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	ctx, _ := context.WithCancel(context.Background())
 

@@ -53,8 +53,7 @@ func (con PayController) Do(c *gin.Context) {
 		return
 	}
 
-	var config models.Config
-	ay.Db.First(&config, 1)
+	config := models.ConfigModel{}.GetId(1)
 
 	// 获取金额
 	VAmount := 0.00

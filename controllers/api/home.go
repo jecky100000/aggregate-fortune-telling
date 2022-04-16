@@ -23,20 +23,16 @@ func (con HomeController) Home(c *gin.Context) {
 	var order models.Order
 	ay.Db.Model(&order).Where("type = 1 OR type = 2").Count(&count)
 
-	// 图片
-	var image []models.Home
+	// 广告
+	adv := models.AdvModel{}.GetType(1)
 
-	ay.Db.Order("sort asc").Find(&image)
-
-	for k, v := range image {
-		image[k].Image = ay.Domain + v.Image
+	for k, v := range adv {
+		adv[k].Image = ay.Domain + v.Image
 	}
 
-	var recommend []models.Consult
-	ay.Db.Order("sort asc").Find(&recommend, "type = 1")
-
-	var hot []models.Consult
-	ay.Db.Order("sort asc").Find(&hot, "type = 2")
+	// 热门咨询
+	recommend := models.ConsultModel{}.GetType(1)
+	hot := models.ConsultModel{}.GetType(2)
 
 	var banner []models.Banner
 	ay.Db.Order("sort asc").Find(&banner)
@@ -46,7 +42,7 @@ func (con HomeController) Home(c *gin.Context) {
 	}
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
-		"image": image,
+		"adv":   adv,
 		"count": count,
 		"consult": gin.H{
 			"recommend": recommend,
@@ -57,9 +53,7 @@ func (con HomeController) Home(c *gin.Context) {
 }
 
 func (con HomeController) Config(c *gin.Context) {
-	var config models.Config
-	ay.Db.First(&config, 1)
-
+	config := models.ConfigModel{}.GetId(1)
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
