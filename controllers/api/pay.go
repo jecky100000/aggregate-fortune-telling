@@ -77,7 +77,7 @@ func (con PayController) Do(c *gin.Context) {
 		}
 	}
 
-	// 历史金额
+	// 订单历史金额
 	order.OldAmount = VAmount
 
 	couponAmount := 0.00
@@ -118,6 +118,7 @@ func (con PayController) Do(c *gin.Context) {
 		couponAmount = coupon.Amount
 	}
 
+	// 减少用户余额
 	amount := 0.00
 	if getForm.Return == 0 {
 		amount = VAmount - couponAmount
@@ -135,10 +136,13 @@ func (con PayController) Do(c *gin.Context) {
 	user.Amount = user.Amount - amount
 	ay.Db.Save(&user)
 
+	// 订单设置已支付
 	order.Status = 1
+	order.PayType = 9
 	order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 	ay.Db.Save(&order)
 
+	// 优惠卷设置过期
 	if getForm.Coupon != 0 {
 		var coupon models.Coupon
 		ay.Db.First(&coupon, "id = ?", getForm.Coupon)

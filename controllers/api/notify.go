@@ -72,6 +72,7 @@ func (con NotifyController) AliPay(c *gin.Context) {
 
 	if res == 1 {
 		order.Status = 1
+		order.PayType = 1
 		order.TradeNo = notifyReq.Get("trade_no")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)
@@ -139,6 +140,7 @@ func (con NotifyController) WeChat(c *gin.Context) {
 
 	if res == 1 {
 		order.Status = 1
+		order.PayType = 2
 		order.TradeNo = notifyReq.Get("transaction_id")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)

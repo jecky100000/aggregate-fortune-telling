@@ -14,18 +14,38 @@ import (
 	"strings"
 )
 
-type AccountController struct {
+type OrderController struct {
 }
 
-type listForm struct {
+type orderListForm struct {
 	Page     int    `form:"page"`
 	PageSize int    `form:"pageSize"`
 	Key      string `form:"key"`
+	Status   string `form:"status"`
+	Type     string `form:"type"`
+}
+
+type returnList struct {
+	Id        int64         `json:"id"`
+	Oid       string        `json:"oid"`
+	Type      int           `json:"type"`
+	Uid       int64         `json:"uid"`
+	Username  string        `json:"username"`
+	Gender    int           `json:"gender"`
+	Amount    float64       `json:"amount"`
+	OldAmount float64       `json:"old_amount"`
+	Coupon    int64         `json:"coupon"`
+	PayType   int           `json:"pay_type"`
+	TradeNo   string        `json:"trade_no"`
+	Status    int           `json:"status"`
+	Discount  float64       `json:"discount"`
+	Phone     string        `json:"phone"`
+	CreatedAt models.MyTime `json:"created_at"`
 }
 
 // List 用户列表
-func (con AccountController) List(c *gin.Context) {
-	var data listForm
+func (con OrderController) List(c *gin.Context) {
+	var data orderListForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -36,42 +56,47 @@ func (con AccountController) List(c *gin.Context) {
 		return
 	}
 
-	var user []models.User
+	var list []returnList
 
 	var count int64
+	res := ay.Db.Table("sm_order").
+		Select("sm_user.phone,sm_order.*").
+		Joins("left join sm_user on sm_order.uid=sm_user.id")
+
 	if data.Key != "" {
-		ay.Db.Model(models.User{}).
-			Where("phone like ?", "%"+data.Key+"%").
-			Count(&count)
-		ay.Db.Model(models.User{}).
-			Where("phone like ?", "%"+data.Key+"%").
-			Order("created_at desc").
-			Limit(data.PageSize).
-			Offset((data.Page - 1) * data.PageSize).
-			Find(&user)
-	} else {
-		ay.Db.Model(models.User{}).
-			Count(&count)
-		ay.Db.Model(models.User{}).
-			Limit(data.PageSize).
-			Order("created_at desc").
-			Offset((data.Page - 1) * data.PageSize).
-			Find(&user)
+		res.Where("sm_order.oid like ? OR sm_order.trade_no like ? OR sm_order.username like ? OR sm_user.phone like ?", "%"+data.Key+"%", "%"+data.Key+"%", "%"+data.Key+"%", "%"+data.Key+"%")
 	}
 
+	if data.Status != "" {
+		res.Where("sm_order.status = ?", data.Status)
+	}
+
+	if data.Type != "" {
+		res.Where("sm_order.type = ?", data.Type)
+	}
+
+	row := res
+
+	res.Order("created_at desc").
+		Limit(data.PageSize).
+		Offset((data.Page - 1) * data.PageSize).
+		Find(&list)
+
+	row.Count(&count)
+
 	ay.Json{}.Msg(c, "200", "success", gin.H{
-		"list":  user,
+		"list":  list,
 		"total": count,
 	})
 }
 
-type detailForm struct {
+type orderDetailForm struct {
 	Id int `form:"id"`
 }
 
 // Detail 用户详情
-func (con AccountController) Detail(c *gin.Context) {
-	var data detailForm
+func (con OrderController) Detail(c *gin.Context) {
+	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -91,7 +116,7 @@ func (con AccountController) Detail(c *gin.Context) {
 	})
 }
 
-type optionForm struct {
+type orderOptionForm struct {
 	Id       int     `form:"id"`
 	Type     int     `form:"type"`
 	Phone    string  `form:"phone"`
@@ -100,8 +125,8 @@ type optionForm struct {
 }
 
 // Option 添加 编辑
-func (con AccountController) Option(c *gin.Context) {
-	var data optionForm
+func (con OrderController) Option(c *gin.Context) {
+	var data orderOptionForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -153,12 +178,12 @@ func (con AccountController) Option(c *gin.Context) {
 
 }
 
-type deleteForm struct {
+type orderDeleteForm struct {
 	Id string `form:"id"`
 }
 
-func (con AccountController) Delete(c *gin.Context) {
-	var data deleteForm
+func (con OrderController) Delete(c *gin.Context) {
+	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -172,8 +197,8 @@ func (con AccountController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var user models.User
-		ay.Db.Delete(&user, v)
+		var order models.Order
+		ay.Db.Delete(&order, v)
 	}
 
 	ay.Json{}.Msg(c, "200", "删除成功", gin.H{})
