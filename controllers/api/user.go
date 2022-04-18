@@ -159,7 +159,7 @@ func (con UserController) Upload(c *gin.Context) {
 		return
 	}
 	fileName := ay.MD5(fmt.Sprintf("%s%s", file.Filename, time.Now().String()))
-	fildDir := fmt.Sprintf("/static/upload/user/%d-%d/", time.Now().Year(), time.Now().Month())
+	fildDir := fmt.Sprintf("static/upload/user/%d-%d/", time.Now().Year(), time.Now().Month())
 
 	err = ay.CreateMutiDir(fildDir)
 	if err != nil {
@@ -169,7 +169,7 @@ func (con UserController) Upload(c *gin.Context) {
 	filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
 	c.SaveUploadedFile(file, filepath)
 	ay.Json{}.Msg(c, "200", "上传成功!", gin.H{
-		"url": filepath,
+		"url": "/" + filepath,
 	})
 }
 

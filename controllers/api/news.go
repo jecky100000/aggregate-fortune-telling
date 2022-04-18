@@ -86,7 +86,7 @@ func (con NewsController) Recommend(c *gin.Context) {
 	notice := models.NewsModel{}.GetList(getForm.Type)
 
 	for k, v := range notice {
-		notice[k].Time = ay.LastTime(int(v.CreatedTime.Unix()))
+		notice[k].Time = ay.LastTime(int(v.CreatedAt.Unix()))
 	}
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{

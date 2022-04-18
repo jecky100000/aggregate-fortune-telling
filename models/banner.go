@@ -11,7 +11,7 @@ type Banner struct {
 	BaseModel
 	Image string `json:"image"`
 	Url   string `json:"url"`
-	Sort  int    `json:"-"`
+	Sort  int    `json:"sort"`
 }
 
 func (Banner) TableName() string {

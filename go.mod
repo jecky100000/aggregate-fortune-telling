@@ -41,12 +41,8 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/tjfoc/gmsm v1.3.2 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
-	github.com/yuin/goldmark v1.4.1 // indirect
 	golang.org/x/crypto v0.0.0-20220208233918-bba287dce954 // indirect
-	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2 // indirect
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
-	golang.org/x/tools v0.1.10 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/ini.v1 v1.56.0 // indirect
 )

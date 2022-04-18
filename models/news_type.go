@@ -12,7 +12,7 @@ type NewsTypeModel struct {
 
 type NewsType struct {
 	Id    uint   `json:"id"`
-	Pid   uint   `json:"-"`
+	Pid   uint   `json:"pid"`
 	Name  string `json:"name"`
 	Class int    `json:"-"`
 }

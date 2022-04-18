@@ -15,26 +15,28 @@ type NewsModel struct {
 }
 
 type NewsNotice struct {
-	//BaseModel
-	Id int `gorm:"primaryKey" json:"id"`
+	BaseModel
 	// Class       int    `gorm:"column:class" json:"-"`
-	Type        int    `gorm:"column:type" json:"-"`
+	Type        int64  `gorm:"column:type" json:"type"`
 	Title       string `gorm:"column:title" json:"title"`
 	Keywords    string `gorm:"column:keywords" json:"keywords"`
 	Description string `gorm:"column:description" json:"description"`
 	Cover       string `gorm:"column:cover" json:"cover"`
 	Content     string `gorm:"column:content" json:"content"`
 	View        int    `gorm:"column:view" json:"view"`
-	CreatedTime MyTime `gorm:"column:created_time" json:"-"`
-	Status      int    `gorm:"column:status" json:"-"`
-	Time        string `json:"time"`
+	Status      int    `gorm:"column:status" json:"status"`
 }
 
 func (NewsNotice) TableName() string {
 	return "sm_notice"
 }
 
-func (con NewsModel) GetList(class int) (res []NewsNotice) {
+type returnNotice struct {
+	NewsNotice
+	Time string `json:"time"`
+}
+
+func (con NewsModel) GetList(class int) (res []returnNotice) {
 	var noticeType NewsType
 	ay.Db.First(&noticeType, "class = ?", class)
 
