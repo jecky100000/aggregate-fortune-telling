@@ -12,14 +12,11 @@ type BaiKeModel struct {
 
 type BaiKe struct {
 	BaseModel
-	Type    int    `json:"-"`
+	Type    int    `json:"type"`
 	Title   string `json:"title"`
 	Cover   string `json:"cover"`
 	Content string `json:"content"`
-	//Cid   string `json:"-"`
-	VType int `json:"-"`
-	//Vcid  string `json:"-"`
-	View int64 `json:"view"`
+	View    int64  `json:"view"`
 }
 
 func (BaiKe) TableName() string {

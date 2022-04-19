@@ -58,4 +58,10 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("notice_type/option", admin.NoticeTypeController{}.Option)
 	adminGroup.POST("notice_type/delete", admin.NoticeTypeController{}.Delete)
 
+	// 热门推荐
+	adminGroup.GET("consult/list", admin.ConsultController{}.List)
+	adminGroup.POST("consult/detail", admin.ConsultController{}.Detail)
+	adminGroup.POST("consult/option", admin.ConsultController{}.Option)
+	adminGroup.POST("consult/delete", admin.ConsultController{}.Delete)
+
 }

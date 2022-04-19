@@ -14,10 +14,10 @@ type ConsultModel struct {
 
 type Consult struct {
 	BaseModel
-	Type int    `json:"-"`
+	Type int    `json:"type"`
 	Name string `json:"name"`
 	Url  string `json:"url"`
-	Sort int    `json:"-"`
+	Sort int    `json:"sort"`
 }
 
 func (Consult) TableName() string {
