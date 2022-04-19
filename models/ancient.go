@@ -16,8 +16,8 @@ type Ancient struct {
 	Title  string `json:"title"`
 	Cover  string `json:"cover"`
 	Author string `json:"author"`
-	Cid    string `json:"cid"`
-	Vcid   string `gorm:"column:vcid" json:"vcid"`
+	Cid    int    `json:"cid"`
+	Vcid   int    `gorm:"column:vcid" json:"vcid"`
 	View   int64  `gorm:"column:view" json:"view"`
 }
 

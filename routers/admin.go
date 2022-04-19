@@ -64,4 +64,27 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("consult/option", admin.ConsultController{}.Option)
 	adminGroup.POST("consult/delete", admin.ConsultController{}.Delete)
 
+	// 百科
+	adminGroup.GET("baike/list", admin.BaikeController{}.List)
+	adminGroup.POST("baike/detail", admin.BaikeController{}.Detail)
+	adminGroup.POST("baike/option", admin.BaikeController{}.Option)
+	adminGroup.POST("baike/delete", admin.BaikeController{}.Delete)
+	adminGroup.POST("baike/upload", admin.BaikeController{}.Upload)
+
+	// 古籍
+	adminGroup.GET("ancient/list", admin.AncientController{}.List)
+	adminGroup.POST("ancient/detail", admin.AncientController{}.Detail)
+	adminGroup.POST("ancient/option", admin.AncientController{}.Option)
+	adminGroup.POST("ancient/delete", admin.AncientController{}.Delete)
+	adminGroup.POST("ancient/upload", admin.AncientController{}.Upload)
+
+	adminGroup.GET("ancient_type/all", admin.AncientTypeController{}.All)
+
+	// 古籍目录
+	adminGroup.GET("ancient_catalogue/list", admin.AncientCatalogueController{}.List)
+	adminGroup.POST("ancient_catalogue/detail", admin.AncientCatalogueController{}.Detail)
+	adminGroup.POST("ancient_catalogue/option", admin.AncientCatalogueController{}.Option)
+	adminGroup.POST("ancient_catalogue/delete", admin.AncientCatalogueController{}.Delete)
+	adminGroup.POST("ancient_catalogue/upload", admin.AncientCatalogueController{}.Upload)
+
 }

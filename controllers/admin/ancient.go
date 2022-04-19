@@ -14,12 +14,20 @@ import (
 	"strings"
 )
 
-type AdvController struct {
+type AncientController struct {
+}
+
+type ancientListForm struct {
+	Page     int    `form:"page"`
+	PageSize int    `form:"pageSize"`
+	Key      string `form:"key"`
+	Status   string `form:"status"`
+	Type     int    `form:"type"`
 }
 
 // List 列表
-func (con AdvController) List(c *gin.Context) {
-	var data noticeListForm
+func (con AncientController) List(c *gin.Context) {
+	var data ancientListForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -30,10 +38,25 @@ func (con AdvController) List(c *gin.Context) {
 		return
 	}
 
-	var list []models.Adv
+	type returnList struct {
+		models.Ancient
+		TypeName string `json:"typeName"`
+	}
+
+	var list []returnList
 
 	var count int64
-	res := ay.Db.Table("sm_adv")
+	res := ay.Db.Table("sm_ancient").
+		Select("sm_ancient.*,sm_ancient_type.name as type_name").
+		Joins("left join sm_ancient_type on sm_ancient.vcid=sm_ancient_type.id")
+
+	if data.Key != "" {
+		res.Where("sm_ancient.title like ?", "%"+data.Key+"%")
+	}
+
+	if data.Type != 0 {
+		res.Where("sm_ancient.type = ?", data.Type)
+	}
 
 	row := res
 
@@ -55,7 +78,7 @@ func (con AdvController) List(c *gin.Context) {
 //}
 
 // Detail 用户详情
-func (con AdvController) Detail(c *gin.Context) {
+func (con AncientController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -67,7 +90,7 @@ func (con AdvController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.Adv
+	var user models.Ancient
 
 	ay.Db.First(&user, data.Id)
 
@@ -76,17 +99,17 @@ func (con AdvController) Detail(c *gin.Context) {
 	})
 }
 
-type advOptionForm struct {
+type ancientOptionForm struct {
 	Id    int    `form:"id"`
-	Link  string `form:"link"`
-	Image string `form:"image"`
-	Sort  int    `form:"sort"`
-	Type  int    `form:"type"`
+	Title string `form:"title"`
+	Cover string `form:"cover"`
+	Cid   int    `form:"cid"`
+	Vcid  int    `form:"vcid"`
 }
 
 // Option 添加 编辑
-func (con AdvController) Option(c *gin.Context) {
-	var data advOptionForm
+func (con AncientController) Option(c *gin.Context) {
+	var data ancientOptionForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -97,24 +120,24 @@ func (con AdvController) Option(c *gin.Context) {
 		return
 	}
 
-	var res models.Adv
+	var res models.Ancient
 	ay.Db.First(&res, data.Id)
 
 	if data.Id != 0 {
 
-		res.Link = data.Link
-		res.Sort = data.Sort
-		res.Image = data.Image
-		res.Type = data.Type
+		res.Title = data.Title
+		res.Cover = data.Cover
+		res.Cid = data.Cid
+		res.Vcid = data.Vcid
 
 		ay.Db.Save(&res)
 		ay.Json{}.Msg(c, "200", "修改成功", gin.H{})
 	} else {
-		ay.Db.Create(&models.Adv{
-			Sort:  data.Sort,
-			Image: data.Image,
-			Link:  data.Link,
-			Type:  data.Type,
+		ay.Db.Create(&models.Ancient{
+			Title: data.Title,
+			Cover: data.Cover,
+			Cid:   data.Cid,
+			Vcid:  data.Vcid,
 		})
 		ay.Json{}.Msg(c, "200", "创建成功", gin.H{})
 
@@ -122,7 +145,7 @@ func (con AdvController) Option(c *gin.Context) {
 
 }
 
-func (con AdvController) Delete(c *gin.Context) {
+func (con AncientController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -137,19 +160,16 @@ func (con AdvController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var order models.Adv
+		var order models.Ancient
 		ay.Db.Delete(&order, v)
 	}
 
 	ay.Json{}.Msg(c, "200", "删除成功", gin.H{})
 }
 
-func (con AdvController) Upload(c *gin.Context) {
-	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
-		return
-	}
-	code, msg := Upload(c, "adv")
+func (con AncientController) Upload(c *gin.Context) {
+
+	code, msg := Upload(c, "notice")
 
 	if code != 200 {
 		ay.Json{}.Msg(c, "400", msg, gin.H{})

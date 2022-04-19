@@ -11,38 +11,47 @@ import (
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
+	"log"
+	"path"
 	"strings"
 )
 
-type AdvController struct {
+type AncientCatalogueController struct {
+}
+
+type ancientCatalogueListForm struct {
+	Page     int    `form:"page"`
+	PageSize int    `form:"pageSize"`
+	Key      string `form:"key"`
+	Id       int    `form:"id"`
 }
 
 // List 列表
-func (con AdvController) List(c *gin.Context) {
-	var data noticeListForm
+func (con AncientCatalogueController) List(c *gin.Context) {
+	var data ancientCatalogueListForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
+	log.Println(data.Id)
 
 	if Auth() == false {
 		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
 		return
 	}
 
-	var list []models.Adv
+	var list []models.AncientClass
 
 	var count int64
-	res := ay.Db.Table("sm_adv")
-
-	row := res
-
-	res.Order("created_at desc").
+	ay.Db.Order("sort asc").
+		Where("aid = ?", data.Id).
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
 
-	row.Count(&count)
+	ay.Db.Table("sm_ancient_class").
+		Where("aid = ?", data.Id).
+		Count(&count)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"list":  list,
@@ -55,7 +64,7 @@ func (con AdvController) List(c *gin.Context) {
 //}
 
 // Detail 用户详情
-func (con AdvController) Detail(c *gin.Context) {
+func (con AncientCatalogueController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -67,26 +76,27 @@ func (con AdvController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.Adv
+	var res models.AncientClass
 
-	ay.Db.First(&user, data.Id)
+	ay.Db.First(&res, data.Id)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
-		"info": user,
+		"info": res,
 	})
 }
 
-type advOptionForm struct {
-	Id    int    `form:"id"`
-	Link  string `form:"link"`
-	Image string `form:"image"`
-	Sort  int    `form:"sort"`
-	Type  int    `form:"type"`
+type ancientCatalogueOptionForm struct {
+	Id      int    `form:"id"`
+	Name    string `form:"name"`
+	Content string `form:"content"`
+	Link    string `form:"link"`
+	Sort    int    `form:"sort"`
+	Aid     int64  `form:"aid"`
 }
 
 // Option 添加 编辑
-func (con AdvController) Option(c *gin.Context) {
-	var data advOptionForm
+func (con AncientCatalogueController) Option(c *gin.Context) {
+	var data ancientCatalogueOptionForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -97,24 +107,37 @@ func (con AdvController) Option(c *gin.Context) {
 		return
 	}
 
-	var res models.Adv
+	var res models.AncientClass
 	ay.Db.First(&res, data.Id)
 
-	if data.Id != 0 {
+	vType := 0
+	ext := path.Ext(data.Link)
+	if ext == "doc" || ext == "docx" {
+		vType = 3
+	} else if ext == "pdf" {
+		vType = 2
+	} else {
+		vType = 1
+	}
 
+	if data.Id != 0 {
+		res.Name = data.Name
 		res.Link = data.Link
+		res.Content = data.Content
 		res.Sort = data.Sort
-		res.Image = data.Image
-		res.Type = data.Type
+		res.Type = vType
 
 		ay.Db.Save(&res)
 		ay.Json{}.Msg(c, "200", "修改成功", gin.H{})
 	} else {
-		ay.Db.Create(&models.Adv{
-			Sort:  data.Sort,
-			Image: data.Image,
-			Link:  data.Link,
-			Type:  data.Type,
+
+		ay.Db.Create(&models.AncientClass{
+			Name:    data.Name,
+			Link:    data.Link,
+			Content: data.Content,
+			Sort:    data.Sort,
+			Aid:     data.Aid,
+			Type:    vType,
 		})
 		ay.Json{}.Msg(c, "200", "创建成功", gin.H{})
 
@@ -122,7 +145,7 @@ func (con AdvController) Option(c *gin.Context) {
 
 }
 
-func (con AdvController) Delete(c *gin.Context) {
+func (con AncientCatalogueController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -137,19 +160,16 @@ func (con AdvController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var order models.Adv
-		ay.Db.Delete(&order, v)
+		var res models.AncientClass
+		ay.Db.Delete(&res, v)
 	}
 
 	ay.Json{}.Msg(c, "200", "删除成功", gin.H{})
 }
 
-func (con AdvController) Upload(c *gin.Context) {
-	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
-		return
-	}
-	code, msg := Upload(c, "adv")
+func (con AncientCatalogueController) Upload(c *gin.Context) {
+
+	code, msg := Upload(c, "ancient_catalogue")
 
 	if code != 200 {
 		ay.Json{}.Msg(c, "400", msg, gin.H{})

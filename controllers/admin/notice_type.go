@@ -147,6 +147,10 @@ func (con NoticeTypeController) Delete(c *gin.Context) {
 }
 
 func (con NoticeTypeController) All(c *gin.Context) {
+	if Auth() == false {
+		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		return
+	}
 	type list struct {
 		Label string `gorm:"column:name" json:"label"`
 		Value int64  `gorm:"column:id" json:"value"`

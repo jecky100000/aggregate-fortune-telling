@@ -181,6 +181,7 @@ func (con NoticeController) Delete(c *gin.Context) {
 }
 
 func (con NoticeController) Upload(c *gin.Context) {
+
 	code, msg := Upload(c, "notice")
 
 	if code != 200 {

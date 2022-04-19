@@ -129,7 +129,7 @@ func (con NoticeController) Detail(c *gin.Context) {
 
 	var ancient []models.AncientClass
 
-	ay.Db.Where("aid = ?", getForm.Aid).Order("id asc").Find(&ancient)
+	ay.Db.Where("aid = ?", getForm.Aid).Order("sort asc").Find(&ancient)
 
 	for k, v := range ancient {
 		ancient[k].Link = ay.Domain + v.Link

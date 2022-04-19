@@ -142,6 +142,7 @@ func (con BannerController) Delete(c *gin.Context) {
 }
 
 func (con BannerController) Upload(c *gin.Context) {
+
 	code, msg := Upload(c, "banner")
 
 	if code != 200 {
