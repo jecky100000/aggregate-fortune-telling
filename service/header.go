@@ -8,8 +8,6 @@
 package service
 
 import (
-	"gin/ay"
-	"gin/controllers/admin"
 	"gin/controllers/api"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -17,29 +15,21 @@ import (
 
 func Header() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, appid := 0, 0
+		token, appid := "", 0
 		for name, values := range c.Request.Header {
 			// Loop over all values for the name.
 			for _, value := range values {
 				if name == "Authorization" {
-					api.Token = value
-					token = 1
+					token = value
 				}
 				if name == "From" {
-					api.Appid, _ = strconv.Atoi(value)
-					appid = 1
+					appid, _ = strconv.Atoi(value)
 				}
 			}
 		}
-		if token == 0 {
-			api.Token = ""
-		}
-		if appid == 0 {
-			api.Appid = 0
-		}
+		api.Token = token
 
-		api.Json = &ay.Json{Serve: c}
-		admin.Json = &ay.Json{Serve: c}
+		api.Appid = appid
 
 		c.Next()
 	}
