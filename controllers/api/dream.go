@@ -25,7 +25,7 @@ func (con DreamController) Main(c *gin.Context) {
 		recommend[k].Message = ay.Summary(v.Message, 50)
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list":      res,
 		"recommend": recommend,
 		//"notice":    notice,
@@ -40,7 +40,7 @@ type GetDreamForm struct {
 func (con DreamController) Search(c *gin.Context) {
 	var getForm GetDreamForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	res := models.DreamModel{}.GetList(getForm.Title, 10)
@@ -49,7 +49,7 @@ func (con DreamController) Search(c *gin.Context) {
 		res[k].Message = ay.Summary(v.Message, 50)
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": res,
 	})
 }
@@ -62,7 +62,7 @@ type GetDreamDetailForm struct {
 func (con DreamController) Detail(c *gin.Context) {
 	var getForm GetDreamDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -70,7 +70,7 @@ func (con DreamController) Detail(c *gin.Context) {
 
 	total := models.DreamTotalModel{}.GetTotal(getForm.Id)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"info":  res,
 		"total": total.Num,
 		//"notice": notice,

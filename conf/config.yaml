@@ -1,6 +1,5 @@
-#
-# config
-mysql: # mysql
+# conf/config.yaml
+mysql:
   localhost: 127.0.0.1
   port: 3306
   user: root
@@ -13,4 +12,4 @@ sms:
   sign: 玄机文化
   template_code: SMS_232177328
 
-domain: http://192.168.2.116:8082/
+domain: http://192.168.2.116:8082

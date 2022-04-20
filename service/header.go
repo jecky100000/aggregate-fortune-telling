@@ -8,6 +8,8 @@
 package service
 
 import (
+	"gin/ay"
+	"gin/controllers/admin"
 	"gin/controllers/api"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -35,6 +37,9 @@ func Header() gin.HandlerFunc {
 		if appid == 0 {
 			api.Appid = 0
 		}
+
+		api.Json = &ay.Json{Serve: c}
+		admin.Json = &ay.Json{Serve: c}
 
 		c.Next()
 	}

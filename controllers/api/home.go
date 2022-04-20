@@ -27,7 +27,7 @@ func (con HomeController) Home(c *gin.Context) {
 	adv := models.AdvModel{}.GetType(1)
 
 	for k, v := range adv {
-		adv[k].Image = ay.Domain + v.Image
+		adv[k].Image = ay.Yaml.GetString("domain") + v.Image
 	}
 
 	// 热门咨询
@@ -38,10 +38,10 @@ func (con HomeController) Home(c *gin.Context) {
 	ay.Db.Order("sort asc").Find(&banner)
 
 	for k, v := range banner {
-		banner[k].Image = ay.Domain + v.Image
+		banner[k].Image = ay.Yaml.GetString("domain") + v.Image
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"adv":   adv,
 		"count": count,
 		"consult": gin.H{
@@ -54,7 +54,7 @@ func (con HomeController) Home(c *gin.Context) {
 
 func (con HomeController) Config(c *gin.Context) {
 	config := models.ConfigModel{}.GetId(1)
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
 	})

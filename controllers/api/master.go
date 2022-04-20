@@ -23,7 +23,7 @@ func (con MasterController) Type(c *gin.Context) {
 	var t []models.MasterType
 	ay.Db.Find(&t)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": t,
 	})
 }
@@ -42,7 +42,7 @@ type Master struct {
 func (con MasterController) List(c *gin.Context) {
 	var getForm GetMasterListForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	page := getForm.Page - 1
@@ -81,18 +81,18 @@ func (con MasterController) List(c *gin.Context) {
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
-			"avatar":    ay.Domain + v.Master.Avatar,
+			"avatar":    ay.Yaml.GetString("domain") + v.Master.Avatar,
 			"rate":      v.Master.Rate,
 			"type_name": type_name,
 		})
 	}
 
 	if row == nil {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": row,
 		})
 	}
@@ -102,7 +102,7 @@ func (con MasterController) List(c *gin.Context) {
 func (con MasterController) GetRecommend(c *gin.Context) {
 	var getForm GetMasterListForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	page := getForm.Page - 1
@@ -141,18 +141,18 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
-			"avatar":    ay.Domain + v.Master.Avatar,
+			"avatar":    ay.Yaml.GetString("domain") + v.Master.Avatar,
 			"rate":      v.Master.Rate,
 			"type_name": type_name,
 		})
 	}
 
 	if row == nil {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": row,
 		})
 	}
@@ -166,25 +166,25 @@ type GetMasterDetailForm struct {
 func (con MasterController) Detail(c *gin.Context) {
 	var getForm GetMasterDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	var user models.User
 	ay.Db.First(&user, "id = ?", getForm.Id)
 	if user.MasterId == 0 {
-		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		Json.Msg(400, "大师不存在", gin.H{})
 		return
 	}
 	var res models.Master
 	ay.Db.Where("id = ?", user.MasterId).First(&res)
 
 	if res.Id == 0 {
-		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		Json.Msg(400, "大师不存在", gin.H{})
 		return
 	}
 
-	res.Avatar = ay.Domain + res.Avatar
+	res.Avatar = ay.Yaml.GetString("domain") + res.Avatar
 
 	res.Id = user.Id
 
@@ -219,7 +219,7 @@ func (con MasterController) Detail(c *gin.Context) {
 		isCollect = 1
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"info": res,
 		"user": gin.H{
 			"is_recommend": isRecommend,
@@ -232,7 +232,7 @@ func (con MasterController) Detail(c *gin.Context) {
 func (con MasterController) Recommend(c *gin.Context) {
 	var getForm GetMasterDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -240,21 +240,21 @@ func (con MasterController) Recommend(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
 	var master models.User
 	ay.Db.First(&master, "id = ?", getForm.Id)
 	if master.MasterId == 0 {
-		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		Json.Msg(400, "大师不存在", gin.H{})
 		return
 	}
 	var res models.Master
 	ay.Db.Where("id = ?", master.MasterId).First(&res)
 
 	if res.Id == 0 {
-		ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+		Json.Msg(400, "大师不存在", gin.H{})
 		return
 	}
 
@@ -267,9 +267,9 @@ func (con MasterController) Recommend(c *gin.Context) {
 			MasterId: getForm.Id,
 		}
 		ay.Db.Create(&ss)
-		ay.Json{}.Msg(c, "200", "推荐成功", gin.H{})
+		Json.Msg(200, "推荐成功", gin.H{})
 	} else {
 		ay.Db.Delete(&masterRecommend)
-		ay.Json{}.Msg(c, "200", "取消推荐", gin.H{})
+		Json.Msg(200, "取消推荐", gin.H{})
 	}
 }

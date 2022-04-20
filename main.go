@@ -15,7 +15,7 @@ func main() {
 
 	r = gin.Default()
 
-	// gin.SetMode(gin.DebugMode)
+	gin.SetMode(gin.DebugMode)
 
 	//r.Use(Cors())
 	//r.Use(Header())

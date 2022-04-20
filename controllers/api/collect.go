@@ -24,7 +24,7 @@ type GetCollectSetForm struct {
 func (con CollectController) Set(c *gin.Context) {
 	var getForm GetCollectSetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -33,7 +33,7 @@ func (con CollectController) Set(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
@@ -53,7 +53,7 @@ func (con CollectController) Set(c *gin.Context) {
 				Where("sm_user.id = ? and sm_user.type = 1", getForm.Id).
 				First(&d)
 			if d.Id == 0 {
-				ay.Json{}.Msg(c, "400", "大师不存在", gin.H{})
+				Json.Msg(400, "大师不存在", gin.H{})
 				return
 			}
 
@@ -61,14 +61,14 @@ func (con CollectController) Set(c *gin.Context) {
 			var baike models.BaiKe
 			ay.Db.Select("id").First(&baike, "id = ?", getForm.Id)
 			if baike.Id == 0 {
-				ay.Json{}.Msg(c, "400", "百科不存在", gin.H{})
+				Json.Msg(400, "百科不存在", gin.H{})
 				return
 			}
 		} else {
 			var ancient models.Ancient
 			ay.Db.Select("id").First(&ancient, "id = ?", getForm.Id)
 			if ancient.Id == 0 {
-				ay.Json{}.Msg(c, "400", "古籍不存在", gin.H{})
+				Json.Msg(400, "古籍不存在", gin.H{})
 				return
 			}
 		}
@@ -81,16 +81,16 @@ func (con CollectController) Set(c *gin.Context) {
 		}
 		ay.Db.Create(&ss)
 		if ss.Id != 0 {
-			ay.Json{}.Msg(c, "200", "收藏成功", gin.H{})
+			Json.Msg(200, "收藏成功", gin.H{})
 		} else {
-			ay.Json{}.Msg(c, "400", "收藏失败", gin.H{})
+			Json.Msg(400, "收藏失败", gin.H{})
 		}
 	} else {
 		ay.Db.Delete(&collect)
 		if collect.Id != 0 {
-			ay.Json{}.Msg(c, "200", "已从收藏中移除", gin.H{})
+			Json.Msg(200, "已从收藏中移除", gin.H{})
 		} else {
-			ay.Json{}.Msg(c, "400", "移除失败", gin.H{})
+			Json.Msg(400, "移除失败", gin.H{})
 		}
 	}
 

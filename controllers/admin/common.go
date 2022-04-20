@@ -15,6 +15,10 @@ import (
 type CommonController struct {
 }
 
+var (
+	Json *ay.Json
+)
+
 func Auth() bool {
 	token := ay.AuthCode(api.Token, "DECODE", "", 0)
 	if token == "" {

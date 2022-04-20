@@ -32,12 +32,12 @@ type GetRechargeMainForm struct {
 func (con RechargeController) Main(c *gin.Context) {
 	var getForm GetRechargeMainForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if getForm.Amount < 1 {
-		ay.Json{}.Msg(c, "400", "充值不能小于1元", gin.H{})
+		Json.Msg(400, "充值不能小于1元", gin.H{})
 		return
 	}
 
@@ -45,7 +45,7 @@ func (con RechargeController) Main(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
@@ -61,22 +61,22 @@ func (con RechargeController) Main(c *gin.Context) {
 		code, msg = con.Web(order, getForm.Type, getForm.Amount, getForm.ReturnUrl, GetRequestIP(c))
 
 		if res == 0 {
-			ay.Json{}.Msg(c, "400", "订单创建失败", gin.H{})
+			Json.Msg(400, "订单创建失败", gin.H{})
 			return
 		}
 		if code == 1 {
 			if getForm.Type == 1 {
-				ay.Json{}.Msg(c, "200", "success", gin.H{
-					"url": ay.Domain + "/pay/alipay?oid=" + order,
+				Json.Msg(200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order,
 				})
 			} else {
-				ay.Json{}.Msg(c, "200", "success", gin.H{
-					"url": ay.Domain + "/pay/wechat?oid=" + order,
+				Json.Msg(200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order,
 				})
 			}
 
 		} else {
-			ay.Json{}.Msg(c, "400", msg, gin.H{})
+			Json.Msg(400, msg, gin.H{})
 		}
 	}
 }
@@ -97,10 +97,10 @@ func (con RechargeController) Web(oid string, payType int, amount float64, retur
 			return 0, err.Error()
 		}
 		client.SetLocation(alipay.LocationShanghai).
-			SetCharset(alipay.UTF8).                       // 设置字符编码，不设置默认 utf-8
-			SetSignType(alipay.RSA2).                      // 设置签名类型，不设置默认 RSA2
-			SetReturnUrl(returnUrl).                       // 设置返回URL
-			SetNotifyUrl(ay.Domain + "/api/notify/alipay") // 设置异步通知URL
+			SetCharset(alipay.UTF8).                                         // 设置字符编码，不设置默认 utf-8
+			SetSignType(alipay.RSA2).                                        // 设置签名类型，不设置默认 RSA2
+			SetReturnUrl(returnUrl).                                         // 设置返回URL
+			SetNotifyUrl(ay.Yaml.GetString("domain") + "/api/notify/alipay") // 设置异步通知URL
 
 		bm := make(gopay.BodyMap)
 		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
@@ -138,14 +138,14 @@ func (con RechargeController) Web(oid string, payType int, amount float64, retur
 			Set("out_trade_no", oid).
 			Set("total_fee", amount*100).
 			Set("spbill_create_ip", ip).
-			Set("notify_url", ay.Domain+"/api/notify/wechat").
+			Set("notify_url", ay.Yaml.GetString("domain")+"/api/notify/wechat").
 			Set("trade_type", "MWEB").
 			Set("device_info", "WEB").
 			Set("sign_type", "MD5").
 			SetBodyMap("scene_info", func(bm gopay.BodyMap) {
 				bm.SetBodyMap("h5_info", func(bm gopay.BodyMap) {
 					bm.Set("type", "Wap")
-					bm.Set("wap_url", ay.Domain)
+					bm.Set("wap_url", ay.Yaml.GetString("domain"))
 					bm.Set("wap_name", "H5测试支付")
 				})
 			}) /*.Set("openid", "o0Df70H2Q0fY8JXh1aFPIRyOBgu8")*/

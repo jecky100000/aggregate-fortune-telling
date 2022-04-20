@@ -36,26 +36,26 @@ type GetPlateSubmitForm struct {
 func (con PlateController) Submit(c *gin.Context) {
 	var getForm GetPlateSubmitForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if getForm.M > 12 || getForm.M < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的月份", gin.H{})
+		Json.Msg(400, "请输入正确的月份", gin.H{})
 		return
 	}
 	if getForm.D > 31 || getForm.D < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的天数", gin.H{})
+		Json.Msg(400, "请输入正确的天数", gin.H{})
 		return
 	}
 
 	if getForm.H < -1 || getForm.H > 24 {
-		ay.Json{}.Msg(c, "400", "请输入正确的时间", gin.H{})
+		Json.Msg(400, "请输入正确的时间", gin.H{})
 		return
 	}
 
 	if getForm.I < -1 || getForm.I > 60 {
-		ay.Json{}.Msg(c, "400", "请输入正确的分钟", gin.H{})
+		Json.Msg(400, "请输入正确的分钟", gin.H{})
 		return
 	}
 
@@ -64,7 +64,7 @@ func (con PlateController) Submit(c *gin.Context) {
 	uid, _ := strconv.Atoi(ay.AuthCode(Token, "DECODE", "", 0))
 
 	if uid == 0 {
-		ay.Json{}.Msg(c, "401", "token错误", gin.H{})
+		Json.Msg(401, "token错误", gin.H{})
 		return
 	}
 
@@ -96,9 +96,9 @@ func (con PlateController) Submit(c *gin.Context) {
 	ay.Db.Create(order)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "数据错误，请联系管理员", gin.H{})
+		Json.Msg(400, "数据错误，请联系管理员", gin.H{})
 	} else {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"oid": oid,
 		})
 	}
@@ -108,7 +108,7 @@ func (con PlateController) Submit(c *gin.Context) {
 func (con PlateController) Detail(c *gin.Context) {
 	var getForm GetHaulDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -117,7 +117,7 @@ func (con PlateController) Detail(c *gin.Context) {
 	ay.Db.First(&order, "oid = ? and type = 2", getForm.Oid)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "订单不存在", gin.H{})
+		Json.Msg(400, "订单不存在", gin.H{})
 		return
 	}
 
@@ -143,7 +143,7 @@ func (con PlateController) Detail(c *gin.Context) {
 		"gender":   order.Gender,
 		"username": order.UserName,
 	}
-	ay.Json{}.Msg(c, "200", "success", rs)
+	Json.Msg(200, "success", rs)
 }
 
 type GetPlateInfoForm struct {
@@ -159,26 +159,26 @@ type GetPlateInfoForm struct {
 func (con PlateController) Info(c *gin.Context) {
 	var getForm GetPlateInfoForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if getForm.M > 12 || getForm.M < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的月份", gin.H{})
+		Json.Msg(400, "请输入正确的月份", gin.H{})
 		return
 	}
 	if getForm.D > 31 || getForm.D < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的天数", gin.H{})
+		Json.Msg(400, "请输入正确的天数", gin.H{})
 		return
 	}
 
 	if getForm.H < -1 || getForm.H > 24 {
-		ay.Json{}.Msg(c, "400", "请输入正确的时间", gin.H{})
+		Json.Msg(400, "请输入正确的时间", gin.H{})
 		return
 	}
 
 	if getForm.I < -1 || getForm.I > 60 {
-		ay.Json{}.Msg(c, "400", "请输入正确的分钟", gin.H{})
+		Json.Msg(400, "请输入正确的分钟", gin.H{})
 		return
 	}
 
@@ -202,7 +202,7 @@ func (con PlateController) Info(c *gin.Context) {
 		hour = common.LunarModel{}.HourChinese(vh)
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"bz":    bz,
 		"tai":   tai,
 		"date":  t,
@@ -220,7 +220,7 @@ type GetPlateYearForm struct {
 func (con PlateController) Year(c *gin.Context) {
 	var getForm GetPlateYearForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -229,7 +229,7 @@ func (con PlateController) Year(c *gin.Context) {
 	ay.Db.First(&order, "oid = ? and type = 2", getForm.Oid)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "订单不存在", gin.H{})
+		Json.Msg(400, "订单不存在", gin.H{})
 		return
 	}
 
@@ -246,7 +246,7 @@ func (con PlateController) Year(c *gin.Context) {
 
 	rs := common.PlateModel{}.GetLiuNian(y, int(m), d, h, i, 0, order.Gender, getForm.Key)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": rs,
 	})
 
@@ -262,7 +262,7 @@ type GetPlateMonthForm struct {
 func (con PlateController) Month(c *gin.Context) {
 	var getForm GetPlateMonthForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -271,7 +271,7 @@ func (con PlateController) Month(c *gin.Context) {
 	ay.Db.First(&order, "oid = ? and type = 2", getForm.Oid)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "订单不存在", gin.H{})
+		Json.Msg(400, "订单不存在", gin.H{})
 		return
 	}
 
@@ -288,7 +288,7 @@ func (con PlateController) Month(c *gin.Context) {
 
 	rs := common.PlateModel{}.GetLiuYue(y, int(m), d, h, i, 0, order.Gender, getForm.Key, getForm.Index)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": rs,
 	})
 

@@ -29,12 +29,12 @@ type ancientTypeListForm struct {
 func (con AncientTypeController) List(c *gin.Context) {
 	var data noticeTypeListForm
 	if err := c.ShouldBind(&data); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		Json.Msg(401, "请登入", gin.H{})
 		return
 	}
 
@@ -55,7 +55,7 @@ func (con AncientTypeController) List(c *gin.Context) {
 
 	ay.Db.Table("sm_notice_type").Count(&count)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -69,12 +69,12 @@ func (con AncientTypeController) List(c *gin.Context) {
 func (con AncientTypeController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		Json.Msg(401, "请登入", gin.H{})
 		return
 	}
 
@@ -82,7 +82,7 @@ func (con AncientTypeController) Detail(c *gin.Context) {
 
 	ay.Db.First(&res, data.Id)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"info": res,
 	})
 }
@@ -96,12 +96,12 @@ type ancientTypeOptionForm struct {
 func (con AncientTypeController) Option(c *gin.Context) {
 	var data ancientTypeOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		Json.Msg(401, "请登入", gin.H{})
 		return
 	}
 
@@ -112,13 +112,13 @@ func (con AncientTypeController) Option(c *gin.Context) {
 		res.Name = data.Name
 
 		ay.Db.Save(&res)
-		ay.Json{}.Msg(c, "200", "修改成功", gin.H{})
+		Json.Msg(200, "修改成功", gin.H{})
 	} else {
 
 		ay.Db.Create(&models.NewsType{
 			Name: data.Name,
 		})
-		ay.Json{}.Msg(c, "200", "创建成功", gin.H{})
+		Json.Msg(200, "创建成功", gin.H{})
 
 	}
 
@@ -127,12 +127,12 @@ func (con AncientTypeController) Option(c *gin.Context) {
 func (con AncientTypeController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		Json.Msg(401, "请登入", gin.H{})
 		return
 	}
 
@@ -143,12 +143,12 @@ func (con AncientTypeController) Delete(c *gin.Context) {
 		ay.Db.Delete(&res, v)
 	}
 
-	ay.Json{}.Msg(c, "200", "删除成功", gin.H{})
+	Json.Msg(200, "删除成功", gin.H{})
 }
 
 func (con AncientTypeController) All(c *gin.Context) {
 	if Auth() == false {
-		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		Json.Msg(401, "请登入", gin.H{})
 		return
 	}
 	pid := c.Query("pid")
@@ -169,7 +169,7 @@ func (con AncientTypeController) All(c *gin.Context) {
 
 	res.Find(&l)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": l,
 	})
 }

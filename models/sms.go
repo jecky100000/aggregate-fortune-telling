@@ -46,17 +46,15 @@ func CreateClient(accessKeyId *string, accessKeySecret *string) (_result *dysmsa
 }
 
 func (con SmsModel) Send(phone, code string) (_err error) {
-	var yaml ay.Yaml
-	yaml.GetConf()
 
-	client, _err := CreateClient(tea.String(yaml.Sms.Ak), tea.String(yaml.Sms.Sk))
+	client, _err := CreateClient(tea.String(ay.Yaml.GetString("sms.ak")), tea.String(ay.Yaml.GetString("sms.sk")))
 	if _err != nil {
 		return _err
 	}
 
 	sendSmsRequest := &dysmsapi20170525.SendSmsRequest{
-		SignName:      tea.String(yaml.Sms.Sign),
-		TemplateCode:  tea.String(yaml.Sms.TemplateCode),
+		SignName:      tea.String(ay.Yaml.GetString("sms.sign")),
+		TemplateCode:  tea.String(ay.Yaml.GetString("sms.template_code")),
 		PhoneNumbers:  tea.String(phone),
 		TemplateParam: tea.String(`{"time":"` + code + `"}`),
 	}

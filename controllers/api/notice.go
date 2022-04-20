@@ -39,7 +39,7 @@ func (con NoticeController) Search(c *gin.Context) {
 
 	var getForm GetNoticeSearchForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -89,15 +89,15 @@ func (con NoticeController) Search(c *gin.Context) {
 			search[k].Collect = 1
 		}
 		search[k].Time = ay.LastTime(int(v.CreatedAt.Unix()))
-		search[k].Cover = ay.Domain + v.Cover
+		search[k].Cover = ay.Yaml.GetString("domain") + v.Cover
 	}
 
 	if search == nil {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"list": search,
 		})
 	}
@@ -114,14 +114,14 @@ func (con NoticeController) Detail(c *gin.Context) {
 
 	var getForm GetAncientDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	var res models.Ancient
 	ay.Db.First(&res, "id = ?", getForm.Aid)
 	if res.Id == 0 {
-		ay.Json{}.Msg(c, "400", "古籍不存在", gin.H{})
+		Json.Msg(400, "古籍不存在", gin.H{})
 		return
 	}
 	res.View = res.View + 1
@@ -132,10 +132,10 @@ func (con NoticeController) Detail(c *gin.Context) {
 	ay.Db.Where("aid = ?", getForm.Aid).Order("sort asc").Find(&ancient)
 
 	for k, v := range ancient {
-		ancient[k].Link = ay.Domain + v.Link
+		ancient[k].Link = ay.Yaml.GetString("domain") + v.Link
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": ancient,
 	})
 }
@@ -149,7 +149,7 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 
 	var getForm GetBaiKeForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -158,11 +158,11 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 	ay.Db.First(&baike, "id = ?", getForm.Id)
 
 	if baike.Id == 0 {
-		ay.Json{}.Msg(c, "400", "数据有误", gin.H{})
+		Json.Msg(400, "数据有误", gin.H{})
 	} else {
 		baike.View = baike.View + 1
 		ay.Db.Save(&baike)
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"info": baike,
 		})
 	}

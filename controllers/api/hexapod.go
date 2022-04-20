@@ -36,12 +36,12 @@ func (con HexapodController) Index(c *gin.Context) {
 
 		for k, v := range common.HexapodWuName {
 			if v1 == v {
-				list = append(list, List{Image: ay.Domain + "/static/image/hexapod/desc/" + strconv.Itoa(k) + ".png", Name: v})
+				list = append(list, List{Image: ay.Yaml.GetString("domain") + "/static/image/hexapod/desc/" + strconv.Itoa(k) + ".png", Name: v})
 			}
 		}
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": list,
 	})
 
@@ -55,7 +55,7 @@ type GetForm struct {
 func (con HexapodController) Get(c *gin.Context) {
 	var getForm GetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -63,13 +63,13 @@ func (con HexapodController) Get(c *gin.Context) {
 	image := ""
 	for k, v := range common.HexapodName {
 		if v == name {
-			image = ay.Domain + "/static/image/hexapod/simple/" + strconv.Itoa(k) + ".png"
+			image = ay.Yaml.GetString("domain") + "/static/image/hexapod/simple/" + strconv.Itoa(k) + ".png"
 		}
 	}
 
 	res := models.HexapodModel{}.GetContonent(name)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"name":    name,
 		"image":   image,
 		"content": res.Content + res.Handount,

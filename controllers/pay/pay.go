@@ -74,7 +74,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	var j OpenId
 	err := json.Unmarshal(body, &j)
 	if err != nil {
-		ay.Json{}.Msg(c, "400", "获取openid失败", gin.H{})
+		api.Json.Msg(400, "获取openid失败", gin.H{})
 		return
 	}
 
@@ -95,7 +95,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 		Set("out_trade_no", order.OutTradeNo).
 		Set("total_fee", order.Amount*100).
 		Set("spbill_create_ip", api.GetRequestIP(c)).
-		Set("notify_url", ay.Domain+"/api/notify/wechat").
+		Set("notify_url", ay.Yaml.GetString("domain")+"/api/notify/wechat").
 		Set("trade_type", "JSAPI").
 		Set("sign_type", "MD5").
 		Set("openid", openid)
@@ -156,7 +156,7 @@ func (con Controller) Wechat(c *gin.Context) {
 	}
 
 	if order.Status == 1 {
-		ay.Json{}.Msg(c, "400", "该笔订单已支付过", gin.H{})
+		api.Json.Msg(400, "该笔订单已支付过", gin.H{})
 		return
 	}
 
@@ -164,7 +164,7 @@ func (con Controller) Wechat(c *gin.Context) {
 	ay.Db.First(&pay, "id = ?", 6)
 
 	if con.IsWechat(c) {
-		redirect_uri := url.QueryEscape(ay.Domain + "/pay/open?oid=" + c.Query("oid"))
+		redirect_uri := url.QueryEscape(ay.Yaml.GetString("domain") + "/pay/open?oid=" + c.Query("oid"))
 		urlx := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + pay.Appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect"
 		c.Redirect(http.StatusTemporaryRedirect, urlx)
 		//c.Header("Content-Type", "text/html; charset=utf-8")

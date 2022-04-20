@@ -29,7 +29,7 @@ type GetPayDoForm struct {
 func (con PayController) Do(c *gin.Context) {
 	var getForm GetPayDoForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -37,19 +37,19 @@ func (con PayController) Do(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", getForm.Oid)
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "订单不存在", gin.H{})
+		Json.Msg(400, "订单不存在", gin.H{})
 		return
 	}
 
 	if order.Status == 1 {
-		ay.Json{}.Msg(c, "400", "该笔订单已支付过", gin.H{})
+		Json.Msg(400, "该笔订单已支付过", gin.H{})
 		return
 	}
 
@@ -62,7 +62,7 @@ func (con PayController) Do(c *gin.Context) {
 		ay.Db.First(&haulAmount, "id = ?", getForm.AmountId)
 
 		if haulAmount.Id == 0 {
-			ay.Json{}.Msg(c, "400", "金额错误", gin.H{})
+			Json.Msg(400, "金额错误", gin.H{})
 			return
 		}
 		VAmount = haulAmount.Amount
@@ -71,7 +71,7 @@ func (con PayController) Do(c *gin.Context) {
 		if order.Type == 1 {
 			VAmount = config.HaulAmount
 		} else {
-			ay.Json{}.Msg(c, "400", "此红包不适用于此订单", gin.H{})
+			Json.Msg(400, "此红包不适用于此订单", gin.H{})
 			return
 		}
 	}
@@ -86,7 +86,7 @@ func (con PayController) Do(c *gin.Context) {
 		ay.Db.First(&coupon, "id = ? and uid = ?", getForm.Coupon, user.Id)
 
 		if coupon.Id == 0 {
-			ay.Json{}.Msg(c, "400", "优惠卷不存在", gin.H{})
+			Json.Msg(400, "优惠卷不存在", gin.H{})
 			return
 		}
 
@@ -100,17 +100,17 @@ func (con PayController) Do(c *gin.Context) {
 			}
 		}
 		if vType == 0 {
-			ay.Json{}.Msg(c, "400", "优惠卷不适用于此产品", gin.H{})
+			Json.Msg(400, "优惠卷不适用于此产品", gin.H{})
 			return
 		}
 
 		if coupon.AmountThan > VAmount {
-			ay.Json{}.Msg(c, "400", "优惠卷不适用于此产品，金额错误", gin.H{})
+			Json.Msg(400, "优惠卷不适用于此产品，金额错误", gin.H{})
 			return
 		}
 
 		if coupon.EffectiveAt.Unix() < time.Now().Unix() {
-			ay.Json{}.Msg(c, "400", "优惠卷已过期", gin.H{})
+			Json.Msg(400, "优惠卷已过期", gin.H{})
 			return
 		}
 		order.Coupon = coupon.Id
@@ -128,7 +128,7 @@ func (con PayController) Do(c *gin.Context) {
 	order.Amount = amount
 
 	if user.Amount < amount {
-		ay.Json{}.Msg(c, "406", "余额不足", gin.H{})
+		Json.Msg(406, "余额不足", gin.H{})
 		return
 	}
 
@@ -150,6 +150,6 @@ func (con PayController) Do(c *gin.Context) {
 		ay.Db.Save(&coupon)
 	}
 
-	ay.Json{}.Msg(c, "200", "支付成功", gin.H{})
+	Json.Msg(200, "支付成功", gin.H{})
 
 }

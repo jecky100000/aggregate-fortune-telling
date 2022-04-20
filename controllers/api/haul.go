@@ -34,21 +34,21 @@ type GetHaulSubmitForm struct {
 func (con HaulController) Submit(c *gin.Context) {
 	var getForm GetHaulSubmitForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if getForm.M > 12 || getForm.M < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的月份", gin.H{})
+		Json.Msg(400, "请输入正确的月份", gin.H{})
 		return
 	}
 	if getForm.D > 31 || getForm.D < 1 {
-		ay.Json{}.Msg(c, "400", "请输入正确的天数", gin.H{})
+		Json.Msg(400, "请输入正确的天数", gin.H{})
 		return
 	}
 
 	if getForm.H < -1 || getForm.H > 24 {
-		ay.Json{}.Msg(c, "400", "请输入正确的时间", gin.H{})
+		Json.Msg(400, "请输入正确的时间", gin.H{})
 		return
 	}
 
@@ -63,7 +63,7 @@ func (con HaulController) Submit(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
@@ -98,9 +98,9 @@ func (con HaulController) Submit(c *gin.Context) {
 	ay.Db.Create(order)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "数据错误，请联系管理员", gin.H{})
+		Json.Msg(400, "数据错误，请联系管理员", gin.H{})
 	} else {
-		ay.Json{}.Msg(c, "200", "success", gin.H{
+		Json.Msg(200, "success", gin.H{
 			"oid": oid,
 		})
 	}
@@ -115,7 +115,7 @@ type GetHaulDetailForm struct {
 func (con HaulController) Detail(c *gin.Context) {
 	var getForm GetHaulDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -123,7 +123,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
@@ -132,7 +132,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	ay.Db.First(&order, "oid = ? and type = 1", getForm.Oid)
 
 	if order.Id == 0 {
-		ay.Json{}.Msg(c, "400", "订单不存在", gin.H{})
+		Json.Msg(400, "订单不存在", gin.H{})
 		return
 	}
 
@@ -192,10 +192,10 @@ func (con HaulController) Detail(c *gin.Context) {
 
 	if order.Status == 0 {
 		res["isPay"] = false
-		ay.Json{}.Msg(c, "200", "未支付", res)
+		Json.Msg(200, "未支付", res)
 	} else {
 		res["isPay"] = true
-		ay.Json{}.Msg(c, "200", "success", res)
+		Json.Msg(200, "success", res)
 	}
 
 }
@@ -208,7 +208,7 @@ type GetHaulCouponForm struct {
 func (con HaulController) Coupon(c *gin.Context) {
 	var getForm GetHaulCouponForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -216,7 +216,7 @@ func (con HaulController) Coupon(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		ay.Json{}.Msg(c, "401", "Token错误", gin.H{})
+		Json.Msg(401, "Token错误", gin.H{})
 		return
 	}
 
@@ -224,14 +224,14 @@ func (con HaulController) Coupon(c *gin.Context) {
 	ay.Db.First(&amount, "id = ?", getForm.Id)
 
 	if amount.Id == 0 {
-		ay.Json{}.Msg(c, "400", "金额错误", gin.H{})
+		Json.Msg(400, "金额错误", gin.H{})
 		return
 	}
 
 	var coupon []models.Coupon
 	ay.Db.Where("uid = ? and FIND_IN_SET(1,product) and status=0 and amount_than <= ?", user.Id, amount.Amount).Order("id desc").Find(&coupon)
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": coupon,
 	})
 
@@ -261,14 +261,14 @@ func (con HaulController) Main(c *gin.Context) {
 	cases := models.HaulCasesModel{}.GetType(1)
 
 	for k, v := range introduce {
-		introduce[k].Link = ay.Domain + v.Link
+		introduce[k].Link = ay.Yaml.GetString("domain") + v.Link
 	}
 
 	for k, v := range cases {
-		cases[k].Link = ay.Domain + v.Link
+		cases[k].Link = ay.Yaml.GetString("domain") + v.Link
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"introduce": introduce,
 		"cases":     cases,
 		"notice":    notice,
@@ -299,7 +299,7 @@ func (con HaulController) Notice(c *gin.Context) {
 		notice = append(notice, str)
 	}
 
-	ay.Json{}.Msg(c, "200", "success", gin.H{
+	Json.Msg(200, "success", gin.H{
 		"list": &notice,
 	})
 }
