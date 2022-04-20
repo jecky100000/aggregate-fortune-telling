@@ -33,7 +33,7 @@ func (con DreamController) Main(c *gin.Context) {
 }
 
 type GetDreamForm struct {
-	Title string `form:"title" binding:"required"`
+	Title string `form:"title" binding:"required" label:"标题"`
 }
 
 // Search 搜索

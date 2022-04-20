@@ -17,9 +17,9 @@ type CalenderController struct {
 }
 
 type GetCalenderGetForm struct {
-	Y int `form:"y" binding:"required"`
-	M int `form:"m" binding:"required"`
-	D int `form:"d" binding:"required"`
+	Y int `form:"y" binding:"required" label:"年份"`
+	M int `form:"m" binding:"required" label:"月份"`
+	D int `form:"d" binding:"required" label:"日"`
 }
 
 func (con CalenderController) Get(c *gin.Context) {

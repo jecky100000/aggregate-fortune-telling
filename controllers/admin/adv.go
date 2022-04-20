@@ -107,16 +107,22 @@ func (con AdvController) Option(c *gin.Context) {
 		res.Image = data.Image
 		res.Type = data.Type
 
-		ay.Db.Save(&res)
-		Json.Msg(200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&res).Error; err != nil {
+			Json.Msg(400, "修改失败", gin.H{})
+		} else {
+			Json.Msg(200, "修改成功", gin.H{})
+		}
 	} else {
-		ay.Db.Create(&models.Adv{
+		if err := ay.Db.Create(&models.Adv{
 			Sort:  data.Sort,
 			Image: data.Image,
 			Link:  data.Link,
 			Type:  data.Type,
-		})
-		Json.Msg(200, "创建成功", gin.H{})
+		}).Error; err != nil {
+			Json.Msg(400, "创建失败", gin.H{})
+		} else {
+			Json.Msg(200, "创建成功", gin.H{})
+		}
 
 	}
 

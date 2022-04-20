@@ -17,8 +17,8 @@ type CollectController struct {
 }
 
 type GetCollectSetForm struct {
-	Type int   `form:"type" binding:"required"`
-	Id   int64 `form:"id" binding:"required"`
+	Type int   `form:"type" binding:"required" label:"类型"`
+	Id   int64 `form:"id" binding:"required" `
 }
 
 func (con CollectController) Set(c *gin.Context) {

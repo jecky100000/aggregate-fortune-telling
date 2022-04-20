@@ -22,11 +22,11 @@ type HaulController struct {
 }
 
 type GetHaulSubmitForm struct {
-	UserName string `form:"username" binding:"required"`
-	Gender   int    `form:"gender" binding:"required"`
-	Y        int    `form:"y" binding:"required"`
-	M        int    `form:"m" binding:"required"`
-	D        int    `form:"d" binding:"required"`
+	UserName string `form:"username" binding:"required" label:"名称"`
+	Gender   int    `form:"gender" binding:"required" label:"性别"`
+	Y        int    `form:"y" binding:"required" label:"年份"`
+	M        int    `form:"m" binding:"required" label:"月份"`
+	D        int    `form:"d" binding:"required" label:"日"`
 	H        int    `form:"h"`
 }
 
@@ -108,7 +108,7 @@ func (con HaulController) Submit(c *gin.Context) {
 }
 
 type GetHaulDetailForm struct {
-	Oid string `form:"oid" binding:"required"`
+	Oid string `form:"oid" binding:"required" label:"订单号"`
 }
 
 // Detail 详情

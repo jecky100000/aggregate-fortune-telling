@@ -24,9 +24,9 @@ type RechargeController struct {
 }
 
 type GetRechargeMainForm struct {
-	Type      int     `form:"type" binding:"required"`
-	Amount    float64 `form:"amount" binding:"required"`
-	ReturnUrl string  `form:"return_url" binding:"required"`
+	Type      int     `form:"type" binding:"required" label:"类型"`
+	Amount    float64 `form:"amount" binding:"required" label:"金额"`
+	ReturnUrl string  `form:"return_url" binding:"required" label:"同步地址"`
 }
 
 func (con RechargeController) Main(c *gin.Context) {

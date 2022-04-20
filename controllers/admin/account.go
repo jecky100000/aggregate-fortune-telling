@@ -131,8 +131,14 @@ func (con AccountController) Option(c *gin.Context) {
 		user.Type = data.Type
 		user.NickName = data.Nickname
 
-		ay.Db.Save(&user)
-		Json.Msg(200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&user).Error; err != nil {
+			Json.Msg(400, "请联系管理员", gin.H{})
+			return
+		} else {
+			Json.Msg(200, "修改成功", gin.H{})
+			return
+		}
+
 	} else {
 		var phoneNum int64
 		ay.Db.Model(&models.User{}).Where("phone = ?", data.Phone).Count(&phoneNum)
@@ -140,14 +146,19 @@ func (con AccountController) Option(c *gin.Context) {
 			Json.Msg(400, "手机已存在", gin.H{})
 			return
 		}
-		ay.Db.Create(&models.User{
+		if err := ay.Db.Create(&models.User{
 			Type:     data.Type,
 			Amount:   data.Amount,
 			Phone:    data.Phone,
 			Avatar:   "/static/user/default.png",
 			NickName: data.Nickname,
-		})
-		Json.Msg(200, "创建成功", gin.H{})
+		}).Error; err != nil {
+			Json.Msg(400, "请联系管理员", gin.H{})
+			return
+		} else {
+			Json.Msg(200, "创建成功", gin.H{})
+			return
+		}
 
 	}
 

@@ -29,9 +29,9 @@ type NoticeSearch struct {
 }
 
 type GetNoticeSearchForm struct {
-	Type  int    `form:"type" binding:"required"`
+	Type  int    `form:"type" binding:"required" label:"类型"`
 	Title string `form:"title"`
-	Page  int    `form:"page" binding:"required"`
+	Page  int    `form:"page" binding:"required" label:"分页"`
 }
 
 // Search 搜索
@@ -105,7 +105,7 @@ func (con NoticeController) Search(c *gin.Context) {
 }
 
 type GetAncientDetailForm struct {
-	Aid string `form:"aid" binding:"required"`
+	Aid string `form:"aid" binding:"required" label:"古籍id"`
 	//Page int    `form:"page" binding:"required"`
 }
 

@@ -21,7 +21,7 @@ type PayController struct {
 
 type GetPayDoForm struct {
 	AmountId int64  `form:"amount_id"`
-	Oid      string `form:"oid" binding:"required"`
+	Oid      string `form:"oid" binding:"required" label:"订单号"`
 	Coupon   int64  `form:"coupon"`
 	Return   int    `form:"return"`
 }

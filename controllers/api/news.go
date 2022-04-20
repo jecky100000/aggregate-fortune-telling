@@ -37,7 +37,7 @@ func (con NewsController) Type(c *gin.Context) {
 
 type GetNewsAllForm struct {
 	Id   int64 `form:"id" binding:"required"`
-	Page int   `form:"id" binding:"required"`
+	Page int   `form:"id" binding:"required" label:"页码"`
 }
 
 // All 获取分类下所有文章
@@ -72,7 +72,7 @@ func (con NewsController) Detail(c *gin.Context) {
 }
 
 type GetNewsRecommendForm struct {
-	Type int `form:"type" binding:"required"`
+	Type int `form:"type" binding:"required" label:"页码"`
 }
 
 // Recommend 文章详情

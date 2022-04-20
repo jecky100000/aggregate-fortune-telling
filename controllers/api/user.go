@@ -67,18 +67,20 @@ func (con UserController) Edit(c *gin.Context) {
 		user.BirthDay = getForm.BirthDay
 	}
 
-	ay.Db.Save(&user)
-
-	Json.Msg(200, "修改成功", gin.H{
-		"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
-		"phone":    user.Phone,
-		"nickname": user.NickName,
-	})
+	if err := ay.Db.Save(&user).Error; err != nil {
+		Json.Msg(400, "修改失败", gin.H{})
+	} else {
+		Json.Msg(200, "修改成功", gin.H{
+			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
+			"phone":    user.Phone,
+			"nickname": user.NickName,
+		})
+	}
 
 }
 
 type GetUserCouponForm struct {
-	Page int `form:"page" binding:"required"`
+	Page int `form:"page" binding:"required" label:"页码"`
 }
 
 // Coupon 优惠卷
@@ -298,8 +300,8 @@ func (con UserController) Collect(c *gin.Context) {
 }
 
 type GetUserHistoryForm struct {
-	Type int `form:"type" binding:"required"`
-	Page int `form:"page" binding:"required"`
+	Type int `form:"type" binding:"required" label:"类型"`
+	Page int `form:"page" binding:"required" label:"页码"`
 }
 
 type ReturnHistory struct {
@@ -369,12 +371,12 @@ func (con UserController) History(c *gin.Context) {
 }
 
 type GetUserControllerWithdrawal struct {
-	Type    int     `form:"type" binding:"required"`
-	Amount  float64 `form:"amount" binding:"required"`
-	Account string  `form:"account" binding:"required"`
+	Type    int     `form:"type" binding:"required" label:"类型"`
+	Amount  float64 `form:"amount" binding:"required" label:"金额"`
+	Account string  `form:"account" binding:"required" label:"账号"`
 }
 
-// 提现
+// Withdrawal 提现
 func (con UserController) Withdrawal(c *gin.Context) {
 
 	var getForm GetUserControllerWithdrawal
@@ -397,7 +399,10 @@ func (con UserController) Withdrawal(c *gin.Context) {
 	}
 
 	user.Amount = user.Amount - getForm.Amount
-	ay.Db.Save(&user)
+	if err := ay.Db.Save(&user).Error; err != nil {
+		Json.Msg(400, "提现失败", gin.H{})
+		return
+	}
 
 	oid := ay.MakeOrder(time.Now())
 	v := strconv.FormatFloat(getForm.Amount, 'g', -1, 64)
@@ -428,8 +433,8 @@ func (con UserController) Withdrawal(c *gin.Context) {
 }
 
 type GetUserControllerLog struct {
-	Type int `form:"type" binding:"required"`
-	Page int `form:"page" binding:"required"`
+	Type int `form:"type" binding:"required" label:"类型"`
+	Page int `form:"page" binding:"required" label:"页码"`
 }
 
 type Pp struct {

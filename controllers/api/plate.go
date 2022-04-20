@@ -22,11 +22,11 @@ type PlateController struct {
 }
 
 type GetPlateSubmitForm struct {
-	UserName string `form:"username" binding:"required"`
-	Gender   int    `form:"gender" binding:"required"`
-	Y        int    `form:"y" binding:"required"`
-	M        int    `form:"m" binding:"required"`
-	D        int    `form:"d" binding:"required"`
+	UserName string `form:"username" binding:"required" label:"名称"`
+	Gender   int    `form:"gender" binding:"required" label:"性别"`
+	Y        int    `form:"y" binding:"required" label:"年份"`
+	M        int    `form:"m" binding:"required" label:"月份"`
+	D        int    `form:"d" binding:"required" label:"日"`
 	H        int    `form:"h"`
 	I        int    `form:"i"`
 	AreaId   int    `form:"area_id"`
@@ -147,9 +147,9 @@ func (con PlateController) Detail(c *gin.Context) {
 }
 
 type GetPlateInfoForm struct {
-	Y      int `form:"y" binding:"required"`
-	M      int `form:"m" binding:"required"`
-	D      int `form:"d" binding:"required"`
+	Y      int `form:"y" binding:"required" label:"年份"`
+	M      int `form:"m" binding:"required" label:"月份"`
+	D      int `form:"d" binding:"required" label:"日"`
 	H      int `form:"h"`
 	I      int `form:"i"`
 	AreaId int `form:"area_id"`
@@ -212,7 +212,7 @@ func (con PlateController) Info(c *gin.Context) {
 }
 
 type GetPlateYearForm struct {
-	Oid string `form:"oid" binding:"required"`
+	Oid string `form:"oid" binding:"required" label:"订单号"`
 	Key int    `form:"key"`
 }
 
@@ -253,7 +253,7 @@ func (con PlateController) Year(c *gin.Context) {
 }
 
 type GetPlateMonthForm struct {
-	Oid   string `form:"oid" binding:"required"`
+	Oid   string `form:"oid" binding:"required" label:"订单号"`
 	Key   int    `form:"key"`
 	Index int    `form:"index"`
 }

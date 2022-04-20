@@ -12,6 +12,9 @@ import (
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
+	"log"
+	"reflect"
+
 	//en_translations "github.com/go-playground/validator/v10/translations/en"
 	zh_translations "github.com/go-playground/validator/v10/translations/zh"
 )
@@ -31,8 +34,15 @@ func init() {
 	uni = ut.New(zh, zh)
 	trans, _ = uni.GetTranslator("zh")
 	validate := binding.Validator.Engine().(*validator.Validate)
-	zh_translations.RegisterDefaultTranslations(validate, trans)
+	err := zh_translations.RegisterDefaultTranslations(validate, trans)
+	if err != nil {
+		log.Println(err)
+	}
 	//en_translations.RegisterDefaultTranslations(validate, trans)
+	validate.RegisterTagNameFunc(func(fld reflect.StructField) string {
+		name := fld.Tag.Get("label")
+		return name
+	})
 }
 
 //Translate 翻译错误信息

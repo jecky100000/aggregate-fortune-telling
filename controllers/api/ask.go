@@ -109,7 +109,7 @@ func (con AskController) Main(c *gin.Context) {
 }
 
 type GetAskGetForm struct {
-	Type string `form:"type" binding:"required"`
+	Type string `form:"type" binding:"required" label:"类型"`
 }
 
 func (con AskController) Get(c *gin.Context) {
@@ -141,13 +141,13 @@ func (con AskController) Get(c *gin.Context) {
 }
 
 type GetAskSubmitForm struct {
-	UserName string  `form:"username" binding:"required"`
-	Gender   int     `form:"gender" binding:"required"`
-	Birth    string  `form:"birth" binding:"required"`
+	UserName string  `form:"username" binding:"required" label:"名称"`
+	Gender   int     `form:"gender" binding:"required" label:"性别"`
+	Birth    string  `form:"birth" binding:"required" label:"生日"`
 	Type     int     `form:"type"`
-	Content  string  `form:"content" binding:"required"`
+	Content  string  `form:"content" binding:"required" label:"内容"`
 	Amount   float64 `form:"amount"`
-	AreaId   int     `form:"area_id" binding:"required"`
+	AreaId   int     `form:"area_id" binding:"required" label:"地区id"`
 }
 
 func (con AskController) Submit(c *gin.Context) {
@@ -179,7 +179,10 @@ func (con AskController) Submit(c *gin.Context) {
 		}
 
 		user.Amount = user.Amount - amount
-		ay.Db.Save(&user)
+		if err := ay.Db.Save(&user).Error; err != nil {
+			Json.Msg(400, "请联系管理员", gin.H{})
+			return
+		}
 	}
 
 	oid := ay.MakeOrder(time.Now())
@@ -234,7 +237,7 @@ func MakePhone() string {
 }
 
 type GetAskDetailForm struct {
-	AskId string `form:"ask_id" binding:"required"`
+	AskId string `form:"ask_id" binding:"required" label:"问题id"`
 }
 
 func (con AskController) Detail(c *gin.Context) {
