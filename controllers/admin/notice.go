@@ -64,12 +64,12 @@ func (con NoticeController) List(c *gin.Context) {
 
 	row := res
 
+	row.Count(&count)
+
 	res.Order("created_at desc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
-
-	row.Count(&count)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"list":  list,

@@ -98,6 +98,66 @@ func (con MasterController) List(c *gin.Context) {
 	}
 }
 
+// GetRecommend 获取推荐下大师
+func (con MasterController) GetRecommend(c *gin.Context) {
+	var getForm GetMasterListForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+	page := getForm.Page - 1
+
+	//field := "id,name,sign,type,years,online,avatar,rate"
+	//var res []models.Master
+	//ay.Db.Where("FIND_IN_SET(?,type)", getForm.Type).Select(field).Limit(10).Offset(page * 10).Order("id desc").Find(&res)
+
+	var res []Master
+	ay.Db.Table("sm_user").
+		Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_master.avatar,sm_master.rate").
+		Joins("left join sm_master on sm_user.master_id=sm_master.id").
+		Where("is_recommend = 1").
+		Limit(10).
+		Offset(page * 10).
+		Order("sm_user.id desc").
+		Find(&res)
+
+	var row []map[string]interface{}
+
+	for _, v := range res {
+		var type_name []string
+
+		for _, v := range strings.Split(v.Master.Type, ",") {
+			var master_type models.MasterType
+			ay.Db.First(&master_type, "id = ?", v)
+			if master_type.Name != "" {
+				type_name = append(type_name, master_type.Name)
+			}
+
+		}
+
+		row = append(row, map[string]interface{}{
+			"id":        v.Id,
+			"name":      v.Master.Name,
+			"sign":      v.Master.Sign,
+			"years":     v.Master.Years,
+			"online":    v.Master.Online,
+			"avatar":    ay.Domain + v.Master.Avatar,
+			"rate":      v.Master.Rate,
+			"type_name": type_name,
+		})
+	}
+
+	if row == nil {
+		ay.Json{}.Msg(c, "200", "success", gin.H{
+			"list": []string{},
+		})
+	} else {
+		ay.Json{}.Msg(c, "200", "success", gin.H{
+			"list": row,
+		})
+	}
+}
+
 type GetMasterDetailForm struct {
 	Id int64 `form:"id"`
 }

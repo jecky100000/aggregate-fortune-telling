@@ -14,20 +14,20 @@ import (
 	"strings"
 )
 
-type AncientController struct {
+type AncientTypeController struct {
 }
 
-type ancientListForm struct {
+type ancientTypeListForm struct {
 	Page     int    `form:"page"`
 	PageSize int    `form:"pageSize"`
 	Key      string `form:"key"`
 	Status   string `form:"status"`
-	Type     int    `form:"type"`
+	Type     string `form:"type"`
 }
 
 // List 列表
-func (con AncientController) List(c *gin.Context) {
-	var data ancientListForm
+func (con AncientTypeController) List(c *gin.Context) {
+	var data noticeTypeListForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -39,33 +39,21 @@ func (con AncientController) List(c *gin.Context) {
 	}
 
 	type returnList struct {
-		models.Ancient
+		models.NewsNotice
 		TypeName string `json:"typeName"`
 	}
 
-	var list []returnList
+	var list []models.NewsType
 
 	var count int64
-	res := ay.Db.Table("sm_ancient").
-		Select("sm_ancient.*,sm_ancient_type.name as type_name").
-		Joins("left join sm_ancient_type on sm_ancient.vcid=sm_ancient_type.id")
-
-	if data.Key != "" {
-		res.Where("sm_ancient.title like ?", "%"+data.Key+"%")
-	}
-
-	if data.Type != 0 {
-		res.Where("sm_ancient.type = ?", data.Type)
-	}
-
-	row := res
-
-	row.Count(&count)
-
-	res.Order("created_at desc").
+	ay.Db.Table("sm_notice_type").
+		Select("sm_notice_type.*").
+		Order("id desc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
+
+	ay.Db.Table("sm_notice_type").Count(&count)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"list":  list,
@@ -78,7 +66,7 @@ func (con AncientController) List(c *gin.Context) {
 //}
 
 // Detail 用户详情
-func (con AncientController) Detail(c *gin.Context) {
+func (con AncientTypeController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -90,26 +78,23 @@ func (con AncientController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.Ancient
+	var res models.NewsType
 
-	ay.Db.First(&user, data.Id)
+	ay.Db.First(&res, data.Id)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
-		"info": user,
+		"info": res,
 	})
 }
 
-type ancientOptionForm struct {
-	Id    int    `form:"id"`
-	Title string `form:"title"`
-	Cover string `form:"cover"`
-	Cid   int    `form:"cid"`
-	Vcid  int    `form:"vcid"`
+type ancientTypeOptionForm struct {
+	Id   int    `form:"id"`
+	Name string `form:"name"`
 }
 
 // Option 添加 编辑
-func (con AncientController) Option(c *gin.Context) {
-	var data ancientOptionForm
+func (con AncientTypeController) Option(c *gin.Context) {
+	var data ancientTypeOptionForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -120,24 +105,18 @@ func (con AncientController) Option(c *gin.Context) {
 		return
 	}
 
-	var res models.Ancient
+	var res models.NewsType
 	ay.Db.First(&res, data.Id)
 
 	if data.Id != 0 {
-
-		res.Title = data.Title
-		res.Cover = data.Cover
-		res.Cid = data.Cid
-		res.Vcid = data.Vcid
+		res.Name = data.Name
 
 		ay.Db.Save(&res)
 		ay.Json{}.Msg(c, "200", "修改成功", gin.H{})
 	} else {
-		ay.Db.Create(&models.Ancient{
-			Title: data.Title,
-			Cover: data.Cover,
-			Cid:   data.Cid,
-			Vcid:  data.Vcid,
+
+		ay.Db.Create(&models.NewsType{
+			Name: data.Name,
 		})
 		ay.Json{}.Msg(c, "200", "创建成功", gin.H{})
 
@@ -145,7 +124,7 @@ func (con AncientController) Option(c *gin.Context) {
 
 }
 
-func (con AncientController) Delete(c *gin.Context) {
+func (con AncientTypeController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, "400", ay.Validator{}.Translate(err), gin.H{})
@@ -160,20 +139,37 @@ func (con AncientController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var order models.Ancient
-		ay.Db.Delete(&order, v)
+		var res models.NewsType
+		ay.Db.Delete(&res, v)
 	}
 
 	ay.Json{}.Msg(c, "200", "删除成功", gin.H{})
 }
 
-func (con AncientController) Upload(c *gin.Context) {
-
-	code, msg := Upload(c, "notice")
-
-	if code != 200 {
-		ay.Json{}.Msg(c, "400", msg, gin.H{})
-	} else {
-		ay.Json{}.Msg(c, "200", msg, gin.H{})
+func (con AncientTypeController) All(c *gin.Context) {
+	if Auth() == false {
+		ay.Json{}.Msg(c, "401", "请登入", gin.H{})
+		return
 	}
+	pid := c.Query("pid")
+
+	type list struct {
+		Label string `gorm:"column:name" json:"label"`
+		Value int64  `gorm:"column:id" json:"value"`
+	}
+	var l []list
+	res := ay.Db.Table("sm_ancient_type")
+
+	if pid != "" {
+		res.Where("pid = ? ", pid)
+	} else {
+		res.Where("pid = ? ", 0)
+
+	}
+
+	res.Find(&l)
+
+	ay.Json{}.Msg(c, "200", "success", gin.H{
+		"list": l,
+	})
 }

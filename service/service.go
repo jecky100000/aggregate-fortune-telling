@@ -6,7 +6,6 @@ import (
 
 func Set(r *gin.Engine) *gin.Engine {
 	r.Use(Cors())
-	r = SetSession(r)
-	r = GetHeader(r)
+	r.Use(Header())
 	return r
 }

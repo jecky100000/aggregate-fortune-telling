@@ -82,6 +82,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("master/list", api.MasterController{}.List)
 	apiGroup.POST("master/detail", api.MasterController{}.Detail)
 	apiGroup.POST("master/recommend", api.MasterController{}.Recommend)
+	apiGroup.GET("master/recommend", api.MasterController{}.GetRecommend)
 
 	// 支付
 	apiGroup.POST("pay/recharge", api.RechargeController{}.Main)

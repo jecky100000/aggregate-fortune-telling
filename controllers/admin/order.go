@@ -26,21 +26,22 @@ type orderListForm struct {
 }
 
 type returnList struct {
-	Id        int64         `json:"id"`
-	Oid       string        `json:"oid"`
-	Type      int           `json:"type"`
-	Uid       int64         `json:"uid"`
-	Username  string        `json:"username"`
-	Gender    int           `json:"gender"`
-	Amount    float64       `json:"amount"`
-	OldAmount float64       `json:"old_amount"`
-	Coupon    int64         `json:"coupon"`
-	PayType   int           `json:"pay_type"`
-	TradeNo   string        `json:"trade_no"`
-	Status    int           `json:"status"`
-	Discount  float64       `json:"discount"`
-	Phone     string        `json:"phone"`
-	CreatedAt models.MyTime `json:"created_at"`
+	Id           int64         `json:"id"`
+	Oid          string        `json:"oid"`
+	Type         int           `json:"type"`
+	Uid          int64         `json:"uid"`
+	Username     string        `json:"username"`
+	Gender       int           `json:"gender"`
+	Amount       float64       `json:"amount"`
+	OldAmount    float64       `json:"old_amount"`
+	Coupon       int64         `json:"coupon"`
+	PayType      int           `json:"pay_type"`
+	TradeNo      string        `json:"trade_no"`
+	Status       int           `json:"status"`
+	Discount     float64       `json:"discount"`
+	Phone        string        `json:"phone"`
+	CreatedAt    models.MyTime `json:"created_at"`
+	CouponAmount float64       `json:"coupon_amount"`
 }
 
 // List 用户列表
@@ -60,8 +61,9 @@ func (con OrderController) List(c *gin.Context) {
 
 	var count int64
 	res := ay.Db.Table("sm_order").
-		Select("sm_user.phone,sm_order.*").
-		Joins("left join sm_user on sm_order.uid=sm_user.id")
+		Select("sm_user.phone,sm_order.*,sm_user_coupon.amount as coupon_amount").
+		Joins("left join sm_user on sm_order.uid=sm_user.id").
+		Joins("left join sm_user_coupon on sm_order.coupon=sm_user_coupon.id")
 
 	if data.Key != "" {
 		res.Where("sm_order.oid like ? OR sm_order.trade_no like ? OR sm_order.username like ? OR sm_user.phone like ?", "%"+data.Key+"%", "%"+data.Key+"%", "%"+data.Key+"%", "%"+data.Key+"%")
@@ -77,12 +79,12 @@ func (con OrderController) List(c *gin.Context) {
 
 	row := res
 
+	row.Count(&count)
+
 	res.Order("created_at desc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
-
-	row.Count(&count)
 
 	ay.Json{}.Msg(c, "200", "success", gin.H{
 		"list":  list,
