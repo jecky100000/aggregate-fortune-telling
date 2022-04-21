@@ -41,7 +41,7 @@ func (con HexapodController) Index(c *gin.Context) {
 		}
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": list,
 	})
 
@@ -55,7 +55,7 @@ type GetForm struct {
 func (con HexapodController) Get(c *gin.Context) {
 	var getForm GetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -69,7 +69,7 @@ func (con HexapodController) Get(c *gin.Context) {
 
 	res := models.HexapodModel{}.GetContonent(name)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"name":    name,
 		"image":   image,
 		"content": res.Content + res.Handount,

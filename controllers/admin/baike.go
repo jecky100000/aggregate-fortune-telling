@@ -29,12 +29,12 @@ type baikeListForm struct {
 func (con BaikeController) List(c *gin.Context) {
 	var data baikeListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -52,7 +52,7 @@ func (con BaikeController) List(c *gin.Context) {
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -66,12 +66,12 @@ func (con BaikeController) List(c *gin.Context) {
 func (con BaikeController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -79,7 +79,7 @@ func (con BaikeController) Detail(c *gin.Context) {
 
 	ay.Db.First(&user, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": user,
 	})
 }
@@ -95,12 +95,12 @@ type baikeOptionForm struct {
 func (con BaikeController) Option(c *gin.Context) {
 	var data baikeOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -114,14 +114,14 @@ func (con BaikeController) Option(c *gin.Context) {
 		res.Cover = data.Cover
 
 		ay.Db.Save(&res)
-		Json.Msg(200, "修改成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	} else {
 		ay.Db.Create(&models.BaiKe{
 			Title:   data.Title,
 			Cover:   data.Cover,
 			Content: data.Content,
 		})
-		Json.Msg(200, "创建成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
 	}
 
@@ -130,12 +130,12 @@ func (con BaikeController) Option(c *gin.Context) {
 func (con BaikeController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -146,7 +146,7 @@ func (con BaikeController) Delete(c *gin.Context) {
 		ay.Db.Delete(&order, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }
 
 func (con BaikeController) Upload(c *gin.Context) {
@@ -154,8 +154,8 @@ func (con BaikeController) Upload(c *gin.Context) {
 	code, msg := Upload(c, "baike")
 
 	if code != 200 {
-		Json.Msg(400, msg, gin.H{})
+		ay.Json{}.Msg(c, 400, msg, gin.H{})
 	} else {
-		Json.Msg(200, msg, gin.H{})
+		ay.Json{}.Msg(c, 200, msg, gin.H{})
 	}
 }

@@ -24,13 +24,13 @@ type GetNewsDetailForm struct {
 func (con NewsController) Type(c *gin.Context) {
 	var getForm GetNewsDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	var res []models.NewsType
 	ay.Db.Find(&res, "pid = ?", getForm.Id)
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": res,
 	})
 }
@@ -44,7 +44,7 @@ type GetNewsAllForm struct {
 func (con NewsController) All(c *gin.Context) {
 	var getForm GetNewsAllForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -52,7 +52,7 @@ func (con NewsController) All(c *gin.Context) {
 
 	var res []models.NewsNotice
 	ay.Db.Limit(10).Offset(page*10).Order("id desc").Find(&res, "type = ? and status = 1", getForm.Id)
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": res,
 	})
 }
@@ -61,12 +61,12 @@ func (con NewsController) All(c *gin.Context) {
 func (con NewsController) Detail(c *gin.Context) {
 	var getForm GetNewsDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	res := models.NewsModel{}.GetDetail(getForm.Id)
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": res,
 	})
 }
@@ -79,7 +79,7 @@ type GetNewsRecommendForm struct {
 func (con NewsController) Recommend(c *gin.Context) {
 	var getForm GetNewsRecommendForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -89,7 +89,7 @@ func (con NewsController) Recommend(c *gin.Context) {
 		notice[k].Time = ay.LastTime(int(v.CreatedAt.Unix()))
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": notice,
 	})
 }

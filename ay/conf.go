@@ -8,7 +8,7 @@ import (
 
 var Yaml *viper.Viper
 
-func initConfig() *viper.Viper {
+func InitConfig() *viper.Viper {
 	config := viper.New()
 	config.SetConfigName("config")
 	config.AddConfigPath("conf/")
@@ -20,11 +20,11 @@ func initConfig() *viper.Viper {
 	return config
 }
 
-func watchConf() {
+func WatchConf() {
 	Yaml.WatchConfig()
 	Yaml.OnConfigChange(func(event fsnotify.Event) {
 		// 配置文件修改重新执行的方法
-		sql()
+		Sql()
 		//
 		log.Printf("Detect config change: %s \n", event.String())
 	})

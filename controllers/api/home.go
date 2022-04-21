@@ -41,7 +41,7 @@ func (con HomeController) Home(c *gin.Context) {
 		banner[k].Image = ay.Yaml.GetString("domain") + v.Image
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"adv":   adv,
 		"count": count,
 		"consult": gin.H{
@@ -54,7 +54,7 @@ func (con HomeController) Home(c *gin.Context) {
 
 func (con HomeController) Config(c *gin.Context) {
 	config := models.ConfigModel{}.GetId(1)
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
 	})

@@ -23,7 +23,7 @@ type GetAreaGetForm struct {
 func (con AreaController) Get(c *gin.Context) {
 	var getForm GetAreaGetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -34,9 +34,9 @@ func (con AreaController) Get(c *gin.Context) {
 	var area []models.Area
 
 	if err := ay.Db.Where("pid = ?", getForm.Id).Find(&area).Error; err != nil {
-		Json.Msg(400, "查询失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "查询失败", gin.H{})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": area,
 		})
 	}

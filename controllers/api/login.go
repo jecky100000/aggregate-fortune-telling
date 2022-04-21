@@ -32,7 +32,7 @@ type GetLoginForm struct {
 func (con LoginController) Login(c *gin.Context) {
 	var getForm GetLoginForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -50,9 +50,9 @@ func (con LoginController) Login(c *gin.Context) {
 	}
 
 	if res == 0 {
-		Json.Msg(400, token, gin.H{})
+		ay.Json{}.Msg(c, 400, token, gin.H{})
 	} else if res == 201 {
-		Json.Msg(201, "请绑定手机", gin.H{
+		ay.Json{}.Msg(c, 201, "请绑定手机", gin.H{
 			"session_key": session_key,
 			"openid":      token,
 		})
@@ -61,7 +61,7 @@ func (con LoginController) Login(c *gin.Context) {
 		var user models.User
 		ay.Db.First(&user, "phone = ?", getForm.Phone)
 
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"token":    token,
 			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
 			"phone":    user.Phone,
@@ -190,7 +190,7 @@ type GetBindForm struct {
 func (con LoginController) Bind(c *gin.Context) {
 	var getForm GetBindForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -198,7 +198,7 @@ func (con LoginController) Bind(c *gin.Context) {
 	ay.Db.First(&pay, "id = ?", getForm.Appid)
 
 	if pay.Id == 0 {
-		Json.Msg(400, "appid错误", gin.H{})
+		ay.Json{}.Msg(c, 400, "appid错误", gin.H{})
 		return
 	}
 
@@ -213,7 +213,7 @@ func (con LoginController) Send(c *gin.Context) {
 
 	var getForm GetSendForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -222,7 +222,7 @@ func (con LoginController) Send(c *gin.Context) {
 	reg := `^1([38][0-9]|14[579]|5[^4]|16[6]|7[1-35-8]|9[189])\d{8}$`
 	rgx := regexp.MustCompile(reg)
 	if !rgx.MatchString(phone) {
-		Json.Msg(400, "手机号错误", gin.H{})
+		ay.Json{}.Msg(c, 400, "手机号错误", gin.H{})
 		return
 	}
 
@@ -232,7 +232,7 @@ func (con LoginController) Send(c *gin.Context) {
 	ay.Db.Model(&models.Sms{}).Where("ip = ? and phone = ? and ymd = ?", ip, phone, time.Now().Format("20060102")).Count(&count)
 
 	if count > 3 {
-		Json.Msg(400, "短信发送上限", gin.H{})
+		ay.Json{}.Msg(c, 400, "短信发送上限", gin.H{})
 		return
 	}
 
@@ -251,9 +251,9 @@ func (con LoginController) Send(c *gin.Context) {
 	}
 	ay.Db.Create(&smss)
 	if smss.Id != 0 {
-		Json.Msg(200, "短信发送成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "短信发送成功", gin.H{})
 	} else {
-		Json.Msg(400, "短信发送失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "短信发送失败", gin.H{})
 	}
 
 }

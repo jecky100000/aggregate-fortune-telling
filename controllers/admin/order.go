@@ -48,12 +48,12 @@ type returnList struct {
 func (con OrderController) List(c *gin.Context) {
 	var data orderListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -86,7 +86,7 @@ func (con OrderController) List(c *gin.Context) {
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -100,12 +100,12 @@ type orderDetailForm struct {
 func (con OrderController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -113,7 +113,7 @@ func (con OrderController) Detail(c *gin.Context) {
 
 	ay.Db.First(&user, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": user,
 	})
 }
@@ -130,12 +130,12 @@ type orderOptionForm struct {
 func (con OrderController) Option(c *gin.Context) {
 	var data orderOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -148,7 +148,7 @@ func (con OrderController) Option(c *gin.Context) {
 			var phoneNum int64
 			ay.Db.Model(&models.User{}).Where("id != ? AND phone = ?", data.Id, data.Phone).Count(&phoneNum)
 			if phoneNum != 0 {
-				Json.Msg(400, "手机已存在", gin.H{})
+				ay.Json{}.Msg(c, 400, "手机已存在", gin.H{})
 				return
 			}
 		}
@@ -159,12 +159,12 @@ func (con OrderController) Option(c *gin.Context) {
 		user.NickName = data.Nickname
 
 		ay.Db.Save(&user)
-		Json.Msg(200, "修改成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	} else {
 		var phoneNum int64
 		ay.Db.Model(&models.User{}).Where("phone = ?", data.Phone).Count(&phoneNum)
 		if phoneNum != 0 {
-			Json.Msg(400, "手机已存在", gin.H{})
+			ay.Json{}.Msg(c, 400, "手机已存在", gin.H{})
 			return
 		}
 		ay.Db.Create(&models.User{
@@ -174,7 +174,7 @@ func (con OrderController) Option(c *gin.Context) {
 			Avatar:   "/static/user/default.png",
 			NickName: data.Nickname,
 		})
-		Json.Msg(200, "创建成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
 	}
 
@@ -187,12 +187,12 @@ type orderDeleteForm struct {
 func (con OrderController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -203,5 +203,5 @@ func (con OrderController) Delete(c *gin.Context) {
 		ay.Db.Delete(&order, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }

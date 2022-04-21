@@ -9,7 +9,6 @@ import (
 var (
 	Token string
 	Appid int
-	Json  *ay.Json
 )
 
 type CommonController struct {

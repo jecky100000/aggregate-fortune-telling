@@ -39,7 +39,7 @@ func (con NoticeController) Search(c *gin.Context) {
 
 	var getForm GetNoticeSearchForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -93,11 +93,11 @@ func (con NoticeController) Search(c *gin.Context) {
 	}
 
 	if search == nil {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": search,
 		})
 	}
@@ -114,14 +114,14 @@ func (con NoticeController) Detail(c *gin.Context) {
 
 	var getForm GetAncientDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	var res models.Ancient
 	ay.Db.First(&res, "id = ?", getForm.Aid)
 	if res.Id == 0 {
-		Json.Msg(400, "古籍不存在", gin.H{})
+		ay.Json{}.Msg(c, 400, "古籍不存在", gin.H{})
 		return
 	}
 	res.View = res.View + 1
@@ -135,7 +135,7 @@ func (con NoticeController) Detail(c *gin.Context) {
 		ancient[k].Link = ay.Yaml.GetString("domain") + v.Link
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": ancient,
 	})
 }
@@ -149,7 +149,7 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 
 	var getForm GetBaiKeForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -158,11 +158,11 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 	ay.Db.First(&baike, "id = ?", getForm.Id)
 
 	if baike.Id == 0 {
-		Json.Msg(400, "数据有误", gin.H{})
+		ay.Json{}.Msg(c, 400, "数据有误", gin.H{})
 	} else {
 		baike.View = baike.View + 1
 		ay.Db.Save(&baike)
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"info": baike,
 		})
 	}

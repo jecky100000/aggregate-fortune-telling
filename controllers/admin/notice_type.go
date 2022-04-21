@@ -29,12 +29,12 @@ type noticeTypeListForm struct {
 func (con NoticeTypeController) List(c *gin.Context) {
 	var data noticeTypeListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -55,7 +55,7 @@ func (con NoticeTypeController) List(c *gin.Context) {
 
 	ay.Db.Table("sm_notice_type").Count(&count)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -69,12 +69,12 @@ func (con NoticeTypeController) List(c *gin.Context) {
 func (con NoticeTypeController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -82,7 +82,7 @@ func (con NoticeTypeController) Detail(c *gin.Context) {
 
 	ay.Db.First(&res, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": res,
 	})
 }
@@ -96,12 +96,12 @@ type noticeTypeOptionForm struct {
 func (con NoticeTypeController) Option(c *gin.Context) {
 	var data noticeTypeOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -112,13 +112,13 @@ func (con NoticeTypeController) Option(c *gin.Context) {
 		res.Name = data.Name
 
 		ay.Db.Save(&res)
-		Json.Msg(200, "修改成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	} else {
 
 		ay.Db.Create(&models.NewsType{
 			Name: data.Name,
 		})
-		Json.Msg(200, "创建成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
 	}
 
@@ -127,12 +127,12 @@ func (con NoticeTypeController) Option(c *gin.Context) {
 func (con NoticeTypeController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -143,12 +143,12 @@ func (con NoticeTypeController) Delete(c *gin.Context) {
 		ay.Db.Delete(&res, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }
 
 func (con NoticeTypeController) All(c *gin.Context) {
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 	type list struct {
@@ -158,7 +158,7 @@ func (con NoticeTypeController) All(c *gin.Context) {
 	var l []list
 	ay.Db.Table("sm_notice_type").Find(&l)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": l,
 	})
 }

@@ -30,13 +30,13 @@ type ancientCatalogueListForm struct {
 func (con AncientCatalogueController) List(c *gin.Context) {
 	var data ancientCatalogueListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	log.Println(data.Id)
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -53,7 +53,7 @@ func (con AncientCatalogueController) List(c *gin.Context) {
 		Where("aid = ?", data.Id).
 		Count(&count)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -67,12 +67,12 @@ func (con AncientCatalogueController) List(c *gin.Context) {
 func (con AncientCatalogueController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -80,7 +80,7 @@ func (con AncientCatalogueController) Detail(c *gin.Context) {
 
 	ay.Db.First(&res, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": res,
 	})
 }
@@ -98,12 +98,12 @@ type ancientCatalogueOptionForm struct {
 func (con AncientCatalogueController) Option(c *gin.Context) {
 	var data ancientCatalogueOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -128,7 +128,7 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 		res.Type = vType
 
 		ay.Db.Save(&res)
-		Json.Msg(200, "修改成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	} else {
 
 		ay.Db.Create(&models.AncientClass{
@@ -139,7 +139,7 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 			Aid:     data.Aid,
 			Type:    vType,
 		})
-		Json.Msg(200, "创建成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
 	}
 
@@ -148,12 +148,12 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 func (con AncientCatalogueController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -164,7 +164,7 @@ func (con AncientCatalogueController) Delete(c *gin.Context) {
 		ay.Db.Delete(&res, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }
 
 func (con AncientCatalogueController) Upload(c *gin.Context) {
@@ -172,8 +172,8 @@ func (con AncientCatalogueController) Upload(c *gin.Context) {
 	code, msg := Upload(c, "ancient_catalogue")
 
 	if code != 200 {
-		Json.Msg(400, msg, gin.H{})
+		ay.Json{}.Msg(c, 400, msg, gin.H{})
 	} else {
-		Json.Msg(200, msg, gin.H{})
+		ay.Json{}.Msg(c, 200, msg, gin.H{})
 	}
 }

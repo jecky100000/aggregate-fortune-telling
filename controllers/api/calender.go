@@ -25,18 +25,18 @@ type GetCalenderGetForm struct {
 func (con CalenderController) Get(c *gin.Context) {
 	var getForm GetCalenderGetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	if getForm.M > 12 || getForm.M < 1 {
-		Json.Msg(400, "请输入正确的月份", gin.H{})
+		ay.Json{}.Msg(c, 400, "请输入正确的月份", gin.H{})
 		return
 	}
 	if getForm.D > 31 || getForm.D < 1 {
-		Json.Msg(400, "请输入正确的天数", gin.H{})
+		ay.Json{}.Msg(c, 400, "请输入正确的天数", gin.H{})
 		return
 	}
 
 	arr := common.CalendarModel{}.Get(getForm.Y, getForm.M, getForm.D)
-	Json.Msg(200, "success", arr)
+	ay.Json{}.Msg(c, 200, "success", arr)
 }

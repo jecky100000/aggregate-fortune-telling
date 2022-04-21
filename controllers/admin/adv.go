@@ -21,12 +21,12 @@ type AdvController struct {
 func (con AdvController) List(c *gin.Context) {
 	var data noticeListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -44,7 +44,7 @@ func (con AdvController) List(c *gin.Context) {
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -58,12 +58,12 @@ func (con AdvController) List(c *gin.Context) {
 func (con AdvController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -71,7 +71,7 @@ func (con AdvController) Detail(c *gin.Context) {
 
 	ay.Db.First(&user, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": user,
 	})
 }
@@ -88,12 +88,12 @@ type advOptionForm struct {
 func (con AdvController) Option(c *gin.Context) {
 	var data advOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -108,9 +108,9 @@ func (con AdvController) Option(c *gin.Context) {
 		res.Type = data.Type
 
 		if err := ay.Db.Save(&res).Error; err != nil {
-			Json.Msg(400, "修改失败", gin.H{})
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
 		} else {
-			Json.Msg(200, "修改成功", gin.H{})
+			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 		}
 	} else {
 		if err := ay.Db.Create(&models.Adv{
@@ -119,9 +119,9 @@ func (con AdvController) Option(c *gin.Context) {
 			Link:  data.Link,
 			Type:  data.Type,
 		}).Error; err != nil {
-			Json.Msg(400, "创建失败", gin.H{})
+			ay.Json{}.Msg(c, 400, "创建失败", gin.H{})
 		} else {
-			Json.Msg(200, "创建成功", gin.H{})
+			ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 		}
 
 	}
@@ -131,12 +131,12 @@ func (con AdvController) Option(c *gin.Context) {
 func (con AdvController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -147,19 +147,19 @@ func (con AdvController) Delete(c *gin.Context) {
 		ay.Db.Delete(&order, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }
 
 func (con AdvController) Upload(c *gin.Context) {
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 	code, msg := Upload(c, "adv")
 
 	if code != 200 {
-		Json.Msg(400, msg, gin.H{})
+		ay.Json{}.Msg(c, 400, msg, gin.H{})
 	} else {
-		Json.Msg(200, msg, gin.H{})
+		ay.Json{}.Msg(c, 200, msg, gin.H{})
 	}
 }

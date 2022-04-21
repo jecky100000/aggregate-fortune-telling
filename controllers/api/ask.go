@@ -102,7 +102,7 @@ func (con AskController) Main(c *gin.Context) {
 		})
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"comment": com,
 		"dynamic": dynamic,
 	})
@@ -115,7 +115,7 @@ type GetAskGetForm struct {
 func (con AskController) Get(c *gin.Context) {
 	var getForm GetAskGetForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -133,7 +133,7 @@ func (con AskController) Get(c *gin.Context) {
 
 	online := 20 + masterCount
 	number := 77 + rand.Intn(9) + rand.Intn(9)
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":   ss,
 		"online": online,
 		"number": number,
@@ -153,7 +153,7 @@ type GetAskSubmitForm struct {
 func (con AskController) Submit(c *gin.Context) {
 	var getForm GetAskSubmitForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -161,7 +161,7 @@ func (con AskController) Submit(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -169,18 +169,18 @@ func (con AskController) Submit(c *gin.Context) {
 
 	if amount != 0 {
 		if amount < 5 {
-			Json.Msg(400, "悬赏金额需要大于5元", gin.H{})
+			ay.Json{}.Msg(c, 400, "悬赏金额需要大于5元", gin.H{})
 			return
 		}
 
 		if user.Amount < amount {
-			Json.Msg(400, "余额不足", gin.H{})
+			ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
 			return
 		}
 
 		user.Amount = user.Amount - amount
 		if err := ay.Db.Save(&user).Error; err != nil {
-			Json.Msg(400, "请联系管理员", gin.H{})
+			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
 			return
 		}
 	}
@@ -212,9 +212,9 @@ func (con AskController) Submit(c *gin.Context) {
 	ay.Db.Create(order)
 
 	if order.Id == 0 {
-		Json.Msg(400, "数据错误，请联系管理员", gin.H{})
+		ay.Json{}.Msg(c, 400, "数据错误，请联系管理员", gin.H{})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"oid": oid,
 		})
 	}
@@ -243,7 +243,7 @@ type GetAskDetailForm struct {
 func (con AskController) Detail(c *gin.Context) {
 	var getForm GetAskDetailForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -251,7 +251,7 @@ func (con AskController) Detail(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -296,7 +296,7 @@ func (con AskController) Detail(c *gin.Context) {
 		list = []interface{}{}
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":       list,
 		"avatar":     ay.Yaml.GetString("domain") + user.Avatar,
 		"nickname":   user.NickName,

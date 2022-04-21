@@ -32,12 +32,12 @@ type GetRechargeMainForm struct {
 func (con RechargeController) Main(c *gin.Context) {
 	var getForm GetRechargeMainForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if getForm.Amount < 1 {
-		Json.Msg(400, "充值不能小于1元", gin.H{})
+		ay.Json{}.Msg(c, 400, "充值不能小于1元", gin.H{})
 		return
 	}
 
@@ -45,7 +45,7 @@ func (con RechargeController) Main(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -61,22 +61,22 @@ func (con RechargeController) Main(c *gin.Context) {
 		code, msg = con.Web(order, getForm.Type, getForm.Amount, getForm.ReturnUrl, GetRequestIP(c))
 
 		if res == 0 {
-			Json.Msg(400, "订单创建失败", gin.H{})
+			ay.Json{}.Msg(c, 400, "订单创建失败", gin.H{})
 			return
 		}
 		if code == 1 {
 			if getForm.Type == 1 {
-				Json.Msg(200, "success", gin.H{
+				ay.Json{}.Msg(c, 200, "success", gin.H{
 					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order,
 				})
 			} else {
-				Json.Msg(200, "success", gin.H{
+				ay.Json{}.Msg(c, 200, "success", gin.H{
 					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order,
 				})
 			}
 
 		} else {
-			Json.Msg(400, msg, gin.H{})
+			ay.Json{}.Msg(c, 400, msg, gin.H{})
 		}
 	}
 }

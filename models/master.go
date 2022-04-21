@@ -22,9 +22,10 @@ type Master struct {
 	Online    int     `json:"online"`
 	Rate      float64 `json:"rate"`
 	AskNum    int     `json:"ask_num"`
-	Uid       int64   `json:"-"`
+	Uid       int64   `json:"uid"`
 	Fans      int64   `json:"fans"`
 	Reply     int64   `json:"reply"`
+	Image     string  `json:"image"`
 }
 
 func (Master) TableName() string {

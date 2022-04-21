@@ -8,16 +8,11 @@
 package service
 
 import (
-	"gin/ay"
-	"gin/controllers/admin"
-	"gin/controllers/api"
 	"github.com/gin-gonic/gin"
 )
 
 func Pretreatment() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		api.Json = &ay.Json{Serve: c}
-		admin.Json = &ay.Json{Serve: c}
 		c.Next()
 	}
 }

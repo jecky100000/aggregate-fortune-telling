@@ -17,7 +17,5 @@ var (
 )
 
 func init() {
-	Yaml = initConfig()
-	sql()
-	go watchConf()
+
 }

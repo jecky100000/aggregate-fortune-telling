@@ -29,12 +29,12 @@ type consultTypeListForm struct {
 func (con ConsultController) List(c *gin.Context) {
 	var data consultTypeListForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -48,7 +48,7 @@ func (con ConsultController) List(c *gin.Context) {
 
 	ay.Db.Model(&models.Consult{}).Count(&count)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
 		"total": count,
 	})
@@ -58,12 +58,12 @@ func (con ConsultController) List(c *gin.Context) {
 func (con ConsultController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -71,7 +71,7 @@ func (con ConsultController) Detail(c *gin.Context) {
 
 	ay.Db.First(&res, data.Id)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"info": res,
 	})
 }
@@ -88,12 +88,12 @@ type consultOptionForm struct {
 func (con ConsultController) Option(c *gin.Context) {
 	var data consultOptionForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -108,7 +108,7 @@ func (con ConsultController) Option(c *gin.Context) {
 		res.Url = data.Url
 
 		ay.Db.Save(&res)
-		Json.Msg(200, "修改成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	} else {
 
 		ay.Db.Create(&models.Consult{
@@ -117,7 +117,7 @@ func (con ConsultController) Option(c *gin.Context) {
 			Sort: data.Sort,
 			Url:  data.Url,
 		})
-		Json.Msg(200, "创建成功", gin.H{})
+		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
 	}
 
@@ -126,12 +126,12 @@ func (con ConsultController) Option(c *gin.Context) {
 func (con ConsultController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
 	if Auth() == false {
-		Json.Msg(401, "请登入", gin.H{})
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
 		return
 	}
 
@@ -142,5 +142,5 @@ func (con ConsultController) Delete(c *gin.Context) {
 		ay.Db.Delete(&res, v)
 	}
 
-	Json.Msg(200, "删除成功", gin.H{})
+	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
 }

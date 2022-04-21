@@ -74,7 +74,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	var j OpenId
 	err := json.Unmarshal(body, &j)
 	if err != nil {
-		api.Json.Msg(400, "获取openid失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "获取openid失败", gin.H{})
 		return
 	}
 
@@ -156,7 +156,7 @@ func (con Controller) Wechat(c *gin.Context) {
 	}
 
 	if order.Status == 1 {
-		api.Json.Msg(400, "该笔订单已支付过", gin.H{})
+		ay.Json{}.Msg(c, 400, "该笔订单已支付过", gin.H{})
 		return
 	}
 

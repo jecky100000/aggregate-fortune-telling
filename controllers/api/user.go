@@ -35,7 +35,7 @@ type GetUserEditForm struct {
 func (con UserController) Edit(c *gin.Context) {
 	var getForm GetUserEditForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -43,7 +43,7 @@ func (con UserController) Edit(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -68,9 +68,9 @@ func (con UserController) Edit(c *gin.Context) {
 	}
 
 	if err := ay.Db.Save(&user).Error; err != nil {
-		Json.Msg(400, "修改失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
 	} else {
-		Json.Msg(200, "修改成功", gin.H{
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{
 			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
 			"phone":    user.Phone,
 			"nickname": user.NickName,
@@ -87,7 +87,7 @@ type GetUserCouponForm struct {
 func (con UserController) Coupon(c *gin.Context) {
 	var getForm GetUserCouponForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -97,14 +97,14 @@ func (con UserController) Coupon(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
 	var coupon []models.Coupon
 	ay.Db.Where("uid = ?", user.Id).Limit(10).Offset(page * 10).Find(&coupon)
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": coupon,
 	})
 }
@@ -118,11 +118,11 @@ func (con UserController) Info(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
-	Json.Msg(200, "success", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"nickname": user.NickName,
 		"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
 		"gender":   user.Gender,
@@ -139,7 +139,7 @@ func (con UserController) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
 		log.Println(err)
-		Json.Msg(400, "上传图片出错", gin.H{})
+		ay.Json{}.Msg(c, 400, "上传图片出错", gin.H{})
 		return
 	}
 	//log.Println(file.Filename)
@@ -148,7 +148,7 @@ func (con UserController) Upload(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -157,7 +157,7 @@ func (con UserController) Upload(c *gin.Context) {
 
 	log.Println(fileExt)
 	if fileExt != ".png" && fileExt != ".jpg" && fileExt != ".gif" && fileExt != ".jpeg" {
-		Json.Msg(400, "上传失败!只允许png,jpg,gif,jpeg文件", gin.H{})
+		ay.Json{}.Msg(c, 400, "上传失败!只允许png,jpg,gif,jpeg文件", gin.H{})
 		return
 	}
 	fileName := ay.MD5(fmt.Sprintf("%s%s", file.Filename, time.Now().String()))
@@ -170,7 +170,7 @@ func (con UserController) Upload(c *gin.Context) {
 
 	filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
 	c.SaveUploadedFile(file, filepath)
-	Json.Msg(200, "上传成功!", gin.H{
+	ay.Json{}.Msg(c, 200, "上传成功!", gin.H{
 		"url": "/" + filepath,
 	})
 }
@@ -204,7 +204,7 @@ func (con UserController) Collect(c *gin.Context) {
 
 	var getForm GetUserCollectForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -214,7 +214,7 @@ func (con UserController) Collect(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -288,11 +288,11 @@ func (con UserController) Collect(c *gin.Context) {
 	}
 
 	if guji == nil {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": guji,
 		})
 	}
@@ -316,7 +316,7 @@ type ReturnHistory struct {
 func (con UserController) History(c *gin.Context) {
 	var getForm GetUserHistoryForm
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -326,7 +326,7 @@ func (con UserController) History(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -357,12 +357,12 @@ func (con UserController) History(c *gin.Context) {
 	}
 
 	if history == nil {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list":   []string{},
 			"amount": user.Amount,
 		})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list":   history,
 			"amount": user.Amount,
 		})
@@ -381,7 +381,7 @@ func (con UserController) Withdrawal(c *gin.Context) {
 
 	var getForm GetUserControllerWithdrawal
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -389,18 +389,18 @@ func (con UserController) Withdrawal(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
 	if user.Amount < getForm.Amount {
-		Json.Msg(400, "余额不足", gin.H{})
+		ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
 		return
 	}
 
 	user.Amount = user.Amount - getForm.Amount
 	if err := ay.Db.Save(&user).Error; err != nil {
-		Json.Msg(400, "提现失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "提现失败", gin.H{})
 		return
 	}
 
@@ -425,9 +425,9 @@ func (con UserController) Withdrawal(c *gin.Context) {
 	ay.Db.Create(order)
 
 	if order.Id == 0 {
-		Json.Msg(400, "提现失败", gin.H{})
+		ay.Json{}.Msg(c, 400, "提现失败", gin.H{})
 	} else {
-		Json.Msg(200, "等待确认", gin.H{})
+		ay.Json{}.Msg(c, 200, "等待确认", gin.H{})
 	}
 
 }
@@ -455,7 +455,7 @@ type Pp struct {
 func (con UserController) Log(c *gin.Context) {
 	var getForm GetUserControllerLog
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 
@@ -463,7 +463,7 @@ func (con UserController) Log(c *gin.Context) {
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -502,11 +502,11 @@ func (con UserController) Log(c *gin.Context) {
 			}
 		}
 		if row == nil {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
 		} else {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": row,
 			})
 		}
@@ -531,11 +531,11 @@ func (con UserController) Log(c *gin.Context) {
 			})
 		}
 		if pp == nil {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
 		} else {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": pp,
 			})
 		}
@@ -563,11 +563,11 @@ func (con UserController) Log(c *gin.Context) {
 			})
 		}
 		if pp == nil {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
 		} else {
-			Json.Msg(200, "success", gin.H{
+			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": pp,
 			})
 		}
@@ -583,14 +583,14 @@ type GetUserAsk struct {
 func (con UserController) Ask(c *gin.Context) {
 	var getForm GetUserAsk
 	if err := c.ShouldBind(&getForm); err != nil {
-		Json.Msg(400, ay.Validator{}.Translate(err), gin.H{})
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
 	}
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
 	if user.Id == 0 {
-		Json.Msg(401, "Token错误", gin.H{})
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
 
@@ -616,11 +616,11 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	if res == nil {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
-		Json.Msg(200, "success", gin.H{
+		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": res,
 		})
 	}

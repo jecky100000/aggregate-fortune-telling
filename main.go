@@ -1,6 +1,7 @@
 package main
 
 import (
+	"gin/ay"
 	"gin/routers"
 	"gin/service"
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,10 @@ var (
 )
 
 func main() {
+
+	ay.Yaml = ay.InitConfig()
+	ay.Sql()
+	go ay.WatchConf()
 
 	r = gin.Default()
 
