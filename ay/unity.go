@@ -77,6 +77,17 @@ func MakeOrder(t time.Time) string {
 	return n
 }
 
+func GetRandomString(len int) string {
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	bytes := make([]byte, len)
+	for i := 0; i < len; i++ {
+		b := r.Intn(26) + 65
+		bytes[i] = byte(b)
+	}
+	return string(bytes)
+
+}
+
 //对长度不足n的数字前面补0
 func sup(i int64, n int) string {
 	m := fmt.Sprintf("%d", i)

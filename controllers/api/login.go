@@ -26,6 +26,7 @@ type GetLoginForm struct {
 	Code   string `form:"code" binding:"required"`
 	Phone  string `form:"phone"`
 	Openid string `form:"openid"`
+	Aff    string `form:"aff"`
 }
 
 // Login 登入
@@ -40,7 +41,7 @@ func (con LoginController) Login(c *gin.Context) {
 	token, session_key := "", ""
 
 	if Appid == 1 {
-		res, token = con.web(getForm.Phone, getForm.Code)
+		res, token = con.web(getForm.Phone, getForm.Code, getForm.Aff)
 	} else {
 		res, token, session_key = con.xcx(getForm.Code, Appid)
 		//res, token, session_key = 1, "", ""
@@ -88,18 +89,39 @@ func (con LoginController) AuthCode(phone, code string) (int, string) {
 }
 
 // 手机号登入
-func (con LoginController) web(phone, code string) (int, string) {
+func (con LoginController) web(phone, code, aff string) (int, string) {
 
 	if res, msg := con.AuthCode(phone, code); res != 1 {
 		return 0, msg
 	}
 
-	log.Println(phone)
+	var pid int64 = 0
+
+	var pUser models.User
+	ay.Db.First(&pUser, "aff = ? and type = 0", aff)
+
+	if pUser.Id != 0 {
+		pid = pUser.Id
+	}
+
 	var user models.User
 	ay.Db.First(&user, "phone = ? and type = 0", phone)
 
 	uid := user.Id
 	if uid == 0 {
+
+		makeCode := ay.GetRandomString(6)
+
+		for {
+			var affUser models.User
+			ay.Db.First(&affUser, "aff = ? and type = 0", makeCode)
+			if affUser.Id == 0 {
+				break
+			} else {
+				makeCode = ay.GetRandomString(6)
+			}
+		}
+
 		ss := models.User{
 			Phone:    phone,
 			Appid:    0,
@@ -107,8 +129,17 @@ func (con LoginController) web(phone, code string) (int, string) {
 			NickName: "用户" + strconv.Itoa(rand.Intn(90000)),
 			Avatar:   "/static/user/default.png",
 			Type:     0,
+			Pid:      pid,
+			Aff:      makeCode,
 		}
-		ay.Db.Create(&ss)
+		if err := ay.Db.Create(&ss).Error; err != nil {
+			return 0, "注册失败"
+		}
+		//
+		ay.Db.Create(&models.UserInvite{
+			Pid: pUser.Id,
+			Uid: ss.Id,
+		})
 		// 用户注册 发放优惠卷
 		//if vtype == 0 {
 		con.SetCoupon(ss.Id)

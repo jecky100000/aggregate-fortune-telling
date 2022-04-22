@@ -33,6 +33,7 @@ type Config struct {
 	MasterLink        string  `gorm:"column:master_link" json:"master_link"`
 	UserRegCoupon     int     `gorm:"column:user_reg_coupon" json:"user_reg_coupon"`
 	HaulDiscount      string  `gorm:"column:haul_discount" json:"haul_discount"`
+	InviteRate        float64 `gorm:"column:invite_rate" json:"invite_rate"`
 }
 
 func (Config) TableName() string {

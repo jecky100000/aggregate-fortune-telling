@@ -122,14 +122,20 @@ func (con UserController) Info(c *gin.Context) {
 		return
 	}
 
+	var frozenInviteAmount float64
+	ay.Db.Table("sm_user_invite_consumption").Where("pid = ? AND status=0", user.Id).Pluck("SUM(amount)", &frozenInviteAmount)
+
 	ay.Json{}.Msg(c, 200, "success", gin.H{
-		"nickname": user.NickName,
-		"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
-		"gender":   user.Gender,
-		"area_id":  user.AreaId,
-		"birthday": user.BirthDay,
-		"phone":    user.Phone,
-		"amount":   user.Amount * config.Rate,
+		"nickname":             user.NickName,
+		"avatar":               ay.Yaml.GetString("domain") + user.Avatar,
+		"gender":               user.Gender,
+		"area_id":              user.AreaId,
+		"birthday":             user.BirthDay,
+		"phone":                user.Phone,
+		"amount":               user.Amount * config.Rate,
+		"frozen_invite_amount": frozenInviteAmount,
+		"invite_amount":        user.InviteAmount * config.Rate,
+		"aff":                  user.Aff,
 	})
 }
 

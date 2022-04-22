@@ -98,4 +98,9 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("ask/get", api.AskController{}.Get)
 	apiGroup.POST("ask/detail", api.AskController{}.Detail)
 
+	// 邀请
+	apiGroup.POST("invite/list", api.InviteController{}.List)
+	apiGroup.POST("invite/withdraw", api.InviteController{}.Withdraw)
+	apiGroup.POST("invite/do", api.InviteController{}.Do)
+
 }
