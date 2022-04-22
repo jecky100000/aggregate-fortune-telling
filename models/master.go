@@ -26,6 +26,7 @@ type Master struct {
 	Fans      int64   `json:"fans"`
 	Reply     int64   `json:"reply"`
 	Image     string  `json:"image"`
+	BackImage string  `json:"back_image"`
 }
 
 func (Master) TableName() string {

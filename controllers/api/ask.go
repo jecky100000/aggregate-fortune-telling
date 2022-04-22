@@ -52,13 +52,13 @@ func (con AskController) Main(c *gin.Context) {
 			continue
 		}
 
-		var type_name []string
+		var typeName []string
 
 		for _, v1 := range strings.Split(re.Type, ",") {
-			var master_type models.MasterType
-			ay.Db.First(&master_type, "id = ?", v1)
-			if master_type.Name != "" {
-				type_name = append(type_name, master_type.Name)
+			var masterType models.MasterType
+			ay.Db.First(&masterType, "id = ?", v1)
+			if masterType.Name != "" {
+				typeName = append(typeName, masterType.Name)
 			}
 
 		}
@@ -73,7 +73,7 @@ func (con AskController) Main(c *gin.Context) {
 			"master_name":      re.Name,
 			"master_sign":      re.Sign,
 			"master_avatar":    ay.Yaml.GetString("domain") + re.Avatar,
-			"master_type_name": type_name,
+			"master_type_name": typeName,
 		})
 	}
 	fw := []string{

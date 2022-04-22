@@ -133,7 +133,7 @@ func (con RechargeController) Web(oid string, payType int, amount float64, retur
 
 		bm := make(gopay.BodyMap)
 		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
-		bm.Set("nonce_str", util.GetRandomString(32)).
+		bm.Set("nonce_str", util.RandomString(32)).
 			Set("body", "充值"+v+"元").
 			Set("out_trade_no", oid).
 			Set("total_fee", amount*100).

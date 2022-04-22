@@ -190,6 +190,7 @@ func (con MasterController) Detail(c *gin.Context) {
 	}
 
 	res.Avatar = ay.Yaml.GetString("domain") + res.Avatar
+	res.BackImage = ay.Yaml.GetString("domain") + res.BackImage
 
 	res.Id = user.Id
 
