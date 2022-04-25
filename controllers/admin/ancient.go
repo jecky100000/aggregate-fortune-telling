@@ -130,16 +130,22 @@ func (con AncientController) Option(c *gin.Context) {
 		res.Cid = data.Cid
 		res.Vcid = data.Vcid
 
-		ay.Db.Save(&res)
-		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&res); err != nil {
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+		} else {
+			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		}
 	} else {
-		ay.Db.Create(&models.Ancient{
+		if err := ay.Db.Create(&models.Ancient{
 			Title: data.Title,
 			Cover: data.Cover,
 			Cid:   data.Cid,
 			Vcid:  data.Vcid,
-		})
-		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
+		}); err != nil {
+			ay.Json{}.Msg(c, 400, "创建失败", gin.H{})
+		} else {
+			ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
+		}
 
 	}
 

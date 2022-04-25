@@ -111,8 +111,11 @@ func (con NoticeTypeController) Option(c *gin.Context) {
 	if data.Id != 0 {
 		res.Name = data.Name
 
-		ay.Db.Save(&res)
-		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&res).Error; err != nil {
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+		} else {
+			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		}
 	} else {
 
 		ay.Db.Create(&models.NewsType{

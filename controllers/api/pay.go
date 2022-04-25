@@ -161,7 +161,10 @@ func (con PayController) Do(c *gin.Context) {
 	order.Status = 1
 	order.PayType = 9
 	order.PayTime = time.Now().Format("2006-01-02 15:04:05")
-	ay.Db.Save(&order)
+	if err := ay.Db.Save(&order).Error; err != nil {
+		ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+		return
+	}
 
 	// 优惠卷设置过期
 	if getForm.Coupon != 0 {
@@ -169,7 +172,10 @@ func (con PayController) Do(c *gin.Context) {
 		ay.Db.First(&coupon, "id = ?", getForm.Coupon)
 		coupon.Status = 1
 		coupon.UsedAt = time.Now().Format("2006-01-02 15:04:05")
-		ay.Db.Save(&coupon)
+		if err := ay.Db.Save(&coupon).Error; err != nil {
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+			return
+		}
 	}
 
 	ay.Json{}.Msg(c, 200, "支付成功", gin.H{})

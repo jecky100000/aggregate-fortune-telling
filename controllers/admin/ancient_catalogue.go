@@ -112,9 +112,10 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 
 	vType := 0
 	ext := path.Ext(data.Link)
-	if ext == "doc" || ext == "docx" {
+	log.Println(ext)
+	if ext == ".doc" || ext == ".docx" {
 		vType = 3
-	} else if ext == "pdf" {
+	} else if ext == ".pdf" {
 		vType = 2
 	} else {
 		vType = 1
@@ -127,8 +128,11 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 		res.Sort = data.Sort
 		res.Type = vType
 
-		ay.Db.Save(&res)
-		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&res).Error; err != nil {
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+		} else {
+			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		}
 	} else {
 
 		ay.Db.Create(&models.AncientClass{

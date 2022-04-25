@@ -158,8 +158,11 @@ func (con OrderController) Option(c *gin.Context) {
 		user.Type = data.Type
 		user.NickName = data.Nickname
 
-		ay.Db.Save(&user)
-		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		if err := ay.Db.Save(&user).Error; err != nil {
+			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
+		} else {
+			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
+		}
 	} else {
 		var phoneNum int64
 		ay.Db.Model(&models.User{}).Where("phone = ?", data.Phone).Count(&phoneNum)
