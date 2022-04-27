@@ -190,7 +190,7 @@ func (con HaulController) Detail(c *gin.Context) {
 	res["amount"] = amount
 	res["return_amount"] = config.HaulAmount
 
-	if order.Status == 0 {
+	if order.Status != 1 {
 		res["isPay"] = false
 		ay.Json{}.Msg(c, 200, "未支付", res)
 	} else {

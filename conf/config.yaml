@@ -6,6 +6,11 @@ mysql:
   password: root
   database: sm
 
+im:
+  appid: 1400610903
+  key: 154578a41c96270911ac670aff55c92a8c82a511e70673411e91f46602144009
+  root: administrator
+
 sms:
   ak: LTAI5tKXgdMz57vnjpTRMX6H
   sk: D4lBRNzFvWW5ysNxtDVd0x7aHTIxxJ
@@ -13,3 +18,4 @@ sms:
   template_code: SMS_232177328
 
 domain: http://192.168.2.116:8082
+

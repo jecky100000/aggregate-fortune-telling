@@ -188,8 +188,9 @@ func (con LoginController) xcx(code string, appid int) (int, string, string) {
 	switch pay.Type {
 	case 1:
 
-	case 2:
+	case 3:
 		res, openid, session_key = BaiDuController{}.GetOpenid(code, pay.VKey, pay.Secret)
+		res, openid, session_key = 1, "123", ""
 	}
 
 	if res == 0 {
@@ -197,7 +198,7 @@ func (con LoginController) xcx(code string, appid int) (int, string, string) {
 	}
 
 	var user models.User
-	ay.Db.First(&user, "openid = ? and appid = ?", openid, appid)
+	ay.Db.First(&user, "openid = ?", openid)
 	uid := user.Id
 	// 用户不存在
 	if uid == 0 {
