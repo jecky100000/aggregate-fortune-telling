@@ -30,7 +30,7 @@ type Order struct {
 	Coupon     int64   `gorm:"column:coupon" json:"coupon"`
 	Line       string  `gorm:"column:line" json:"line"`
 	Ip         string  `gorm:"column:ip" json:"ip"`
-	Appid      int     `gorm:"column:appid" json:"appid"`
+	Appid      int64   `gorm:"column:appid" json:"appid"`
 	PayType    int     `gorm:"column:pay_type" json:"pay_type"`
 	TradeNo    string  `gorm:"column:trade_no" json:"trade_no"`
 	AreaId     int     `gorm:"column:area_id" json:"area_id"`

@@ -23,6 +23,8 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("user/login", api.LoginController{}.Login)
 	apiGroup.POST("user/send", api.LoginController{}.Send)
 
+	apiGroup.POST("login/baidu/bind", api.LoginController{}.BaiduBind)
+
 	// 地区
 	apiGroup.POST("area/get", api.AreaController{}.Get)
 

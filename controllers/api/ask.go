@@ -39,9 +39,13 @@ func (con AskController) Main(c *gin.Context) {
 			continue
 		}
 
-		var re models.Master
+		type cc struct {
+			models.Master
+			Avatar string `json:"avatar"`
+		}
+		var re cc
 		ay.Db.Table("sm_user").
-			Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_master.avatar,sm_master.rate").
+			Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 			Joins("left join sm_master on sm_user.master_id=sm_master.id").
 			Where("sm_user.id = ?", v.MasterId).
 			Order("RAND()").
@@ -269,7 +273,7 @@ func (con AskController) Detail(c *gin.Context) {
 	}
 	var ss []S
 	ay.Db.Table("sm_ask_reply").
-		Select("sm_ask_reply.master_id,sm_master.avatar,sm_master.name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
+		Select("sm_ask_reply.master_id,sm_user.avatar,sm_master.name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
 		Joins("left join sm_user on sm_user.id=sm_ask_reply.master_id").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("sm_ask_reply.ask_id", getForm.AskId).

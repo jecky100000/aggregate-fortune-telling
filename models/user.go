@@ -7,14 +7,14 @@
 
 package models
 
+import "gin/ay"
+
 type UserModel struct {
 }
 
 type User struct {
 	BaseModel
 	Phone        string  `json:"phone"`
-	Appid        int     `json:"appid"`
-	Openid       string  `json:"openid"`
 	Avatar       string  `gorm:"column:avatar" json:"avatar"`
 	AreaId       int     `gorm:"column:area_id" json:"area_id"`
 	Gender       int     `gorm:"column:gender" json:"gender"`
@@ -30,4 +30,9 @@ type User struct {
 
 func (User) TableName() string {
 	return "sm_user"
+}
+
+func (con UserModel) GetPhone(phone string) (res User) {
+	ay.Db.Where("phone = ?", phone).First(&res)
+	return
 }

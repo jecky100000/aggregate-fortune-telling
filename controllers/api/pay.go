@@ -12,6 +12,7 @@ import (
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
+	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -128,6 +129,7 @@ func (con PayController) Do(c *gin.Context) {
 
 	order.Amount = amount
 
+	log.Println(user)
 	if user.Amount < amount {
 		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
 		return

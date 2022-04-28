@@ -258,10 +258,15 @@ func (con UserController) Collect(c *gin.Context) {
 			})
 		} else if v.Type == 1 {
 
-			var d models.Master
+			type cc struct {
+				models.Master
+				Avatar string `json:"avatar"`
+			}
+
+			var d cc
 
 			ay.Db.Table("sm_user").
-				Select("sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_master.avatar,sm_master.rate,sm_master.label").
+				Select("sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
 				Joins("left join sm_master on sm_user.master_id=sm_master.id").
 				Where("sm_user.id", v.Cid).
 				First(&d)
@@ -480,19 +485,27 @@ func (con UserController) Log(c *gin.Context) {
 		var usermasterlog []models.UserMasterLog
 		ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&usermasterlog, "uid = ?", user.Id)
 		for _, v1 := range usermasterlog {
-			var res []models.Master
-			ay.Db.Where("id = ?", v1.MasterId).Find(&res)
+			type cc struct {
+				models.Master
+				Avatar string `json:"avatar"`
+			}
+			var res []cc
+
+			ay.Db.Table("sm_master").
+				Select("sm_master.*,sm_user.avatar").
+				Joins("left join sm_user on sm_master.id=sm_user.master_id").
+				Where("sm_master.id = ?", v1.MasterId).
+				Find(&res)
 
 			for _, v := range res {
 				var type_name []string
 
 				for _, v := range strings.Split(v.Type, ",") {
-					var master_type models.MasterType
-					ay.Db.First(&master_type, "id = ?", v)
-					if master_type.Name != "" {
-						type_name = append(type_name, master_type.Name)
+					var masterType models.MasterType
+					ay.Db.First(&masterType, "id = ?", v)
+					if masterType.Name != "" {
+						type_name = append(type_name, masterType.Name)
 					}
-
 				}
 
 				row = append(row, map[string]interface{}{

@@ -8,7 +8,7 @@ import (
 
 var (
 	Token string
-	Appid int
+	Appid int64
 )
 
 type CommonController struct {

@@ -20,6 +20,9 @@ func main() {
 	ay.Sql()
 	go ay.WatchConf()
 
+	//models.S()
+	//return
+
 	// 开启定时任务
 	c := cron.New()
 	//c.AddFunc("45 2 * * *", task.InviteAmount)

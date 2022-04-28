@@ -1,10 +1,10 @@
 # conf/config.yaml
 mysql:
-  localhost: 127.0.0.1
+  localhost: 111.229.109.208
   port: 3306
-  user: root
-  password: root
-  database: sm
+  user: console_xmml_clu
+  password: BN8sX3ePPjjt6a8e
+  database: console_xmml_clu
 
 im:
   appid: 1400610903

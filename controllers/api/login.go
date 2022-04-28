@@ -8,9 +8,11 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"gin/ay"
 	"gin/models"
+	"gin/models/login"
 	"github.com/gin-gonic/gin"
 	"log"
 	"math/rand"
@@ -110,27 +112,13 @@ func (con LoginController) web(phone, code, aff string) (int, string) {
 	uid := user.Id
 	if uid == 0 {
 
-		makeCode := ay.GetRandomString(6)
-
-		for {
-			var affUser models.User
-			ay.Db.First(&affUser, "aff = ? and type = 0", makeCode)
-			if affUser.Id == 0 {
-				break
-			} else {
-				makeCode = ay.GetRandomString(6)
-			}
-		}
-
 		ss := models.User{
 			Phone:    phone,
-			Appid:    0,
-			Openid:   "",
 			NickName: "用户" + strconv.Itoa(rand.Intn(90000)),
 			Avatar:   "/static/user/default.png",
 			Type:     0,
 			Pid:      pid,
-			Aff:      makeCode,
+			Aff:      con.GetCode(),
 		}
 		if err := ay.Db.Create(&ss).Error; err != nil {
 			return 0, "注册失败"
@@ -178,7 +166,7 @@ func (con LoginController) SetCoupon(uid int64) {
 }
 
 // 小程序登入
-func (con LoginController) xcx(code string, appid int) (int, string, string) {
+func (con LoginController) xcx(code string, appid int64) (int, string, string) {
 	var pay models.Pay
 	ay.Db.First(&pay, "id = ?", appid)
 
@@ -190,15 +178,15 @@ func (con LoginController) xcx(code string, appid int) (int, string, string) {
 
 	case 3:
 		res, openid, session_key = BaiDuController{}.GetOpenid(code, pay.VKey, pay.Secret)
-		res, openid, session_key = 1, "123", ""
+		//res, openid, session_key = 1, "456", ""
 	}
 
 	if res == 0 {
 		return 0, "", openid
 	}
 
-	var user models.User
-	ay.Db.First(&user, "openid = ?", openid)
+	var user models.UserOpenid
+	ay.Db.First(&user, "openid = ? AND appid = ?", openid, Appid)
 	uid := user.Id
 	// 用户不存在
 	if uid == 0 {
@@ -211,15 +199,14 @@ func (con LoginController) xcx(code string, appid int) (int, string, string) {
 }
 
 type GetBindForm struct {
-	Appid         int    `form:"appid" binding:"required"`
 	SessionKey    string `form:"session_key" binding:"required"`
 	Iv            string `form:"iv" binding:"required"`
 	Openid        string `form:"openid" binding:"required"`
 	EncryptedData string `form:"encryptedData"`
 }
 
-// Bind 百度小程序绑定
-func (con LoginController) Bind(c *gin.Context) {
+// BaiduBind 百度小程序绑定
+func (con LoginController) BaiduBind(c *gin.Context) {
 	var getForm GetBindForm
 	if err := c.ShouldBind(&getForm); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
@@ -227,13 +214,96 @@ func (con LoginController) Bind(c *gin.Context) {
 	}
 
 	var pay models.Pay
-	ay.Db.First(&pay, "id = ?", getForm.Appid)
+	ay.Db.First(&pay, "id = ?", Appid)
 
 	if pay.Id == 0 {
 		ay.Json{}.Msg(c, 400, "appid错误", gin.H{})
 		return
 	}
 
+	// 解密
+	crypt := login.BdBizDataCrypt{
+		AppID:      pay.Appid,
+		SessionKey: getForm.SessionKey,
+	}
+	res, err := crypt.Decrypt(getForm.EncryptedData, getForm.Iv, true)
+
+	if err != nil {
+		ay.Json{}.Msg(c, 400, "数据错误", gin.H{})
+		return
+	}
+	type jxm struct {
+		Mobile string `json:"mobile"`
+	}
+	var j jxm
+	json.Unmarshal([]byte(res.(string)), &j)
+
+	// 查询之前绑定的openid
+	userOpenid := models.UserOpenidModel{}.Get(Appid, getForm.Openid)
+
+	var id int64
+
+	if userOpenid.Id == 0 {
+		// 快捷登入不存在
+		user := models.UserModel{}.GetPhone(j.Mobile)
+
+		if user.Id == 0 {
+			// 用户不存在
+			ss := models.User{
+				NickName: "用户" + strconv.Itoa(rand.Intn(90000)),
+				Avatar:   "/static/user/default.png",
+				Type:     0,
+				Aff:      con.GetCode(),
+				Phone:    j.Mobile,
+			}
+			if err := ay.Db.Create(&ss).Error; err != nil {
+				ay.Json{}.Msg(c, 400, "注册失败", gin.H{})
+			}
+			sv := &models.UserOpenid{
+				Appid:  Appid,
+				Uid:    ss.Id,
+				Openid: getForm.Openid,
+			}
+			if err := ay.Db.Create(&sv).Error; err != nil {
+				ay.Json{}.Msg(c, 400, "注册失败", gin.H{})
+			}
+			// 用户注册 发放优惠卷
+			con.SetCoupon(ss.Id)
+			id = ss.Id
+		} else {
+			sv := &models.UserOpenid{
+				Appid:  Appid,
+				Uid:    user.Id,
+				Openid: getForm.Openid,
+			}
+			if err := ay.Db.Create(&sv).Error; err != nil {
+				ay.Json{}.Msg(c, 400, "注册失败", gin.H{})
+			}
+			id = user.Id
+		}
+	} else {
+		id = userOpenid.Uid
+	}
+
+	token := ay.AuthCode(strconv.Itoa(int(id)), "ENCODE", "", 0)
+	ay.Json{}.Msg(c, 200, "success", gin.H{
+		"token": token,
+	})
+
+}
+
+func (con LoginController) GetCode() string {
+	makeCode := ay.GetRandomString(6)
+	for {
+		var affUser models.User
+		ay.Db.First(&affUser, "aff = ? and type = 0", makeCode)
+		if affUser.Id == 0 {
+			break
+		} else {
+			makeCode = ay.GetRandomString(6)
+		}
+	}
+	return makeCode
 }
 
 type GetSendForm struct {

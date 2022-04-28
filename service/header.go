@@ -29,7 +29,7 @@ func Header() gin.HandlerFunc {
 		}
 		api.Token = token
 
-		api.Appid = appid
+		api.Appid = int64(appid)
 
 		c.Next()
 	}
