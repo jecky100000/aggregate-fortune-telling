@@ -132,6 +132,11 @@ func (con LoginController) web(phone, code, aff string) (int, string) {
 		//if vtype == 0 {
 		con.SetCoupon(ss.Id)
 		//}
+		// 生成im账号
+		r, rs := con.MakeImAccount(phone)
+		if r != 1 {
+			return 0, rs
+		}
 
 		uid = ss.Id
 	}
@@ -269,6 +274,11 @@ func (con LoginController) BaiduBind(c *gin.Context) {
 			}
 			// 用户注册 发放优惠卷
 			con.SetCoupon(ss.Id)
+			// 生成im账号
+			r, rs := con.MakeImAccount(j.Mobile)
+			if r != 1 {
+				ay.Json{}.Msg(c, 400, rs, gin.H{})
+			}
 			id = ss.Id
 		} else {
 			sv := &models.UserOpenid{
@@ -358,4 +368,24 @@ func (con LoginController) Send(c *gin.Context) {
 		ay.Json{}.Msg(c, 400, "短信发送失败", gin.H{})
 	}
 
+}
+
+func (con LoginController) MakeImAccount(phone string) (int, string) {
+	imCode, imMsg := models.ImModel{}.HttpPost("/v4/im_open_login_svc/account_import", phone)
+
+	if imCode != 1 {
+		return 0, imMsg
+	}
+	type rj struct {
+		ActionStatus string `json:"ActionStatus"`
+		ErrorCode    int    `json:"ErrorCode"`
+		ErrorInfo    string `json:"ErrorInfo"`
+	}
+	var r rj
+	json.Unmarshal([]byte(imMsg), &r)
+	if r.ErrorCode != 0 {
+		return 0, r.ErrorInfo
+	} else {
+		return 1, "success"
+	}
 }

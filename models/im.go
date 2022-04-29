@@ -8,9 +8,12 @@
 package models
 
 import (
+	"bytes"
 	"fmt"
 	"gin/ay"
 	"gin/sdk/tencentyun"
+	"io/ioutil"
+	"net/http"
 )
 
 type ImModel struct {
@@ -21,11 +24,32 @@ var (
 	UserSig string
 )
 
-func S() {
+func (con ImModel) GetUserSig() string {
 	UserSig, _ = tencentyun.GenUserSig(ay.Yaml.GetInt("im.appid"), ay.Yaml.GetString("im.key"), ay.Yaml.GetString("im.root"), 3600*24*30*365)
-	fmt.Println(UserSig)
+	return UserSig
 }
 
-func MakeAccount(account string) {
+func (con ImModel) HttpPost(url, phone string) (int, string) {
+	post := "{\"UserID\":\"" + phone +
+		"\",\"Nick\":\"" + phone +
+		"\"}"
 
+	fmt.Println(url, "post", post)
+
+	var jsonStr = []byte(post)
+
+	resp, err := http.Post("https://console.tim.qq.com"+url+"?sdkappid="+ay.Yaml.GetString("im.appid")+"&identifier="+ay.Yaml.GetString("im.root")+"&usersig="+con.GetUserSig()+"&random=99999999&contenttype=json",
+		"application/json",
+		bytes.NewBuffer(jsonStr))
+	if err != nil {
+		return 0, err.Error()
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return 0, err.Error()
+	}
+
+	return 1, string(body)
 }

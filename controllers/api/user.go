@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"gin/ay"
 	"gin/models"
+	"gin/sdk/tencentyun"
 	"github.com/6tail/lunar-go/calendar"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -125,6 +126,8 @@ func (con UserController) Info(c *gin.Context) {
 	var frozenInviteAmount float64
 	ay.Db.Table("sm_user_invite_consumption").Where("pid = ? AND status=0", user.Id).Pluck("SUM(amount)", &frozenInviteAmount)
 
+	UserSig, _ := tencentyun.GenUserSig(ay.Yaml.GetInt("im.appid"), ay.Yaml.GetString("im.key"), user.Phone, 3600*24)
+
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"nickname":             user.NickName,
 		"avatar":               ay.Yaml.GetString("domain") + user.Avatar,
@@ -136,6 +139,7 @@ func (con UserController) Info(c *gin.Context) {
 		"frozen_invite_amount": frozenInviteAmount,
 		"invite_amount":        user.InviteAmount * config.Rate,
 		"aff":                  user.Aff,
+		"UserSig":              UserSig,
 	})
 }
 
