@@ -17,17 +17,16 @@ import (
 type AncientTypeController struct {
 }
 
-type ancientTypeListForm struct {
-	Page     int    `form:"page"`
-	PageSize int    `form:"pageSize"`
-	Key      string `form:"key"`
-	Status   string `form:"status"`
-	Type     string `form:"type"`
-}
-
 // List 列表
 func (con AncientTypeController) List(c *gin.Context) {
-	var data noticeTypeListForm
+
+	type listForm struct {
+		Page     int    `form:"page"`
+		PageSize int    `form:"pageSize"`
+		Key      string `form:"key"`
+	}
+
+	var data listForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -38,22 +37,29 @@ func (con AncientTypeController) List(c *gin.Context) {
 		return
 	}
 
-	type returnList struct {
-		models.NewsNotice
-		TypeName string `json:"typeName"`
+	type rList struct {
+		models.AncientType
+		Children []models.AncientType `json:"children"`
 	}
-
-	var list []models.NewsType
+	var list []rList
 
 	var count int64
-	ay.Db.Table("sm_notice_type").
-		Select("sm_notice_type.*").
+	ay.Db.Model(&models.AncientType{}).
+		Where("pid = 0").
 		Order("id desc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
 
-	ay.Db.Table("sm_notice_type").Count(&count)
+	for k, v := range list {
+		var xj []models.AncientType
+		ay.Db.Where("pid = ?", v.Id).Find(&xj)
+		list[k].Children = xj
+	}
+
+	ay.Db.Model(&models.AncientType{}).
+		Where("pid = 0").
+		Count(&count)
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  list,
@@ -61,11 +67,7 @@ func (con AncientTypeController) List(c *gin.Context) {
 	})
 }
 
-//type orderDetailForm struct {
-//	Id int `form:"id"`
-//}
-
-// Detail 用户详情
+// Detail 详情
 func (con AncientTypeController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
@@ -78,7 +80,7 @@ func (con AncientTypeController) Detail(c *gin.Context) {
 		return
 	}
 
-	var res models.NewsType
+	var res models.AncientType
 
 	ay.Db.First(&res, data.Id)
 
@@ -88,8 +90,9 @@ func (con AncientTypeController) Detail(c *gin.Context) {
 }
 
 type ancientTypeOptionForm struct {
-	Id   int    `form:"id"`
+	Id   int64  `form:"id"`
 	Name string `form:"name"`
+	Pid  int64  `form:"pid"`
 }
 
 // Option 添加 编辑
@@ -105,11 +108,12 @@ func (con AncientTypeController) Option(c *gin.Context) {
 		return
 	}
 
-	var res models.NewsType
+	var res models.AncientType
 	ay.Db.First(&res, data.Id)
 
 	if data.Id != 0 {
 		res.Name = data.Name
+		res.Pid = data.Pid
 
 		if err := ay.Db.Save(&res).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
@@ -118,8 +122,9 @@ func (con AncientTypeController) Option(c *gin.Context) {
 		}
 	} else {
 
-		ay.Db.Create(&models.NewsType{
+		ay.Db.Create(&models.AncientType{
 			Name: data.Name,
+			Pid:  data.Pid,
 		})
 		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
@@ -142,7 +147,7 @@ func (con AncientTypeController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var res models.NewsType
+		var res models.AncientType
 		ay.Db.Delete(&res, v)
 	}
 

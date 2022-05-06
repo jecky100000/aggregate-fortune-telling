@@ -87,4 +87,9 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("ancient_catalogue/delete", admin.AncientCatalogueController{}.Delete)
 	adminGroup.POST("ancient_catalogue/upload", admin.AncientCatalogueController{}.Upload)
 
+	// 古籍分类
+	adminGroup.GET("ancient_type/list", admin.AncientTypeController{}.List)
+	adminGroup.POST("ancient_type/detail", admin.AncientTypeController{}.Detail)
+	adminGroup.POST("ancient_type/option", admin.AncientTypeController{}.Option)
+	adminGroup.POST("ancient_type/delete", admin.AncientTypeController{}.Delete)
 }

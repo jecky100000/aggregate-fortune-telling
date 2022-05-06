@@ -9,7 +9,6 @@ package models
 
 import (
 	"bytes"
-	"fmt"
 	"gin/ay"
 	"gin/sdk/tencentyun"
 	"io/ioutil"
@@ -34,11 +33,9 @@ func (con ImModel) HttpPost(url, phone string) (int, string) {
 		"\",\"Nick\":\"" + phone +
 		"\"}"
 
-	fmt.Println(url, "post", post)
-
 	var jsonStr = []byte(post)
 
-	resp, err := http.Post("https://console.tim.qq.com"+url+"?sdkappid="+ay.Yaml.GetString("im.appid")+"&identifier="+ay.Yaml.GetString("im.root")+"&usersig="+con.GetUserSig()+"&random=99999999&contenttype=json",
+	resp, err := http.Post(ImUrl+url+"?sdkappid="+ay.Yaml.GetString("im.appid")+"&identifier="+ay.Yaml.GetString("im.root")+"&usersig="+con.GetUserSig()+"&random=99999999&contenttype=json",
 		"application/json",
 		bytes.NewBuffer(jsonStr))
 	if err != nil {
