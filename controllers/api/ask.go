@@ -125,7 +125,7 @@ func (con AskController) Get(c *gin.Context) {
 
 	var log []models.AskLog
 
-	ay.Db.Find(&log, "type = ?", getForm.Type)
+	ay.Db.Order("RAND()").Limit(3).Find(&log, "type = ?", getForm.Type)
 
 	var ss []string
 	for _, v := range log {

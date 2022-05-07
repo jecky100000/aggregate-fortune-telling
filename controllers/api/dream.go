@@ -19,7 +19,7 @@ type DreamController struct {
 // Main 首页
 func (con DreamController) Main(c *gin.Context) {
 	res := models.DreamTypeModel{}.GetAllType()
-	recommend := models.DreamModel{}.GetList("0", 3)
+	recommend := models.DreamModel{}.GetList("0", 20)
 
 	for k, v := range recommend {
 		recommend[k].Message = ay.Summary(v.Message, 50)

@@ -250,9 +250,9 @@ func (con HaulController) Main(c *gin.Context) {
 		minutes := strconv.Itoa(rand.Intn(30))
 		str := ""
 		if v.Gender == 1 {
-			str = string([]rune(v.UserName)[:1]) + "先生" + minutes + "分钟前支付" + amount + "铜币领取精心打造的命书"
+			str = string([]rune(v.UserName)[:1]) + "先生" + minutes + "分钟前支付" + amount + "元领取精心打造的命书"
 		} else {
-			str = string([]rune(v.UserName)[:1]) + "女士" + minutes + "分钟前支付" + amount + "铜币领取精心打造的命书"
+			str = string([]rune(v.UserName)[:1]) + "女士" + minutes + "分钟前支付" + amount + "元领取精心打造的命书"
 		}
 		notice = append(notice, str)
 	}
