@@ -68,6 +68,7 @@ func ApiRouters(r *gin.RouterGroup) {
 
 	// 百科/古籍
 	apiGroup.POST("notice/search", api.NoticeController{}.Search)
+	apiGroup.POST("ancient/classify", api.NoticeController{}.Classify)
 	apiGroup.POST("ancient/detail", api.NoticeController{}.Detail)
 	apiGroup.POST("baike/detail", api.NoticeController{}.BaiKe)
 

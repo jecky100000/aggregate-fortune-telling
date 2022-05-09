@@ -39,7 +39,7 @@ func (con BannerController) List(c *gin.Context) {
 
 	row.Count(&count)
 
-	res.Order("created_at desc").
+	res.Order("sort asc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)

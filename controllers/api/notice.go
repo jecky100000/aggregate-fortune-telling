@@ -8,6 +8,7 @@
 package api
 
 import (
+	"encoding/json"
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
@@ -105,7 +106,7 @@ func (con NoticeController) Search(c *gin.Context) {
 }
 
 type GetAncientDetailForm struct {
-	Aid string `form:"aid" binding:"required" label:"古籍id"`
+	Id string `form:"id" binding:"required" label:"古籍目录"`
 	//Page int    `form:"page" binding:"required"`
 }
 
@@ -118,25 +119,27 @@ func (con NoticeController) Detail(c *gin.Context) {
 		return
 	}
 
-	var res models.Ancient
-	ay.Db.First(&res, "id = ?", getForm.Aid)
+	var res models.AncientClass
+	ay.Db.First(&res, "id = ?", getForm.Id)
 	if res.Id == 0 {
-		ay.Json{}.Msg(c, 400, "古籍不存在", gin.H{})
+		ay.Json{}.Msg(c, 400, "目录不存在", gin.H{})
 		return
 	}
-	res.View = res.View + 1
-	ay.Db.Save(&res)
 
-	var ancient []models.AncientClass
+	var link []string
+	json.Unmarshal([]byte(res.Link), &link)
 
-	ay.Db.Where("aid = ?", getForm.Aid).Order("sort asc").Find(&ancient)
-
-	for k, v := range ancient {
-		ancient[k].Link = ay.Yaml.GetString("domain") + v.Link
+	for k, v := range link {
+		link[k] = ay.Yaml.GetString("domain") + v
 	}
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
-		"list": ancient,
+		"info": gin.H{
+			"content": res.Content,
+			"type":    res.Type,
+			"name":    res.Name,
+			"link":    link,
+		},
 	})
 }
 
@@ -167,4 +170,44 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 		})
 	}
 
+}
+
+type GetAncientClassifyForm struct {
+	Aid string `form:"aid" binding:"required" label:"古籍id"`
+	//Page int    `form:"page" binding:"required"`
+}
+
+// Classify 古籍分类
+func (con NoticeController) Classify(c *gin.Context) {
+	var getForm GetAncientClassifyForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	var res models.Ancient
+	ay.Db.First(&res, "id = ?", getForm.Aid)
+	if res.Id == 0 {
+		ay.Json{}.Msg(c, 400, "古籍不存在", gin.H{})
+		return
+	}
+	res.View = res.View + 1
+	ay.Db.Save(&res)
+
+	type aaa struct {
+		Id   int64  `json:"id"`
+		Name string `json:"name"`
+		Type string `json:"type"`
+	}
+	var ancient []aaa
+
+	ay.Db.Model(&models.AncientClass{}).Where("aid = ?", getForm.Aid).Select("id,name,type").Order("sort asc").Find(&ancient)
+
+	//for k, v := range ancient {
+	//	ancient[k].Link = ay.Yaml.GetString("domain") + v.Link
+	//}
+
+	ay.Json{}.Msg(c, 200, "success", gin.H{
+		"list": ancient,
+	})
 }

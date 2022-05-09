@@ -39,7 +39,7 @@ func (con AdvController) List(c *gin.Context) {
 
 	row.Count(&count)
 
-	res.Order("created_at desc").
+	res.Order("sort asc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
 		Find(&list)
@@ -151,10 +151,6 @@ func (con AdvController) Delete(c *gin.Context) {
 }
 
 func (con AdvController) Upload(c *gin.Context) {
-	if Auth() == false {
-		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
-		return
-	}
 	code, msg := Upload(c, "adv")
 
 	if code != 200 {
