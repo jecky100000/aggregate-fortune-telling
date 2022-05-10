@@ -345,42 +345,82 @@ func (con UserController) History(c *gin.Context) {
 		return
 	}
 
-	var order []models.Order
-
-	if getForm.Type == 1 {
-		ay.Db.Where("uid = ? and type != 8 and type != 9", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
-	} else if getForm.Type == 2 {
-		ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
-	} else {
-		ay.Db.Where("uid = ? and type = 8", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
-	}
-
 	var history []ReturnHistory
+	if getForm.Type != 4 {
+		var order []models.Order
 
-	config := models.ConfigModel{}.GetId(1)
+		if getForm.Type == 1 {
+			ay.Db.Where("uid = ? and type != 8 and type != 9 and type != 4", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+		} else if getForm.Type == 2 {
+			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+		} else if getForm.Type == 3 {
+			ay.Db.Where("uid = ? and type = 8", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+		} else {
 
-	for _, v := range order {
-		loc, _ := time.LoadLocation("Local")
-		theTime, _ := time.ParseInLocation("2006-01-02 15:04:05", v.CreatedAt.String()[:19], loc)
-		history = append(history, ReturnHistory{
-			Type:      v.Type,
-			Op:        v.Op,
-			Amount:    v.Amount * config.Rate,
-			CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
-			Status:    v.Status,
-		})
-	}
+		}
 
-	if history == nil {
-		ay.Json{}.Msg(c, 200, "success", gin.H{
-			"list":   []string{},
-			"amount": user.Amount,
-		})
+		config := models.ConfigModel{}.GetId(1)
+
+		for _, v := range order {
+			loc, _ := time.LoadLocation("Local")
+			theTime, _ := time.ParseInLocation("2006-01-02 15:04:05", v.CreatedAt.String()[:19], loc)
+			history = append(history, ReturnHistory{
+				Type:      v.Type,
+				Op:        v.Op,
+				Amount:    v.Amount * config.Rate,
+				CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				Status:    v.Status,
+			})
+		}
+
+		if history == nil {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list":   []string{},
+				"amount": user.Amount,
+			})
+		} else {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list":   history,
+				"amount": user.Amount,
+			})
+		}
 	} else {
-		ay.Json{}.Msg(c, 200, "success", gin.H{
-			"list":   history,
-			"amount": user.Amount,
-		})
+		type rj struct {
+			Amount    float64       `json:"amount"`
+			CreatedAt models.MyTime `json:"created_at"`
+			Status    int           `json:"status"`
+			Nickname  string        `json:"nickname"`
+		}
+		var list []rj
+		ay.Db.Table("sm_user_invite_consumption").
+			Select("sm_user_invite_consumption.amount,sm_user_invite_consumption.created_at,sm_user_invite_consumption.status,sm_user.nickname").
+			Joins("left join sm_user on sm_user_invite_consumption.uid = sm_user.id").
+			Where("sm_user_invite_consumption.pid = ? and status != 3", user.Id).
+			Limit(10).
+			Offset(page * 10).
+			Find(&list)
+		for _, v := range list {
+			loc, _ := time.LoadLocation("Local")
+			theTime, _ := time.ParseInLocation("2006-01-02 15:04:05", v.CreatedAt.String()[:19], loc)
+			history = append(history, ReturnHistory{
+				Type:      4,
+				Op:        1,
+				Amount:    v.Amount,
+				CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				Status:    v.Status,
+			})
+		}
+		if list == nil {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list":   []string{},
+				"amount": user.Amount,
+			})
+		} else {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list":   history,
+				"amount": user.Amount,
+			})
+		}
 	}
 
 }

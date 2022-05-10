@@ -25,6 +25,6 @@ func (HaulCases) TableName() string {
 }
 
 func (con HaulCasesModel) GetType(types int) (res []HaulCases) {
-	ay.Db.First(&res, "type = ?", types)
+	ay.Db.Find(&res, "type = ?", types)
 	return
 }

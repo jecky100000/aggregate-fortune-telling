@@ -42,6 +42,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("user/log", api.UserController{}.Log)
 	apiGroup.POST("user/ask", api.UserController{}.Ask)
 	apiGroup.POST("envelopes/send", api.EnvelopesController{}.Send)
+	apiGroup.POST("envelopes/reward", api.EnvelopesController{}.Reward)
 	apiGroup.POST("envelopes/detail", api.EnvelopesController{}.Detail)
 
 	// 六爻
