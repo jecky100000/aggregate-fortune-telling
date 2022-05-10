@@ -172,15 +172,21 @@ func (con UserController) Upload(c *gin.Context) {
 		return
 	}
 	fileName := ay.MD5(fmt.Sprintf("%s%s", file.Filename, time.Now().String()))
-	fildDir := fmt.Sprintf("static/upload/user/%d-%d/", time.Now().Year(), time.Now().Month())
+	fileDir := fmt.Sprintf("static/upload/user/%d-%d/", time.Now().Year(), time.Now().Month())
 
-	err = ay.CreateMutiDir(fildDir)
+	err = ay.CreateMutiDir(fileDir)
 	if err != nil {
 		log.Println(err)
 	}
 
-	filepath := fmt.Sprintf("%s%s%s", fildDir, fileName, fileExt)
-	c.SaveUploadedFile(file, filepath)
+	filepath := fmt.Sprintf("%s%s%s", fileDir, fileName, fileExt)
+	err = c.SaveUploadedFile(file, filepath)
+	if err != nil {
+		ay.Json{}.Msg(c, 200, "上传成功!", gin.H{
+			"url": "",
+		})
+		return
+	}
 	ay.Json{}.Msg(c, 200, "上传成功!", gin.H{
 		"url": "/" + filepath,
 	})
@@ -232,26 +238,26 @@ func (con UserController) Collect(c *gin.Context) {
 	var collect []models.Collect
 	ay.Db.Where("uid = ? and type = ?", user.Id, getForm.Type).Limit(10).Offset(page * 10).Find(&collect)
 
-	var guji []returnCollect
+	var res []returnCollect
 
 	for _, v := range collect {
 		if v.Type == 2 {
-			var baike models.BaiKe
-			ay.Db.First(&baike, "id = ?", v.Cid)
-			guji = append(guji, returnCollect{
+			var encyclopedias models.BaiKe
+			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+			res = append(res, returnCollect{
 				Cid:       v.Cid,
 				Id:        v.Id,
-				Title:     baike.Title,
-				Cover:     ay.Yaml.GetString("domain") + baike.Cover,
+				Title:     encyclopedias.Title,
+				Cover:     ay.Yaml.GetString("domain") + encyclopedias.Cover,
 				Type:      v.Type,
-				CreatedAt: ay.LastTime(int(baike.CreatedAt.Unix())),
-				View:      baike.View,
+				CreatedAt: ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
+				View:      encyclopedias.View,
 				Collect:   1,
 			})
 		} else if v.Type == 3 {
 			var g models.Ancient
 			ay.Db.First(&g, "id = ?", v.Cid)
-			guji = append(guji, returnCollect{
+			res = append(res, returnCollect{
 				Cid:       v.Cid,
 				Id:        v.Id,
 				Title:     g.Title,
@@ -277,25 +283,25 @@ func (con UserController) Collect(c *gin.Context) {
 				Where("sm_user.id", v.Cid).
 				First(&d)
 
-			var type_name []string
+			var typeName []string
 
 			for _, v := range strings.Split(d.Type, ",") {
-				var master_type models.MasterType
-				ay.Db.First(&master_type, "id = ?", v)
-				if master_type.Name != "" {
-					type_name = append(type_name, master_type.Name)
+				var masterType models.MasterType
+				ay.Db.First(&masterType, "id = ?", v)
+				if masterType.Name != "" {
+					typeName = append(typeName, masterType.Name)
 				}
 
 			}
 
-			guji = append(guji, returnCollect{
+			res = append(res, returnCollect{
 				Cid:      v.Cid,
 				Id:       v.Id,
 				Name:     d.Nickname,
 				Avatar:   ay.Yaml.GetString("domain") + d.Avatar,
 				Type:     v.Type,
 				Rate:     d.Rate,
-				TypeName: type_name,
+				TypeName: typeName,
 				Sign:     d.Sign,
 				Label:    d.Label,
 				Years:    d.Years,
@@ -305,13 +311,13 @@ func (con UserController) Collect(c *gin.Context) {
 		}
 	}
 
-	if guji == nil {
+	if res == nil {
 		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"list": []string{},
 		})
 	} else {
 		ay.Json{}.Msg(c, 200, "success", gin.H{
-			"list": guji,
+			"list": res,
 		})
 	}
 
@@ -530,9 +536,9 @@ func (con UserController) Log(c *gin.Context) {
 
 	if getForm.Type == 1 {
 		var row []map[string]interface{}
-		var usermasterlog []models.UserMasterLog
-		ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&usermasterlog, "uid = ?", user.Id)
-		for _, v1 := range usermasterlog {
+		var UserMasterLog []models.UserMasterLog
+		ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&UserMasterLog, "uid = ?", user.Id)
+		for _, v1 := range UserMasterLog {
 			type cc struct {
 				models.Master
 				Avatar   string `json:"avatar"`
@@ -548,13 +554,13 @@ func (con UserController) Log(c *gin.Context) {
 				Find(&res)
 
 			for _, v := range res {
-				var type_name []string
+				var typeName []string
 
 				for _, v := range strings.Split(v.Type, ",") {
 					var masterType models.MasterType
 					ay.Db.First(&masterType, "id = ?", v)
 					if masterType.Name != "" {
-						type_name = append(type_name, masterType.Name)
+						typeName = append(typeName, masterType.Name)
 					}
 				}
 
@@ -566,7 +572,7 @@ func (con UserController) Log(c *gin.Context) {
 					"online":    v.Online,
 					"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 					"rate":      v.Rate,
-					"type_name": type_name,
+					"type_name": typeName,
 				})
 			}
 		}
