@@ -13,7 +13,6 @@ type MasterModel struct {
 type Master struct {
 	BaseModel
 	Type      string `json:"type"`
-	Name      string `json:"name"`
 	Sign      string `json:"sign"`
 	Label     string `json:"label"`
 	Introduce string `json:"introduce"`

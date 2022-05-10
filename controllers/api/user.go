@@ -140,6 +140,7 @@ func (con UserController) Info(c *gin.Context) {
 		"invite_amount":        user.InviteAmount * config.Rate,
 		"aff":                  user.Aff,
 		"UserSig":              UserSig,
+		"address":              models.AreaModel{}.GetP(int64(user.AreaId)),
 	})
 }
 
@@ -241,7 +242,7 @@ func (con UserController) Collect(c *gin.Context) {
 				Cid:       v.Cid,
 				Id:        v.Id,
 				Title:     baike.Title,
-				Cover:     baike.Cover,
+				Cover:     ay.Yaml.GetString("domain") + baike.Cover,
 				Type:      v.Type,
 				CreatedAt: ay.LastTime(int(baike.CreatedAt.Unix())),
 				View:      baike.View,
@@ -254,7 +255,7 @@ func (con UserController) Collect(c *gin.Context) {
 				Cid:       v.Cid,
 				Id:        v.Id,
 				Title:     g.Title,
-				Cover:     g.Cover,
+				Cover:     ay.Yaml.GetString("domain") + g.Cover,
 				Type:      v.Type,
 				Collect:   1,
 				CreatedAt: ay.LastTime(int(g.CreatedAt.Unix())),
@@ -264,13 +265,14 @@ func (con UserController) Collect(c *gin.Context) {
 
 			type cc struct {
 				models.Master
-				Avatar string `json:"avatar"`
+				Avatar   string `json:"avatar"`
+				Nickname string `json:"nickname"`
 			}
 
 			var d cc
 
 			ay.Db.Table("sm_user").
-				Select("sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
+				Select("sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
 				Joins("left join sm_master on sm_user.master_id=sm_master.id").
 				Where("sm_user.id", v.Cid).
 				First(&d)
@@ -289,7 +291,7 @@ func (con UserController) Collect(c *gin.Context) {
 			guji = append(guji, returnCollect{
 				Cid:      v.Cid,
 				Id:       v.Id,
-				Name:     d.Name,
+				Name:     d.Nickname,
 				Avatar:   ay.Yaml.GetString("domain") + d.Avatar,
 				Type:     v.Type,
 				Rate:     d.Rate,
@@ -298,6 +300,7 @@ func (con UserController) Collect(c *gin.Context) {
 				Label:    d.Label,
 				Years:    d.Years,
 				Collect:  1,
+				Online:   d.Online,
 			})
 		}
 	}
@@ -521,6 +524,7 @@ func (con UserController) Log(c *gin.Context) {
 		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
+	log.Println(user)
 
 	page := getForm.Page - 1
 
@@ -531,14 +535,16 @@ func (con UserController) Log(c *gin.Context) {
 		for _, v1 := range usermasterlog {
 			type cc struct {
 				models.Master
-				Avatar string `json:"avatar"`
+				Avatar   string `json:"avatar"`
+				Nickname string `json:"nickname"`
 			}
 			var res []cc
 
-			ay.Db.Table("sm_master").
-				Select("sm_master.*,sm_user.avatar").
-				Joins("left join sm_user on sm_master.id=sm_user.master_id").
-				Where("sm_master.id = ?", v1.MasterId).
+			ay.Db.Table("sm_user").
+				Select("sm_master.*,sm_user.avatar,sm_user.nickname").
+				Joins("left join sm_master on sm_user.master_id=sm_master.id").
+				Where("sm_user.id = ?", v1.MasterId).
+				Debug().
 				Find(&res)
 
 			for _, v := range res {
@@ -554,7 +560,7 @@ func (con UserController) Log(c *gin.Context) {
 
 				row = append(row, map[string]interface{}{
 					"id":        v.Id,
-					"name":      v.Name,
+					"name":      v.Nickname,
 					"sign":      v.Sign,
 					"years":     v.Years,
 					"online":    v.Online,
@@ -658,7 +664,7 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	var order []models.Order
-	ay.Db.Where("type = 3 and uid = ?", user.Id).Limit(10).Offset((getForm.Page) * 10).Find(&order)
+	ay.Db.Where("type = 3 and uid = ?", user.Id).Order("created_at desc").Limit(10).Offset((getForm.Page) * 10).Find(&order)
 
 	var res []map[string]interface{}
 
@@ -666,6 +672,14 @@ func (con UserController) Ask(c *gin.Context) {
 
 		var count int64
 		ay.Db.Model(&models.AskReply{}).Where("ask_id", v.Oid).Count(&count)
+
+		var adopt int64
+		ay.Db.Model(&models.AskReply{}).Where("ask_id = ? AND adopt = 1", v.Oid).Count(&adopt)
+
+		if adopt > 0 {
+			adopt = 1
+		}
+
 		res = append(res, map[string]interface{}{
 			"ask_id":   v.Oid,
 			"nickname": user.NickName,
@@ -675,6 +689,7 @@ func (con UserController) Ask(c *gin.Context) {
 			"status":   v.Status,
 			"reply":    count,
 			"amount":   v.Amount,
+			"adopt":    adopt,
 		})
 	}
 

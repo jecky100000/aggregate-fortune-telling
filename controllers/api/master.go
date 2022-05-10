@@ -8,7 +8,6 @@
 package api
 
 import (
-	"encoding/json"
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
@@ -37,7 +36,8 @@ type GetMasterListForm struct {
 type Master struct {
 	Id int64
 	models.Master
-	Avatar string `json:"avatar"`
+	Avatar   string `json:"avatar"`
+	Nickname string `json:"nickname"`
 }
 
 // List 获取类型下大师
@@ -55,7 +55,7 @@ func (con MasterController) List(c *gin.Context) {
 
 	var res []Master
 	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+		Select("sm_user.id,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("FIND_IN_SET(?,sm_master.type) and sm_user.type=1", getForm.Type).
 		Limit(10).
@@ -79,7 +79,7 @@ func (con MasterController) List(c *gin.Context) {
 
 		row = append(row, map[string]interface{}{
 			"id":        v.Id,
-			"name":      v.Master.Name,
+			"name":      v.Nickname,
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
@@ -112,11 +112,9 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 	//field := "id,name,sign,type,years,online,avatar,rate"
 	//var res []models.Master
 	//ay.Db.Where("FIND_IN_SET(?,type)", getForm.Type).Select(field).Limit(10).Offset(page * 10).Order("id desc").Find(&res)
-	type cc struct {
-	}
 	var res []Master
 	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+		Select("sm_user.id,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("is_recommend = 1").
 		Limit(10).
@@ -140,7 +138,7 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 
 		row = append(row, map[string]interface{}{
 			"id":        v.Id,
-			"name":      v.Master.Name,
+			"name":      v.Nickname,
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
@@ -181,14 +179,15 @@ func (con MasterController) Detail(c *gin.Context) {
 	}
 	type master struct {
 		models.Master
-		ImageS []string `json:"images"`
-		Avatar string   `json:"avatar"`
+		//ImageS   []string `json:"images"`
+		Avatar string `json:"avatar"`
+		Name   string `json:"name"`
 	}
 	var res master
 	//ay.Db.Model(&models.Master{}).Where("id = ?", user.MasterId).First(&res)
 
 	ay.Db.Table("sm_master").
-		Select("sm_master.*,sm_user.avatar").
+		Select("sm_master.*,sm_user.nickname as name,sm_user.avatar").
 		Joins("left join sm_user on sm_master.id=sm_user.master_id").
 		Where("sm_master.id = ?", user.MasterId).
 		First(&res)
@@ -203,16 +202,16 @@ func (con MasterController) Detail(c *gin.Context) {
 
 	res.Id = user.Id
 
-	var image []string
-
-	json.Unmarshal([]byte(res.Image), &image)
-
-	for k, v := range image {
-		image[k] = ay.Yaml.GetString("domain") + v
-	}
-
-	res.ImageS = image
-	res.Image = ""
+	//var image []string
+	//
+	//json.Unmarshal([]byte(res.Image), &image)
+	//
+	//for k, v := range image {
+	//	image[k] = ay.Yaml.GetString("domain") + v
+	//}
+	//
+	//res.ImageS = image
+	//res.Image = ""
 
 	// 粉丝
 	var count int64

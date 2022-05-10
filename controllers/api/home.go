@@ -54,8 +54,14 @@ func (con HomeController) Home(c *gin.Context) {
 
 func (con HomeController) Config(c *gin.Context) {
 	config := models.ConfigModel{}.GetId(1)
+	// 广告
+	adv := models.AdvModel{}.GetType(2)
+	for k, v := range adv {
+		adv[k].Image = ay.Yaml.GetString("domain") + v.Image
+	}
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
+		"adv":         adv,
 	})
 }

@@ -41,11 +41,12 @@ func (con AskController) Main(c *gin.Context) {
 
 		type cc struct {
 			models.Master
-			Avatar string `json:"avatar"`
+			Avatar   string `json:"avatar"`
+			Nickname string `json:"nickname"`
 		}
 		var re cc
 		ay.Db.Table("sm_user").
-			Select("sm_user.id,sm_master.name,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+			Select("sm_user.id,sm_user.nickname,sm_user.phone,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 			Joins("left join sm_master on sm_user.master_id=sm_master.id").
 			Where("sm_user.id = ?", v.MasterId).
 			Order("RAND()").
@@ -74,10 +75,11 @@ func (con AskController) Main(c *gin.Context) {
 			"content":       v.Content,
 
 			"master_id":        re.Id,
-			"master_name":      re.Name,
+			"master_name":      re.Nickname,
 			"master_sign":      re.Sign,
 			"master_avatar":    ay.Yaml.GetString("domain") + re.Avatar,
 			"master_type_name": typeName,
+			"rate":             v.Rate,
 		})
 	}
 	fw := []string{
@@ -86,18 +88,22 @@ func (con AskController) Main(c *gin.Context) {
 	var dynamic []map[string]string
 	var phone string
 	var name string
+	type mst struct {
+		models.Master
+		Nickname string `json:"nickname"`
+	}
 
-	var res []models.Master
+	var res []mst
 
 	ay.Db.Table("sm_user").
-		Select("sm_master.name").
+		Select("sm_user.nickname").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("sm_user.type = 1").
 		First(&res)
 
 	for i := 0; i < 10; i++ {
 		phone = MakePhone()
-		name = res[rand.Intn(len(res))].Name
+		name = res[rand.Intn(len(res))].Nickname
 		//dynamic = append(dynamic, phone+" 购买了 "+name+" 的"+fw[rand.Intn(len(fw)-1)]+"服务")
 		dynamic = append(dynamic, map[string]string{
 			"phone": phone,
@@ -278,6 +284,7 @@ func (con AskController) Detail(c *gin.Context) {
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("sm_ask_reply.ask_id", getForm.AskId).
 		Order("sm_ask_reply.id desc").
+		Order("sm_ask_reply.created_at desc").
 		Find(&ss)
 
 	var count int64
@@ -285,7 +292,11 @@ func (con AskController) Detail(c *gin.Context) {
 
 	var list []interface{}
 
+	adopt := 0
 	for _, v := range ss {
+		if v.Adopt == 1 {
+			adopt = 1
+		}
 		list = append(list, map[string]interface{}{
 			"master_id":  v.MasterId,
 			"name":       v.Name,
@@ -309,5 +320,6 @@ func (con AskController) Detail(c *gin.Context) {
 		"content":    order.Json,
 		"type":       order.Des,
 		"created_at": order.CreatedAt.Format("2006/01/02"),
+		"adopt":      adopt,
 	})
 }

@@ -7,6 +7,12 @@
 
 package models
 
+import (
+	"gin/ay"
+	"log"
+	"strings"
+)
+
 type AreaModel struct {
 }
 
@@ -27,4 +33,17 @@ type Area struct {
 
 func (Area) TableName() string {
 	return "sm_area"
+}
+
+func (con AreaModel) GetP(id int64) string {
+	if id == 0 {
+		return ""
+	}
+	var res Area
+	ay.Db.First(&res, id)
+
+	log.Println(res.MergeName)
+	arr := strings.Split(res.MergeName, ",")
+
+	return arr[1] + arr[2] + arr[3]
 }
