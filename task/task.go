@@ -10,4 +10,6 @@ package task
 func Start() {
 	InviteAmount()
 	EnvelopesAmount()
+	AskAmount()
+	CouponAmount()
 }
