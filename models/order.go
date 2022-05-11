@@ -39,8 +39,8 @@ type Order struct {
 	Status     int     `gorm:"column:status" json:"status"`
 	Op         int     `gorm:"column:op" json:"op"`
 	ReturnUrl  string  `gorm:"column:return_url" json:"-"`
-	Json       string  `gorm:"column:json" json:"-"`
-	PayTime    string  `gorm:"column:pay_time" json:"-"`
+	Json       string  `gorm:"column:json" json:"json"`
+	PayTime    string  `gorm:"column:pay_time" json:"pay_time"`
 	Birthday   string  `gorm:"column:birthday" json:"birthday"`
 	Discount   float64 `gorm:"column:discount" json:"discount"`
 }

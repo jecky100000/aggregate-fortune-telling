@@ -12,6 +12,7 @@ import (
 	"gin/models"
 	"github.com/gin-gonic/gin"
 	"strings"
+	"time"
 )
 
 type OrderController struct {
@@ -42,6 +43,8 @@ type returnList struct {
 	Phone        string        `json:"phone"`
 	CreatedAt    models.MyTime `json:"created_at"`
 	CouponAmount float64       `json:"coupon_amount"`
+	Json         string        `json:"json"`
+	PayTime      string        `json:"pay_time"`
 }
 
 // List 用户列表
@@ -109,7 +112,7 @@ func (con OrderController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.User
+	var user models.Order
 
 	ay.Db.First(&user, data.Id)
 
@@ -119,11 +122,8 @@ func (con OrderController) Detail(c *gin.Context) {
 }
 
 type orderOptionForm struct {
-	Id       int     `form:"id"`
-	Type     int     `form:"type"`
-	Phone    string  `form:"phone"`
-	Nickname string  `form:"nickname"`
-	Amount   float64 `form:"amount"`
+	Id     int `form:"id"`
+	Status int `form:"status"`
 }
 
 // Option 添加 编辑
@@ -139,46 +139,15 @@ func (con OrderController) Option(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	ay.Db.First(&user, data.Id)
+	var order models.Order
+	ay.Db.First(&order, data.Id)
+	order.Status = data.Status
+	order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 
-	if data.Id != 0 {
-		if user.Phone != data.Phone {
-			// 手机号变动
-			var phoneNum int64
-			ay.Db.Model(&models.User{}).Where("id != ? AND phone = ?", data.Id, data.Phone).Count(&phoneNum)
-			if phoneNum != 0 {
-				ay.Json{}.Msg(c, 400, "手机已存在", gin.H{})
-				return
-			}
-		}
-
-		user.Phone = data.Phone
-		user.Amount = data.Amount
-		user.Type = data.Type
-		user.NickName = data.Nickname
-
-		if err := ay.Db.Save(&user).Error; err != nil {
-			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
-		} else {
-			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
-		}
+	if err := ay.Db.Save(&order).Error; err != nil {
+		ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
 	} else {
-		var phoneNum int64
-		ay.Db.Model(&models.User{}).Where("phone = ?", data.Phone).Count(&phoneNum)
-		if phoneNum != 0 {
-			ay.Json{}.Msg(c, 400, "手机已存在", gin.H{})
-			return
-		}
-		ay.Db.Create(&models.User{
-			Type:     data.Type,
-			Amount:   data.Amount,
-			Phone:    data.Phone,
-			Avatar:   "/static/user/default.png",
-			NickName: data.Nickname,
-		})
-		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
-
+		ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 	}
 
 }

@@ -105,6 +105,12 @@ func (con UserController) Coupon(c *gin.Context) {
 	var coupon []models.Coupon
 	ay.Db.Where("uid = ?", user.Id).Limit(10).Offset(page * 10).Find(&coupon)
 
+	for k, v := range coupon {
+		if v.EffectiveAt.Unix() < time.Now().Unix() {
+			coupon[k].Status = 3
+			ay.Db.Model(models.Coupon{}).Where("id = ?", v.Id).UpdateColumn("status", 3)
+		}
+	}
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": coupon,
 	})
@@ -692,15 +698,16 @@ func (con UserController) Ask(c *gin.Context) {
 		}
 
 		res = append(res, map[string]interface{}{
-			"ask_id":   v.Oid,
-			"nickname": user.NickName,
-			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
-			"type":     v.Des,
-			"content":  v.Json,
-			"status":   v.Status,
-			"reply":    count,
-			"amount":   v.Amount,
-			"adopt":    adopt,
+			"ask_id":     v.Oid,
+			"nickname":   user.NickName,
+			"avatar":     ay.Yaml.GetString("domain") + user.Avatar,
+			"type":       v.Des,
+			"content":    v.Json,
+			"status":     v.Status,
+			"reply":      count,
+			"amount":     v.Amount,
+			"adopt":      adopt,
+			"created_at": v.CreatedAt,
 		})
 	}
 

@@ -9,6 +9,7 @@ package admin
 
 import (
 	"gin/ay"
+	"gin/controllers/api"
 	"gin/models"
 	"github.com/gin-gonic/gin"
 	"strings"
@@ -156,6 +157,11 @@ func (con AccountController) Option(c *gin.Context) {
 			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
 			return
 		} else {
+			r, rs := api.LoginController{}.MakeImAccount(data.Phone)
+			if r != 1 {
+				ay.Json{}.Msg(c, 400, rs, gin.H{})
+				return
+			}
 			ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 			return
 		}

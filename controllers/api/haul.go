@@ -229,7 +229,7 @@ func (con HaulController) Coupon(c *gin.Context) {
 	}
 
 	var coupon []models.Coupon
-	ay.Db.Where("uid = ? and FIND_IN_SET(1,product) and status=0 and amount_than <= ?", user.Id, amount.Amount).Order("id desc").Find(&coupon)
+	ay.Db.Where("uid = ? and FIND_IN_SET(1,product) and status=0 and amount_than <= ? and effective_at > ?", user.Id, amount.Amount, time.Now().Format("2006-01-02 15:04:05")).Order("id desc").Find(&coupon)
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": coupon,

@@ -92,4 +92,10 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("ancient_type/detail", admin.AncientTypeController{}.Detail)
 	adminGroup.POST("ancient_type/option", admin.AncientTypeController{}.Option)
 	adminGroup.POST("ancient_type/delete", admin.AncientTypeController{}.Delete)
+
+	// 优惠卷
+	adminGroup.GET("coupon/list", admin.CouponController{}.List)
+	adminGroup.POST("coupon/detail", admin.CouponController{}.Detail)
+	adminGroup.POST("coupon/option", admin.CouponController{}.Option)
+	adminGroup.POST("coupon/delete", admin.CouponController{}.Delete)
 }

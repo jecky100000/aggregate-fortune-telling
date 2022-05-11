@@ -18,7 +18,7 @@ type Tabler interface {
 }
 
 type BaseModel struct {
-	Id        int64  `gorm:"primaryKey" json:"id"`
+	Id        int64  `gorm:"primaryKey" json:"id" form:"id"`
 	CreatedAt MyTime `json:"created_at"`
 }
 
