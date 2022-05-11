@@ -103,6 +103,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("ask/submit", api.AskController{}.Submit)
 	apiGroup.POST("ask/get", api.AskController{}.Get)
 	apiGroup.POST("ask/detail", api.AskController{}.Detail)
+	apiGroup.POST("ask/adopt", api.AskController{}.Adopt)
 
 	// 邀请
 	apiGroup.POST("invite/list", api.InviteController{}.List)

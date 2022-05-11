@@ -38,6 +38,7 @@ type Master struct {
 	models.Master
 	Avatar   string `json:"avatar"`
 	Nickname string `json:"nickname"`
+	Phone    string `json:"phone"`
 }
 
 // List 获取类型下大师
@@ -55,7 +56,7 @@ func (con MasterController) List(c *gin.Context) {
 
 	var res []Master
 	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+		Select("sm_user.id,sm_user.phone,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("FIND_IN_SET(?,sm_master.type) and sm_user.type=1", getForm.Type).
 		Limit(10).
@@ -66,13 +67,13 @@ func (con MasterController) List(c *gin.Context) {
 	var row []map[string]interface{}
 
 	for _, v := range res {
-		var type_name []string
+		var typeName []string
 
 		for _, v := range strings.Split(v.Master.Type, ",") {
-			var master_type models.MasterType
-			ay.Db.First(&master_type, "id = ?", v)
-			if master_type.Name != "" {
-				type_name = append(type_name, master_type.Name)
+			var masterType models.MasterType
+			ay.Db.First(&masterType, "id = ?", v)
+			if masterType.Name != "" {
+				typeName = append(typeName, masterType.Name)
 			}
 
 		}
@@ -85,7 +86,8 @@ func (con MasterController) List(c *gin.Context) {
 			"online":    v.Master.Online,
 			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 			"rate":      v.Master.Rate,
-			"type_name": type_name,
+			"type_name": typeName,
+			"phone":     v.Phone,
 		})
 	}
 
@@ -114,7 +116,7 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 	//ay.Db.Where("FIND_IN_SET(?,type)", getForm.Type).Select(field).Limit(10).Offset(page * 10).Order("id desc").Find(&res)
 	var res []Master
 	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+		Select("sm_user.id,sm_user.phone,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("is_recommend = 1").
 		Limit(10).
@@ -125,13 +127,13 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 	var row []map[string]interface{}
 
 	for _, v := range res {
-		var type_name []string
+		var typeName []string
 
 		for _, v := range strings.Split(v.Master.Type, ",") {
-			var master_type models.MasterType
-			ay.Db.First(&master_type, "id = ?", v)
-			if master_type.Name != "" {
-				type_name = append(type_name, master_type.Name)
+			var masterType models.MasterType
+			ay.Db.First(&masterType, "id = ?", v)
+			if masterType.Name != "" {
+				typeName = append(typeName, masterType.Name)
 			}
 
 		}
@@ -144,7 +146,8 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 			"online":    v.Master.Online,
 			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 			"rate":      v.Master.Rate,
-			"type_name": type_name,
+			"type_name": typeName,
+			"phone":     v.Phone,
 		})
 	}
 
@@ -180,8 +183,9 @@ func (con MasterController) Detail(c *gin.Context) {
 	type master struct {
 		models.Master
 		//ImageS   []string `json:"images"`
-		Avatar string `json:"avatar"`
-		Name   string `json:"name"`
+		Avatar   string   `json:"avatar"`
+		Name     string   `json:"name"`
+		TypeName []string `json:"type_name"`
 	}
 	var res master
 	//ay.Db.Model(&models.Master{}).Where("id = ?", user.MasterId).First(&res)
@@ -191,6 +195,17 @@ func (con MasterController) Detail(c *gin.Context) {
 		Joins("left join sm_user on sm_master.id=sm_user.master_id").
 		Where("sm_master.id = ?", user.MasterId).
 		First(&res)
+
+	var typeName []string
+
+	for _, v := range strings.Split(res.Type, ",") {
+		var masterType models.MasterType
+		ay.Db.First(&masterType, "id = ?", v)
+		if masterType.Name != "" {
+			typeName = append(typeName, masterType.Name)
+		}
+	}
+	res.TypeName = typeName
 
 	if res.Id == 0 {
 		ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})

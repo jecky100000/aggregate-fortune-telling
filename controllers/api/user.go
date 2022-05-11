@@ -210,6 +210,7 @@ type returnCollect struct {
 	Sign      string   `json:"sign"`
 	TypeName  []string `json:"type_name"`
 	Label     string   `json:"label"`
+	Phone     string   `json:"phone"`
 	Years     int      `json:"years"`
 	Collect   int      `json:"collect"`
 	CreatedAt string   `json:"created_at"`
@@ -273,12 +274,13 @@ func (con UserController) Collect(c *gin.Context) {
 				models.Master
 				Avatar   string `json:"avatar"`
 				Nickname string `json:"nickname"`
+				Phone    string `json:"phone"`
 			}
 
 			var d cc
 
 			ay.Db.Table("sm_user").
-				Select("sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
+				Select("sm_user.nickname,sm_user.phone,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
 				Joins("left join sm_master on sm_user.master_id=sm_master.id").
 				Where("sm_user.id", v.Cid).
 				First(&d)
@@ -307,6 +309,7 @@ func (con UserController) Collect(c *gin.Context) {
 				Years:    d.Years,
 				Collect:  1,
 				Online:   d.Online,
+				Phone:    d.Phone,
 			})
 		}
 	}
@@ -543,11 +546,12 @@ func (con UserController) Log(c *gin.Context) {
 				models.Master
 				Avatar   string `json:"avatar"`
 				Nickname string `json:"nickname"`
+				Phone    int    `json:"phone"`
 			}
 			var res []cc
 
 			ay.Db.Table("sm_user").
-				Select("sm_master.*,sm_user.avatar,sm_user.nickname").
+				Select("sm_master.*,sm_user.avatar,sm_user.nickname,sm_user.phone").
 				Joins("left join sm_master on sm_user.master_id=sm_master.id").
 				Where("sm_user.id = ?", v1.MasterId).
 				Debug().
@@ -573,6 +577,7 @@ func (con UserController) Log(c *gin.Context) {
 					"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 					"rate":      v.Rate,
 					"type_name": typeName,
+					"phone":     v.Phone,
 				})
 			}
 		}

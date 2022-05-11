@@ -43,10 +43,11 @@ func (con AskController) Main(c *gin.Context) {
 			models.Master
 			Avatar   string `json:"avatar"`
 			Nickname string `json:"nickname"`
+			Phone    string `json:"phone"`
 		}
 		var re cc
 		ay.Db.Table("sm_user").
-			Select("sm_user.id,sm_user.nickname,sm_user.phone,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
+			Select("sm_user.id,sm_user.phone,sm_user.nickname,sm_user.phone,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
 			Joins("left join sm_master on sm_user.master_id=sm_master.id").
 			Where("sm_user.id = ?", v.MasterId).
 			Order("RAND()").
@@ -76,6 +77,7 @@ func (con AskController) Main(c *gin.Context) {
 
 			"master_id":        re.Id,
 			"master_name":      re.Nickname,
+			"master_phone":     re.Phone,
 			"master_sign":      re.Sign,
 			"master_avatar":    ay.Yaml.GetString("domain") + re.Avatar,
 			"master_type_name": typeName,
@@ -269,6 +271,7 @@ func (con AskController) Detail(c *gin.Context) {
 	ay.Db.First(&order, "oid = ?", getForm.AskId)
 
 	type S struct {
+		ReplyId   string        `json:"reply_id"`
 		AskId     string        `json:"ask_id"`
 		MasterId  int64         `json:"master_id"`
 		Content   string        `json:"content"`
@@ -279,7 +282,7 @@ func (con AskController) Detail(c *gin.Context) {
 	}
 	var ss []S
 	ay.Db.Table("sm_ask_reply").
-		Select("sm_ask_reply.master_id,sm_user.avatar,sm_master.name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
+		Select("sm_ask_reply.id as reply_id,sm_ask_reply.master_id,sm_user.avatar,sm_master.name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
 		Joins("left join sm_user on sm_user.id=sm_ask_reply.master_id").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("sm_ask_reply.ask_id", getForm.AskId).
@@ -298,6 +301,7 @@ func (con AskController) Detail(c *gin.Context) {
 			adopt = 1
 		}
 		list = append(list, map[string]interface{}{
+			"reply_id":   v.ReplyId,
 			"master_id":  v.MasterId,
 			"name":       v.Name,
 			"avatar":     ay.Yaml.GetString("domain") + v.Avatar,
@@ -322,4 +326,69 @@ func (con AskController) Detail(c *gin.Context) {
 		"created_at": order.CreatedAt.Format("2006/01/02"),
 		"adopt":      adopt,
 	})
+}
+
+type GetAskAdoptForm struct {
+	ReplyId int64 `form:"reply_id" binding:"required" label:"回复id"`
+}
+
+func (con AskController) Adopt(c *gin.Context) {
+	var getForm GetAskAdoptForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+
+	if user.Id == 0 {
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+		return
+	}
+
+	var res models.AskReply
+	ay.Db.First(&res, getForm.ReplyId)
+
+	if res.Id == 0 {
+		ay.Json{}.Msg(c, 400, "回复不存在", gin.H{})
+		return
+	}
+
+	if res.Adopt == 1 {
+		ay.Json{}.Msg(c, 400, "已采纳无需再次采纳", gin.H{})
+		return
+	}
+
+	var count int64
+	ay.Db.Model(&models.AskReply{}).Where("adopt = 1 AND ask_id = ?", res.AskId).Count(&count)
+
+	if count > 0 {
+		ay.Json{}.Msg(c, 400, "已采纳无需再次采纳", gin.H{})
+		return
+	}
+
+	tx := ay.Db.Begin()
+
+	res.Adopt = 1
+	if err := tx.Save(&res).Error; err == nil {
+
+		var order models.Order
+		tx.Where("oid = ?", res.AskId).First(&order)
+		order.Status = 1
+		tx.Save(&order)
+
+		var master models.User
+		tx.Where("id = ?", res.MasterId).First(&master)
+
+		master.Amount += order.Amount
+		tx.Save(master)
+
+		tx.Commit()
+		ay.Json{}.Msg(c, 200, "采纳成功", gin.H{})
+	} else {
+		tx.Rollback()
+		ay.Json{}.Msg(c, 400, "操作失败", gin.H{})
+
+	}
 }
