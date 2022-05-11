@@ -13,6 +13,7 @@ import (
 	"gin/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"strings"
 )
 
 type NoticeController struct {
@@ -165,6 +166,8 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 	} else {
 		baike.View = baike.View + 1
 		ay.Db.Save(&baike)
+		baike.Cover = ay.Yaml.GetString("domain") + baike.Cover
+		baike.Content = strings.Replace(baike.Content, "/static", ay.Yaml.GetString("domain")+"/static", -1)
 		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"info": baike,
 		})

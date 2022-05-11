@@ -12,7 +12,6 @@ import (
 	"gin/models"
 	"github.com/gin-gonic/gin"
 	"log"
-	"path"
 	"strings"
 )
 
@@ -91,6 +90,7 @@ type ancientCatalogueOptionForm struct {
 	Content string `form:"content"`
 	Link    string `form:"link"`
 	Sort    int    `form:"sort"`
+	Type    int    `form:"type"`
 	Aid     int64  `form:"aid"`
 }
 
@@ -110,23 +110,12 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 	var res models.AncientClass
 	ay.Db.First(&res, data.Id)
 
-	vType := 0
-	ext := path.Ext(data.Link)
-	log.Println(ext)
-	if ext == ".doc" || ext == ".docx" {
-		vType = 3
-	} else if ext == ".pdf" {
-		vType = 2
-	} else {
-		vType = 1
-	}
-
 	if data.Id != 0 {
 		res.Name = data.Name
 		res.Link = data.Link
 		res.Content = data.Content
 		res.Sort = data.Sort
-		res.Type = vType
+		res.Type = data.Type
 
 		if err := ay.Db.Save(&res).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
@@ -141,7 +130,7 @@ func (con AncientCatalogueController) Option(c *gin.Context) {
 			Content: data.Content,
 			Sort:    data.Sort,
 			Aid:     data.Aid,
-			Type:    vType,
+			Type:    data.Type,
 		})
 		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
