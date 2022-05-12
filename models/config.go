@@ -34,6 +34,7 @@ type Config struct {
 	UserRegCoupon     int     `gorm:"column:user_reg_coupon" json:"user_reg_coupon"`
 	HaulDiscount      string  `gorm:"column:haul_discount" json:"haul_discount"`
 	InviteRate        float64 `gorm:"column:invite_rate" json:"invite_rate"`
+	WithdrawAmount    float64 `gorm:"column:withdraw_amount" json:"withdraw_amount"`
 }
 
 func (Config) TableName() string {

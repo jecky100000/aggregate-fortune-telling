@@ -156,6 +156,7 @@ func (con PayController) Do(c *gin.Context) {
 			Amount:    inviteAmount,
 			OldAmount: amount,
 			Status:    0,
+			Oid:       order.Oid,
 		})
 	}
 
