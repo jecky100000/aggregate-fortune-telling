@@ -469,7 +469,7 @@ func (con UserController) Withdrawal(c *gin.Context) {
 	config := models.ConfigModel{}.GetId(1)
 
 	if config.WithdrawAmount > getForm.Amount {
-		ay.Json{}.Msg(c, 401, "提现金额不能小于"+strconv.FormatFloat(config.WithdrawAmount, 'g', -1, 64)+"元", gin.H{})
+		ay.Json{}.Msg(c, 400, "提现金额不能小于"+strconv.FormatFloat(config.WithdrawAmount, 'g', -1, 64)+"元", gin.H{})
 		return
 	}
 
