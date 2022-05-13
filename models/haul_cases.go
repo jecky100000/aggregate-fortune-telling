@@ -13,11 +13,12 @@ type HaulCasesModel struct {
 }
 
 type HaulCases struct {
-	Id   int64  `gorm:"primaryKey" json:"id"`
-	Type string `gorm:"column:type" json:"type"`
-	Link string `gorm:"column:link" json:"link"`
-	Sort string `gorm:"column:sort" json:"sort"`
-	Name string `gorm:"column:name" json:"name"`
+	Id    int64  `gorm:"primaryKey" json:"id"`
+	Type  string `gorm:"column:type" json:"type"`
+	Link  string `gorm:"column:link" json:"link"`
+	Cover string `gorm:"column:cover" json:"cover"`
+	Sort  string `gorm:"column:sort" json:"sort"`
+	Name  string `gorm:"column:name" json:"name"`
 }
 
 func (HaulCases) TableName() string {
@@ -25,6 +26,6 @@ func (HaulCases) TableName() string {
 }
 
 func (con HaulCasesModel) GetType(types int) (res []HaulCases) {
-	ay.Db.Find(&res, "type = ?", types)
+	ay.Db.Order("sort asc").Find(&res, "type = ?", types)
 	return
 }

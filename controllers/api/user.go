@@ -155,7 +155,6 @@ func (con UserController) Upload(c *gin.Context) {
 
 	file, err := c.FormFile("file")
 	if err != nil {
-		log.Println(err)
 		ay.Json{}.Msg(c, 400, "上传图片出错", gin.H{})
 		return
 	}
@@ -413,7 +412,7 @@ func (con UserController) History(c *gin.Context) {
 		ay.Db.Table("sm_user_invite_consumption").
 			Select("sm_user_invite_consumption.amount,sm_user_invite_consumption.created_at,sm_user_invite_consumption.status,sm_user.nickname").
 			Joins("left join sm_user on sm_user_invite_consumption.uid = sm_user.id").
-			Where("sm_user_invite_consumption.pid = ? and status != 3", user.Id).
+			Where("sm_user_invite_consumption.pid = ?", user.Id).
 			Limit(10).
 			Offset(page * 10).
 			Find(&list)
@@ -428,7 +427,7 @@ func (con UserController) History(c *gin.Context) {
 				Status:    v.Status,
 			})
 		}
-		if list == nil {
+		if history == nil {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list":   []string{},
 				"amount": user.Amount,
@@ -546,11 +545,12 @@ func (con UserController) Log(c *gin.Context) {
 		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
 		return
 	}
-	log.Println(user)
+	//log.Println(user)
 
 	page := getForm.Page - 1
 
 	if getForm.Type == 1 {
+		//大师
 		var row []map[string]interface{}
 		var UserMasterLog []models.UserMasterLog
 		ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&UserMasterLog, "uid = ?", user.Id)
@@ -598,14 +598,16 @@ func (con UserController) Log(c *gin.Context) {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
+			return
 		} else {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": row,
 			})
+			return
 		}
 
 	} else if getForm.Type == 2 {
-
+		//八字
 		var order []models.Order
 		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 1", user.Id).Order("id desc").Find(&order)
 
@@ -627,14 +629,16 @@ func (con UserController) Log(c *gin.Context) {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
+			return
 		} else {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": pp,
 			})
+			return
 		}
 
-	} else {
-
+	} else if getForm.Type == 3 {
+		// 排盘
 		var order []models.Order
 		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 2", user.Id).Order("id desc").Find(&order)
 
@@ -659,10 +663,89 @@ func (con UserController) Log(c *gin.Context) {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": []string{},
 			})
+			return
 		} else {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"list": pp,
 			})
+			return
+		}
+	}
+
+	if getForm.Type == 6 {
+		history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
+
+		var res []gin.H
+		for _, v := range history {
+			res = append(res, gin.H{
+				"data":       v.Data,
+				"des":        v.Des,
+				"created_at": ay.LastTime(int(v.CreatedAt.Unix())),
+			})
+		}
+
+		if res == nil {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list": []string{},
+			})
+			return
+		} else {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list": res,
+			})
+			return
+		}
+	} else {
+		history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
+
+		type rh struct {
+			Id        int64  `json:"id"`
+			Cid       int64  `json:"cid"`
+			Title     string `json:"title"`
+			Cover     string `json:"cover"`
+			Type      int    `json:"type"`
+			CreatedAt string `json:"created_at"`
+			View      int64  `json:"view"`
+		}
+		var res []rh
+
+		for _, v := range history {
+			if v.Type == 4 {
+				var encyclopedias models.BaiKe
+				ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+				res = append(res, rh{
+					Cid:       v.Cid,
+					Id:        v.Id,
+					Title:     encyclopedias.Title,
+					Cover:     ay.Yaml.GetString("domain") + encyclopedias.Cover,
+					Type:      v.Type,
+					CreatedAt: ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
+					View:      encyclopedias.View,
+				})
+			} else if v.Type == 5 {
+				var g models.Ancient
+				ay.Db.First(&g, "id = ?", v.Cid)
+				res = append(res, rh{
+					Cid:       v.Cid,
+					Id:        v.Id,
+					Title:     g.Title,
+					Cover:     ay.Yaml.GetString("domain") + g.Cover,
+					Type:      v.Type,
+					CreatedAt: ay.LastTime(int(g.CreatedAt.Unix())),
+					View:      g.View,
+				})
+			}
+		}
+		if res == nil {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list": []string{},
+			})
+			return
+		} else {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"list": res,
+			})
+			return
 		}
 	}
 
@@ -714,7 +797,7 @@ func (con UserController) Ask(c *gin.Context) {
 			"reply":      count,
 			"amount":     v.Amount,
 			"adopt":      adopt,
-			"created_at": v.CreatedAt,
+			"created_at": v.CreatedAt.Format("2006/01/02"),
 		})
 	}
 

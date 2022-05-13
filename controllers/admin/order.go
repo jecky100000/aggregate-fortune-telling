@@ -45,6 +45,7 @@ type returnList struct {
 	CouponAmount float64       `json:"coupon_amount"`
 	Json         string        `json:"json"`
 	PayTime      string        `json:"pay_time"`
+	Birthday     string        `json:"birthday"`
 }
 
 // List 用户列表
@@ -141,6 +142,19 @@ func (con OrderController) Option(c *gin.Context) {
 
 	var order models.Order
 	ay.Db.First(&order, data.Id)
+
+	if order.Status == 3 {
+		ay.Json{}.Msg(c, 400, "请勿重新修改退款状态", gin.H{})
+		return
+	}
+
+	if data.Status == 3 {
+		var user models.User
+		ay.Db.First(&user, order.Uid)
+		user.Amount = user.Amount + order.Amount
+		ay.Db.Save(&user)
+	}
+
 	order.Status = data.Status
 	order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 

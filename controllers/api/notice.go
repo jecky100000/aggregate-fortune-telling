@@ -164,6 +164,11 @@ func (con NoticeController) BaiKe(c *gin.Context) {
 	if baike.Id == 0 {
 		ay.Json{}.Msg(c, 400, "数据有误", gin.H{})
 	} else {
+
+		var user models.User
+		ay.Db.First(&user, "id = ?", GetToken(Token))
+		models.UserHistoryModel{}.Save(user.Id, 4, baike.Id, "", "")
+
 		baike.View = baike.View + 1
 		ay.Db.Save(&baike)
 		baike.Cover = ay.Yaml.GetString("domain") + baike.Cover
@@ -209,6 +214,10 @@ func (con NoticeController) Classify(c *gin.Context) {
 	//for k, v := range ancient {
 	//	ancient[k].Link = ay.Yaml.GetString("domain") + v.Link
 	//}
+
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+	models.UserHistoryModel{}.Save(user.Id, 5, res.Id, "", "")
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list": ancient,

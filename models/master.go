@@ -7,6 +7,10 @@
 
 package models
 
+import (
+	"gin/ay"
+)
+
 type MasterModel struct {
 }
 
@@ -30,4 +34,22 @@ type Master struct {
 
 func (Master) TableName() string {
 	return "sm_master"
+}
+
+func (con MasterModel) IsMaser(id int64) (bool, User, Master) {
+	var user User
+
+	var master Master
+
+	ay.Db.First(&user, "id = ?", id)
+	if user.MasterId == 0 {
+		return false, user, master
+	}
+	ay.Db.Where("id = ?", user.MasterId).First(&master)
+
+	if master.Id == 0 {
+		return false, user, master
+	}
+
+	return true, user, master
 }

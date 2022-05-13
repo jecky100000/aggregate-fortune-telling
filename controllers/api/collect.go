@@ -45,14 +45,8 @@ func (con CollectController) Set(c *gin.Context) {
 
 		if getForm.Type == 1 {
 
-			var d models.Master
-
-			ay.Db.Table("sm_user").
-				Select("sm_master.id").
-				Joins("left join sm_master on sm_user.master_id=sm_master.id").
-				Where("sm_user.id = ? and sm_user.type = 1", getForm.Id).
-				First(&d)
-			if d.Id == 0 {
+			rj, _, _ := models.MasterModel{}.IsMaser(getForm.Id)
+			if !rj {
 				ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})
 				return
 			}

@@ -110,4 +110,6 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("invite/withdraw", api.InviteController{}.Withdraw)
 	apiGroup.POST("invite/do", api.InviteController{}.Do)
 
+	apiGroup.Any("im/notify", api.ImController{}.Notify)
+
 }

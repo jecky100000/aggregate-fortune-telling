@@ -69,6 +69,10 @@ func (con HexapodController) Get(c *gin.Context) {
 
 	res := models.HexapodModel{}.GetContonent(name)
 
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+	models.UserHistoryModel{}.Save(user.Id, 6, 0, getForm.Data, name)
+
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"name":    name,
 		"image":   image,

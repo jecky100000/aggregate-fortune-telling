@@ -174,24 +174,29 @@ func (con MasterController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.User
-	ay.Db.First(&user, "id = ?", getForm.Id)
-	if user.MasterId == 0 {
+	rj, user, _ := models.MasterModel{}.IsMaser(getForm.Id)
+	if !rj {
 		ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})
 		return
 	}
+
+	var optionUser models.User
+	ay.Db.First(&optionUser, "id = ?", GetToken(Token))
+	models.UserMasterLogModel{}.Save(optionUser.Id, user.Id)
+
 	type master struct {
 		models.Master
 		//ImageS   []string `json:"images"`
 		Avatar   string   `json:"avatar"`
 		Name     string   `json:"name"`
 		TypeName []string `json:"type_name"`
+		Phone    string   `json:"phone"`
 	}
 	var res master
 	//ay.Db.Model(&models.Master{}).Where("id = ?", user.MasterId).First(&res)
 
 	ay.Db.Table("sm_master").
-		Select("sm_master.*,sm_user.nickname as name,sm_user.avatar").
+		Select("sm_master.*,sm_user.nickname as name,sm_user.avatar,sm_user.phone").
 		Joins("left join sm_user on sm_master.id=sm_user.master_id").
 		Where("sm_master.id = ?", user.MasterId).
 		First(&res)
@@ -284,16 +289,8 @@ func (con MasterController) Recommend(c *gin.Context) {
 		return
 	}
 
-	var master models.User
-	ay.Db.First(&master, "id = ?", getForm.Id)
-	if master.MasterId == 0 {
-		ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})
-		return
-	}
-	var res models.Master
-	ay.Db.Where("id = ?", master.MasterId).First(&res)
-
-	if res.Id == 0 {
+	rj, _, _ := models.MasterModel{}.IsMaser(getForm.Id)
+	if !rj {
 		ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})
 		return
 	}

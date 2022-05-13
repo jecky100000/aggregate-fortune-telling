@@ -109,7 +109,7 @@ func (con InviteController) Withdraw(c *gin.Context) {
 	ay.Db.Table("sm_user_invite_consumption").
 		Select("sm_user.nickname,sm_user.phone,sm_user.avatar,sm_user_invite_consumption.created_at,sm_user_invite_consumption.amount,sm_user_invite_consumption.status,sm_user_invite_consumption.oid").
 		Joins("left join sm_user on sm_user_invite_consumption.uid=sm_user.id").
-		Where("sm_user_invite_consumption.pid = ? and sm_user_invite_consumption.status != 3 ", user.Id).
+		Where("sm_user_invite_consumption.pid = ?", user.Id).
 		Order("sm_user_invite_consumption.created_at desc").
 		Limit(10).
 		Offset(page * 10).

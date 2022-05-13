@@ -262,6 +262,7 @@ func (con HaulController) Main(c *gin.Context) {
 
 	for k, v := range introduce {
 		introduce[k].Link = ay.Yaml.GetString("domain") + v.Link
+		introduce[k].Cover = ay.Yaml.GetString("domain") + v.Cover
 	}
 
 	for k, v := range cases {

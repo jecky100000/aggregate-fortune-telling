@@ -307,7 +307,7 @@ func (con AskController) Detail(c *gin.Context) {
 			"avatar":     ay.Yaml.GetString("domain") + v.Avatar,
 			"adopt":      v.Adopt,
 			"content":    v.Content,
-			"created_at": v.CreatedAt.Format("2006/01/02 15:04"),
+			"created_at": v.CreatedAt.Format("2006/01/02"),
 		})
 	}
 
