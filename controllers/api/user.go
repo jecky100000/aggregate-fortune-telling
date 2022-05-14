@@ -245,11 +245,14 @@ func (con UserController) Collect(c *gin.Context) {
 	ay.Db.Where("uid = ? and type = ?", user.Id, getForm.Type).Limit(10).Offset(page * 10).Find(&collect)
 
 	var res []returnCollect
-
+	log.Println(res)
 	for _, v := range collect {
 		if v.Type == 2 {
 			var encyclopedias models.BaiKe
 			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+			if encyclopedias.Id == 0 {
+				continue
+			}
 			res = append(res, returnCollect{
 				Cid:       v.Cid,
 				Id:        v.Id,
@@ -263,6 +266,9 @@ func (con UserController) Collect(c *gin.Context) {
 		} else if v.Type == 3 {
 			var g models.Ancient
 			ay.Db.First(&g, "id = ?", v.Cid)
+			if g.Id == 0 {
+				continue
+			}
 			res = append(res, returnCollect{
 				Cid:       v.Cid,
 				Id:        v.Id,
@@ -289,6 +295,10 @@ func (con UserController) Collect(c *gin.Context) {
 				Joins("left join sm_master on sm_user.master_id=sm_master.id").
 				Where("sm_user.id", v.Cid).
 				First(&d)
+
+			if d.Phone == "" {
+				continue
+			}
 
 			var typeName []string
 
