@@ -50,34 +50,11 @@ func (con MasterController) List(c *gin.Context) {
 	}
 	page := getForm.Page - 1
 
-	//field := "id,name,sign,type,years,online,avatar,rate"
-	//var res []models.Master
-	//ay.Db.Where("FIND_IN_SET(?,type)", getForm.Type).Select(field).Limit(10).Offset(page * 10).Order("id desc").Find(&res)
+	var row []gin.H
 
-	var res []Master
-	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_user.phone,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
-		Joins("left join sm_master on sm_user.master_id=sm_master.id").
-		Where("FIND_IN_SET(?,sm_master.type) and sm_user.type=1", getForm.Type).
-		Limit(10).
-		Offset(page * 10).
-		Order("sm_user.id desc").
-		Find(&res)
-
-	var row []map[string]interface{}
+	res := models.MasterModel{}.GetMasterPage(page, 0, getForm.Type)
 
 	for _, v := range res {
-		var typeName []string
-
-		for _, v := range strings.Split(v.Master.Type, ",") {
-			var masterType models.MasterType
-			ay.Db.First(&masterType, "id = ?", v)
-			if masterType.Name != "" {
-				typeName = append(typeName, masterType.Name)
-			}
-
-		}
-
 		row = append(row, map[string]interface{}{
 			"id":        v.Id,
 			"name":      v.Nickname,
@@ -86,7 +63,7 @@ func (con MasterController) List(c *gin.Context) {
 			"online":    v.Master.Online,
 			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 			"rate":      v.Master.Rate,
-			"type_name": typeName,
+			"type_name": v.TypeName,
 			"phone":     v.Phone,
 		})
 	}
@@ -111,33 +88,11 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 	}
 	page := getForm.Page - 1
 
-	//field := "id,name,sign,type,years,online,avatar,rate"
-	//var res []models.Master
-	//ay.Db.Where("FIND_IN_SET(?,type)", getForm.Type).Select(field).Limit(10).Offset(page * 10).Order("id desc").Find(&res)
-	var res []Master
-	ay.Db.Table("sm_user").
-		Select("sm_user.id,sm_user.phone,sm_user.nickname,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate").
-		Joins("left join sm_master on sm_user.master_id=sm_master.id").
-		Where("is_recommend = 1").
-		Limit(10).
-		Offset(page * 10).
-		Order("sm_user.id desc").
-		Find(&res)
+	var row []gin.H
 
-	var row []map[string]interface{}
+	res := models.MasterModel{}.GetMasterPage(page, 1, 0)
 
 	for _, v := range res {
-		var typeName []string
-
-		for _, v := range strings.Split(v.Master.Type, ",") {
-			var masterType models.MasterType
-			ay.Db.First(&masterType, "id = ?", v)
-			if masterType.Name != "" {
-				typeName = append(typeName, masterType.Name)
-			}
-
-		}
-
 		row = append(row, map[string]interface{}{
 			"id":        v.Id,
 			"name":      v.Nickname,
@@ -146,7 +101,7 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 			"online":    v.Master.Online,
 			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
 			"rate":      v.Master.Rate,
-			"type_name": typeName,
+			"type_name": v.TypeName,
 			"phone":     v.Phone,
 		})
 	}
@@ -223,17 +178,6 @@ func (con MasterController) Detail(c *gin.Context) {
 	res.BackImage = ay.Yaml.GetString("domain") + res.BackImage
 
 	res.Id = user.Id
-
-	//var image []string
-	//
-	//json.Unmarshal([]byte(res.Image), &image)
-	//
-	//for k, v := range image {
-	//	image[k] = ay.Yaml.GetString("domain") + v
-	//}
-	//
-	//res.ImageS = image
-	//res.Image = ""
 
 	// 粉丝
 	var count int64

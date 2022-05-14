@@ -98,12 +98,17 @@ func (con LoginController) web(phone, code, aff string) (int, string) {
 	}
 
 	var pid int64 = 0
-
 	var pUser models.User
-	ay.Db.First(&pUser, "aff = ? and type = 0", aff)
 
-	if pUser.Id != 0 {
-		pid = pUser.Id
+	if aff == "" {
+		pid = 0
+	} else {
+		ay.Db.First(&pUser, "aff = ? and type = 0", aff)
+		if pUser.Id != 0 {
+			pid = pUser.Id
+		} else {
+			pid = 0
+		}
 	}
 
 	var user models.User
@@ -124,10 +129,13 @@ func (con LoginController) web(phone, code, aff string) (int, string) {
 			return 0, "注册失败"
 		}
 		//
-		ay.Db.Create(&models.UserInvite{
-			Pid: pUser.Id,
-			Uid: ss.Id,
-		})
+		if pid != 0 {
+			ay.Db.Create(&models.UserInvite{
+				Pid: pid,
+				Uid: ss.Id,
+			})
+		}
+
 		// 用户注册 发放优惠卷
 		//if vtype == 0 {
 		con.SetCoupon(ss.Id)

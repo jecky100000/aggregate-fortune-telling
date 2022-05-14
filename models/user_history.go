@@ -29,7 +29,7 @@ func (UserHistory) TableName() string {
 }
 
 func (con UserHistoryModel) GetAllPage(uid int64, vtype, page int) (res []UserHistory) {
-	ay.Db.Debug().Where("uid = ? and type = ?", uid, vtype).Limit(10).Offset(page * 10).Find(&res)
+	ay.Db.Debug().Where("uid = ? and type = ?", uid, vtype).Order("created_at desc").Limit(10).Offset(page * 10).Find(&res)
 	return
 }
 
@@ -38,7 +38,7 @@ func (con UserHistoryModel) Save(uid int64, vtype int, cid int64, data, des stri
 	row := false
 
 	var res UserHistory
-	ay.Db.Where("uid = ? AND type = ?", uid, vtype).First(&res)
+	ay.Db.Where("uid = ? AND type = ? AND cid = ?", uid, vtype, cid).First(&res)
 
 	if res.Id == 0 || vtype == 6 {
 		if err := ay.Db.Create(&UserHistory{

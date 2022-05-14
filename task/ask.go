@@ -15,22 +15,14 @@ import (
 
 // AskAmount 提问消费退回
 func AskAmount() {
-	log.Println("开始计算提问48小时退回")
+	log.Println("开始计算提问48小时关闭")
 	var order []models.Order
 	ay.Db.Where("status = 0 AND type = 3 AND now() >SUBDATE(created_at,interval -2 day)").Find(&order)
 	for _, v := range order {
-		var user models.User
-		ay.Db.First(&user, v.Uid)
-		user.Amount += v.Amount
-		tx := ay.Db.Begin()
-		if err := tx.Save(&user).Error; err != nil {
-			tx.Rollback()
-			log.Println("提问金额退款失败")
+		if err := ay.Db.Model(models.Order{}).Where("id = ?", v.Id).UpdateColumn("status", 1).Error; err != nil {
+			log.Println("提问订单关闭失败")
+		} else {
+			log.Println("提问订单关闭成功")
 		}
-		if err := tx.Model(models.Order{}).Where("id = ?", v.Id).UpdateColumn("status", 3).Error; err != nil {
-			tx.Rollback()
-			log.Println("提问金额退款失败")
-		}
-		tx.Commit()
 	}
 }

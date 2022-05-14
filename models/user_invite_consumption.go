@@ -7,6 +7,12 @@
 
 package models
 
+import (
+	"fmt"
+	"gin/ay"
+	"strconv"
+)
+
 type UserInviteConsumptionModel struct {
 }
 
@@ -22,4 +28,24 @@ type UserInviteConsumption struct {
 
 func (UserInviteConsumption) TableName() string {
 	return "sm_user_invite_consumption"
+}
+
+func (con UserInviteConsumptionModel) Set(uid, pid int64, amount float64, oid string) {
+	config := ConfigModel{}.GetId(1)
+	// 获取上级
+	var pUser User
+	ay.Db.First(&pUser, "id = ?", pid)
+	if pUser.Id != 0 {
+		inviteAmount, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", config.InviteRate*amount), 64)
+
+		// 消费记录
+		ay.Db.Create(&UserInviteConsumption{
+			Pid:       pUser.Id,
+			Uid:       uid,
+			Amount:    inviteAmount,
+			OldAmount: amount,
+			Status:    0,
+			Oid:       oid,
+		})
+	}
 }

@@ -41,6 +41,24 @@ func LastTime(t int) (msg string) {
 	return
 }
 
+func LastTime1(t int) (msg string) {
+	s := (int(time.Now().Unix()) - t) / 60
+
+	switch {
+	case s < 60:
+		msg = strconv.Itoa(s) + "分钟前"
+
+	case s >= 60 && s < (60*24):
+		msg = strconv.Itoa(s/60) + "小时前"
+	case s >= (60*24) && s < (60*24*3):
+		msg = strconv.Itoa(s/24/60) + "天前"
+
+	default:
+		msg = time.Unix(int64(t), 0).Format("2006/01/02")
+	}
+	return
+}
+
 func Int32ToString(n int32) string {
 	buf := [11]byte{}
 	pos := len(buf)

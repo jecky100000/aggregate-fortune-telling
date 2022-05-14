@@ -133,7 +133,7 @@ func (con AskController) Get(c *gin.Context) {
 
 	var log []models.AskLog
 
-	ay.Db.Order("RAND()").Limit(3).Find(&log, "type = ?", getForm.Type)
+	ay.Db.Order("RAND()").Find(&log, "type = ?", getForm.Type)
 
 	var ss []string
 	for _, v := range log {
@@ -226,6 +226,9 @@ func (con AskController) Submit(c *gin.Context) {
 	if order.Id == 0 {
 		ay.Json{}.Msg(c, 400, "数据错误，请联系管理员", gin.H{})
 	} else {
+		// 上级消费
+		models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
+
 		ay.Json{}.Msg(c, 200, "success", gin.H{
 			"oid": oid,
 		})
@@ -301,13 +304,14 @@ func (con AskController) Detail(c *gin.Context) {
 			adopt = 1
 		}
 		list = append(list, map[string]interface{}{
-			"reply_id":   v.ReplyId,
-			"master_id":  v.MasterId,
-			"name":       v.Name,
-			"avatar":     ay.Yaml.GetString("domain") + v.Avatar,
-			"adopt":      v.Adopt,
-			"content":    v.Content,
-			"created_at": v.CreatedAt.Format("2006/01/02"),
+			"reply_id":  v.ReplyId,
+			"master_id": v.MasterId,
+			"name":      v.Name,
+			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
+			"adopt":     v.Adopt,
+			"content":   v.Content,
+			//"created_at": v.CreatedAt.Format("2006/01/02"),
+			"created_at": ay.LastTime1(int(v.CreatedAt.Unix())),
 		})
 	}
 
@@ -316,14 +320,15 @@ func (con AskController) Detail(c *gin.Context) {
 	}
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
-		"list":       list,
-		"avatar":     ay.Yaml.GetString("domain") + user.Avatar,
-		"nickname":   user.NickName,
-		"amount":     order.Amount,
-		"reply":      count,
-		"content":    order.Json,
-		"type":       order.Des,
-		"created_at": order.CreatedAt.Format("2006/01/02"),
+		"list":     list,
+		"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
+		"nickname": user.NickName,
+		"amount":   order.Amount,
+		"reply":    count,
+		"content":  order.Json,
+		"type":     order.Des,
+		//"created_at": order.CreatedAt.Format("2006/01/02"),
+		"created_at": ay.LastTime1(int(order.CreatedAt.Unix())),
 		"adopt":      adopt,
 	})
 }

@@ -8,7 +8,6 @@
 package api
 
 import (
-	"fmt"
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
@@ -138,27 +137,28 @@ func (con PayController) Do(c *gin.Context) {
 	user.Amount = user.Amount - amount
 	ay.Db.Save(&user)
 
-	// 获取上级
-	var pUser models.User
-	ay.Db.First(&pUser, "id = ?", user.Pid)
-	if pUser.Id != 0 {
-		//log.Println(pUser)
-		//// 设置上级余额
-		////inviteAmount := config.InviteRate * amount
-		inviteAmount, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", config.InviteRate*amount), 64)
-		//pUser.InviteAmount = pUser.InviteAmount + inviteAmount
-		//ay.Db.Save(&pUser)
-
-		// 消费记录
-		ay.Db.Create(&models.UserInviteConsumption{
-			Pid:       pUser.Id,
-			Uid:       user.Id,
-			Amount:    inviteAmount,
-			OldAmount: amount,
-			Status:    0,
-			Oid:       order.Oid,
-		})
-	}
+	models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, amount, order.Oid)
+	//// 获取上级
+	//var pUser models.User
+	//ay.Db.First(&pUser, "id = ?", user.Pid)
+	//if pUser.Id != 0 {
+	//	//log.Println(pUser)
+	//	//// 设置上级余额
+	//	////inviteAmount := config.InviteRate * amount
+	//	inviteAmount, _ := strconv.ParseFloat(fmt.Sprintf("%.2f", config.InviteRate*amount), 64)
+	//	//pUser.InviteAmount = pUser.InviteAmount + inviteAmount
+	//	//ay.Db.Save(&pUser)
+	//
+	//	// 消费记录
+	//	ay.Db.Create(&models.UserInviteConsumption{
+	//		Pid:       pUser.Id,
+	//		Uid:       user.Id,
+	//		Amount:    inviteAmount,
+	//		OldAmount: amount,
+	//		Status:    0,
+	//		Oid:       order.Oid,
+	//	})
+	//}
 
 	// 订单设置已支付
 	order.Status = 1

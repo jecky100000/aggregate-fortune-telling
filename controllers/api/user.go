@@ -197,150 +197,6 @@ func (con UserController) Upload(c *gin.Context) {
 	})
 }
 
-type GetUserCollectForm struct {
-	Type string `form:"type" binding:"required"`
-	Page int    `form:"page" binding:"required"`
-}
-
-type returnCollect struct {
-	Id        int64    `json:"id"`
-	Cid       int64    `json:"cid"`
-	Title     string   `json:"title"`
-	Cover     string   `json:"cover"`
-	Name      string   `json:"name"`
-	Type      int      `json:"type"`
-	Rate      float64  `json:"rate"`
-	Avatar    string   `json:"avatar"`
-	Online    int      `json:"online"`
-	Sign      string   `json:"sign"`
-	TypeName  []string `json:"type_name"`
-	Label     string   `json:"label"`
-	Phone     string   `json:"phone"`
-	Years     int      `json:"years"`
-	Collect   int      `json:"collect"`
-	CreatedAt string   `json:"created_at"`
-	View      int64    `json:"view"`
-}
-
-// Collect 收藏
-func (con UserController) Collect(c *gin.Context) {
-
-	var getForm GetUserCollectForm
-	if err := c.ShouldBind(&getForm); err != nil {
-		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
-		return
-	}
-
-	page := getForm.Page - 1
-
-	var user models.User
-	ay.Db.First(&user, "id = ?", GetToken(Token))
-
-	if user.Id == 0 {
-		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
-		return
-	}
-
-	var collect []models.Collect
-	ay.Db.Where("uid = ? and type = ?", user.Id, getForm.Type).Limit(10).Offset(page * 10).Find(&collect)
-
-	var res []returnCollect
-	log.Println(res)
-	for _, v := range collect {
-		if v.Type == 2 {
-			var encyclopedias models.BaiKe
-			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
-			if encyclopedias.Id == 0 {
-				continue
-			}
-			res = append(res, returnCollect{
-				Cid:       v.Cid,
-				Id:        v.Id,
-				Title:     encyclopedias.Title,
-				Cover:     ay.Yaml.GetString("domain") + encyclopedias.Cover,
-				Type:      v.Type,
-				CreatedAt: ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
-				View:      encyclopedias.View,
-				Collect:   1,
-			})
-		} else if v.Type == 3 {
-			var g models.Ancient
-			ay.Db.First(&g, "id = ?", v.Cid)
-			if g.Id == 0 {
-				continue
-			}
-			res = append(res, returnCollect{
-				Cid:       v.Cid,
-				Id:        v.Id,
-				Title:     g.Title,
-				Cover:     ay.Yaml.GetString("domain") + g.Cover,
-				Type:      v.Type,
-				Collect:   1,
-				CreatedAt: ay.LastTime(int(g.CreatedAt.Unix())),
-				View:      g.View,
-			})
-		} else if v.Type == 1 {
-
-			type cc struct {
-				models.Master
-				Avatar   string `json:"avatar"`
-				Nickname string `json:"nickname"`
-				Phone    string `json:"phone"`
-			}
-
-			var d cc
-
-			ay.Db.Table("sm_user").
-				Select("sm_user.nickname,sm_user.phone,sm_master.sign,sm_master.type,sm_master.years,sm_master.online,sm_user.avatar,sm_master.rate,sm_master.label").
-				Joins("left join sm_master on sm_user.master_id=sm_master.id").
-				Where("sm_user.id", v.Cid).
-				First(&d)
-
-			if d.Phone == "" {
-				continue
-			}
-
-			var typeName []string
-
-			for _, v := range strings.Split(d.Type, ",") {
-				var masterType models.MasterType
-				ay.Db.First(&masterType, "id = ?", v)
-				if masterType.Name != "" {
-					typeName = append(typeName, masterType.Name)
-				}
-
-			}
-
-			res = append(res, returnCollect{
-				Cid:      v.Cid,
-				Id:       v.Id,
-				Name:     d.Nickname,
-				Avatar:   ay.Yaml.GetString("domain") + d.Avatar,
-				Type:     v.Type,
-				Rate:     d.Rate,
-				TypeName: typeName,
-				Sign:     d.Sign,
-				Label:    d.Label,
-				Years:    d.Years,
-				Collect:  1,
-				Online:   d.Online,
-				Phone:    d.Phone,
-			})
-		}
-	}
-
-	if res == nil {
-		ay.Json{}.Msg(c, 200, "success", gin.H{
-			"list": []string{},
-		})
-	} else {
-		ay.Json{}.Msg(c, 200, "success", gin.H{
-			"list": res,
-		})
-	}
-
-}
-
 type GetUserHistoryForm struct {
 	Type int `form:"type" binding:"required" label:"类型"`
 	Page int `form:"page" binding:"required" label:"页码"`
@@ -377,11 +233,11 @@ func (con UserController) History(c *gin.Context) {
 		var order []models.Order
 
 		if getForm.Type == 1 {
-			ay.Db.Where("uid = ? and type != 8 and type != 9 and type != 4", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0))", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 2 {
-			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 3 {
-			ay.Db.Where("uid = ? and type = 8", user.Id).Order("id desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("uid = ? and type = 8", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else {
 
 		}
@@ -392,12 +248,14 @@ func (con UserController) History(c *gin.Context) {
 			loc, _ := time.LoadLocation("Local")
 			theTime, _ := time.ParseInLocation("2006-01-02 15:04:05", v.CreatedAt.String()[:19], loc)
 			history = append(history, ReturnHistory{
-				Type:      v.Type,
-				Op:        v.Op,
-				Amount:    v.Amount * config.Rate,
-				CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				Type:   v.Type,
+				Op:     v.Op,
+				Amount: v.Amount * config.Rate,
+				//CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				CreatedAt: ay.LastTime1(int(theTime.Unix())),
 				Status:    v.Status,
 			})
+
 		}
 
 		if history == nil {
@@ -423,6 +281,7 @@ func (con UserController) History(c *gin.Context) {
 			Select("sm_user_invite_consumption.amount,sm_user_invite_consumption.created_at,sm_user_invite_consumption.status,sm_user.nickname").
 			Joins("left join sm_user on sm_user_invite_consumption.uid = sm_user.id").
 			Where("sm_user_invite_consumption.pid = ?", user.Id).
+			Order("created_at desc").
 			Limit(10).
 			Offset(page * 10).
 			Find(&list)
@@ -430,10 +289,11 @@ func (con UserController) History(c *gin.Context) {
 			loc, _ := time.LoadLocation("Local")
 			theTime, _ := time.ParseInLocation("2006-01-02 15:04:05", v.CreatedAt.String()[:19], loc)
 			history = append(history, ReturnHistory{
-				Type:      4,
-				Op:        1,
-				Amount:    v.Amount,
-				CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				Type:   4,
+				Op:     1,
+				Amount: v.Amount,
+				//CreatedAt: time.Unix(theTime.Unix(), 0).Format("2006/1/2"),
+				CreatedAt: ay.LastTime1(int(theTime.Unix())),
 				Status:    v.Status,
 			})
 		}
@@ -521,6 +381,112 @@ func (con UserController) Withdrawal(c *gin.Context) {
 
 }
 
+type GetUserCollectForm struct {
+	Type int `form:"type" binding:"required"`
+	Page int `form:"page" binding:"required"`
+}
+
+// Collect 收藏
+func (con UserController) Collect(c *gin.Context) {
+
+	var getForm GetUserCollectForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	page := getForm.Page - 1
+
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+
+	if user.Id == 0 {
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+		return
+	}
+
+	var collect []models.Collect
+	ay.Db.Where("uid = ? and type = ?", user.Id, getForm.Type).Limit(10).Offset(page * 10).Find(&collect)
+
+	var res []gin.H
+	switch getForm.Type {
+	case 1:
+		// 大师
+		for _, v := range collect {
+			isMaster, d := models.MasterModel{}.GetMaster(v.Cid)
+			if !isMaster {
+				continue
+			}
+			//rjMaster = append(rjMaster, d)
+			res = append(res, gin.H{
+				"id":        v.Id,
+				"cid":       v.Cid,
+				"name":      d.Nickname,
+				"avatar":    ay.Yaml.GetString("domain") + d.Avatar,
+				"rate":      d.Rate,
+				"type_name": d.TypeName,
+				"sign":      d.Sign,
+				"label":     d.Label,
+				"years":     d.Years,
+				"collect":   1,
+				"online":    d.Online,
+				"phone":     d.Phone,
+			})
+		}
+	case 2:
+		// 百科
+		for _, v := range collect {
+			var encyclopedias models.BaiKe
+			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+			if encyclopedias.Id == 0 {
+				continue
+			}
+			res = append(res, gin.H{
+				"cid":        v.Cid,
+				"id":         v.Id,
+				"title":      encyclopedias.Title,
+				"cover":      ay.Yaml.GetString("domain") + encyclopedias.Cover,
+				"type":       v.Type,
+				"created_at": ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
+				"view":       encyclopedias.View,
+				"collect":    1,
+			})
+		}
+	case 3:
+		// 古籍
+		for _, v := range collect {
+			var ancient models.Ancient
+			ay.Db.First(&ancient, "id = ?", v.Cid)
+			if ancient.Id == 0 {
+				continue
+			}
+			res = append(res, gin.H{
+				"cid":        v.Cid,
+				"id":         v.Id,
+				"title":      ancient.Title,
+				"cover":      ay.Yaml.GetString("domain") + ancient.Cover,
+				"type":       v.Type,
+				"collect":    1,
+				"created_at": ay.LastTime(int(ancient.CreatedAt.Unix())),
+				"view":       ancient.View,
+			})
+		}
+	}
+
+	if res == nil {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": []string{},
+		})
+		return
+	} else {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": res,
+		})
+		return
+	}
+
+}
+
 type GetUserControllerLog struct {
 	Type int `form:"type" binding:"required" label:"类型"`
 	Page int `form:"page" binding:"required" label:"页码"`
@@ -559,205 +525,346 @@ func (con UserController) Log(c *gin.Context) {
 
 	page := getForm.Page - 1
 
-	if getForm.Type == 1 {
-		//大师
-		var row []map[string]interface{}
+	var res []gin.H
+
+	switch getForm.Type {
+	case 1:
+		// 大师
 		var UserMasterLog []models.UserMasterLog
-		ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&UserMasterLog, "uid = ?", user.Id)
-		for _, v1 := range UserMasterLog {
-			type cc struct {
-				models.Master
-				Avatar   string `json:"avatar"`
-				Nickname string `json:"nickname"`
-				Phone    int    `json:"phone"`
+		ay.Db.Order("id desc").Limit(10).Order("created_at desc").Offset(page*10).Find(&UserMasterLog, "uid = ?", user.Id)
+
+		for _, v := range UserMasterLog {
+			isMaster, d := models.MasterModel{}.GetMaster(v.MasterId)
+			if !isMaster {
+				continue
 			}
-			var res []cc
 
-			ay.Db.Table("sm_user").
-				Select("sm_master.*,sm_user.avatar,sm_user.nickname,sm_user.phone").
-				Joins("left join sm_master on sm_user.master_id=sm_master.id").
-				Where("sm_user.id = ?", v1.MasterId).
-				Debug().
-				Find(&res)
+			var collect int64
+			ay.Db.Model(&models.UserMasterLog{}).Where("uid = ? and cid = ?", user.Id, v.MasterId).Count(&collect)
 
-			for _, v := range res {
-				var typeName []string
-
-				for _, v := range strings.Split(v.Type, ",") {
-					var masterType models.MasterType
-					ay.Db.First(&masterType, "id = ?", v)
-					if masterType.Name != "" {
-						typeName = append(typeName, masterType.Name)
-					}
-				}
-
-				row = append(row, map[string]interface{}{
-					"id":        v.Id,
-					"name":      v.Nickname,
-					"sign":      v.Sign,
-					"years":     v.Years,
-					"online":    v.Online,
-					"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
-					"rate":      v.Rate,
-					"type_name": typeName,
-					"phone":     v.Phone,
-				})
-			}
-		}
-		if row == nil {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": []string{},
+			res = append(res, gin.H{
+				"id":        v.Id,
+				"cid":       v.MasterId,
+				"name":      d.Nickname,
+				"avatar":    ay.Yaml.GetString("domain") + d.Avatar,
+				"rate":      d.Rate,
+				"type_name": d.TypeName,
+				"sign":      d.Sign,
+				"label":     d.Label,
+				"years":     d.Years,
+				"collect":   collect,
+				"online":    d.Online,
+				"phone":     d.Phone,
 			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": row,
-			})
-			return
 		}
-
-	} else if getForm.Type == 2 {
+	case 2:
 		//八字
 		var order []models.Order
-		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 1", user.Id).Order("id desc").Find(&order)
-
-		var pp []Pp
+		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 1", user.Id).Order("created_at desc").Find(&order)
 		for _, v := range order {
-			pp = append(pp, Pp{
-				Type:      2,
-				Oid:       v.Oid,
-				UserName:  v.UserName,
-				Gender:    v.Gender,
-				Y:         v.Y,
-				M:         v.M,
-				D:         v.D,
-				CreatedAt: v.CreatedAt.Format("2006-01-02 15:04"),
-				Status:    v.Status,
+			res = append(res, gin.H{
+				"type":       2,
+				"oid":        v.Oid,
+				"username":   v.UserName,
+				"gender":     v.Gender,
+				"y":          v.Y,
+				"m":          v.M,
+				"d":          v.D,
+				"created_at": ay.LastTime(int(v.CreatedAt.Unix())),
+				"status":     v.Status,
 			})
 		}
-		if pp == nil {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": []string{},
-			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": pp,
-			})
-			return
-		}
-
-	} else if getForm.Type == 3 {
+	case 3:
 		// 排盘
 		var order []models.Order
-		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 2", user.Id).Order("id desc").Find(&order)
+		ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 2", user.Id).Order("created_at desc").Find(&order)
 
-		var pp []Pp
 		for _, v := range order {
 			solar := calendar.NewSolar(v.Y, v.M, v.D, v.H, v.I, 0)
 			lunar := solar.GetLunar()
-			pp = append(pp, Pp{
-				Oid:       v.Oid,
-				UserName:  v.UserName,
-				Gender:    v.Gender,
-				Y:         v.Y,
-				M:         v.M,
-				D:         v.D,
-				Type:      3,
-				CreatedAt: v.CreatedAt.Format("2006-01-02 15:04"),
-				Animal:    lunar.GetYearShengXiaoByLiChun(),
-				XingZuo:   fmt.Sprintf("%s", solar.GetXingZuo()),
-			})
-		}
-		if pp == nil {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": []string{},
-			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": pp,
-			})
-			return
-		}
-	}
-
-	if getForm.Type == 6 {
-		history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
-
-		var res []gin.H
-		for _, v := range history {
 			res = append(res, gin.H{
-				"data":       v.Data,
-				"des":        v.Des,
+				"oid":        v.Oid,
+				"username":   v.UserName,
+				"gender":     v.Gender,
+				"y":          v.Y,
+				"m":          v.M,
+				"d":          v.D,
+				"type":       3,
 				"created_at": ay.LastTime(int(v.CreatedAt.Unix())),
+				"animal":     lunar.GetYearShengXiaoByLiChun(),
+				"xingZuo":    fmt.Sprintf("%s", solar.GetXingZuo()),
 			})
 		}
-
-		if res == nil {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": []string{},
-			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": res,
-			})
-			return
-		}
-	} else {
+	case 4:
 		history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
-
-		type rh struct {
-			Id        int64  `json:"id"`
-			Cid       int64  `json:"cid"`
-			Title     string `json:"title"`
-			Cover     string `json:"cover"`
-			Type      int    `json:"type"`
-			CreatedAt string `json:"created_at"`
-			View      int64  `json:"view"`
-		}
-		var res []rh
-
+		// 百科
 		for _, v := range history {
-			if v.Type == 4 {
-				var encyclopedias models.BaiKe
-				ay.Db.First(&encyclopedias, "id = ?", v.Cid)
-				res = append(res, rh{
-					Cid:       v.Cid,
-					Id:        v.Id,
-					Title:     encyclopedias.Title,
-					Cover:     ay.Yaml.GetString("domain") + encyclopedias.Cover,
-					Type:      v.Type,
-					CreatedAt: ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
-					View:      encyclopedias.View,
-				})
-			} else if v.Type == 5 {
-				var g models.Ancient
-				ay.Db.First(&g, "id = ?", v.Cid)
-				res = append(res, rh{
-					Cid:       v.Cid,
-					Id:        v.Id,
-					Title:     g.Title,
-					Cover:     ay.Yaml.GetString("domain") + g.Cover,
-					Type:      v.Type,
-					CreatedAt: ay.LastTime(int(g.CreatedAt.Unix())),
-					View:      g.View,
-				})
+			var encyclopedias models.BaiKe
+			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+			if encyclopedias.Id == 0 {
+				continue
 			}
-		}
-		if res == nil {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": []string{},
+			var collect int64
+			ay.Db.Model(&models.Collect{}).Where("type = 2 and uid = ? and cid = ?", user.Id, v.Cid).Count(&collect)
+			res = append(res, gin.H{
+				"cid":        v.Cid,
+				"id":         v.Id,
+				"title":      encyclopedias.Title,
+				"cover":      ay.Yaml.GetString("domain") + encyclopedias.Cover,
+				"type":       v.Type,
+				"created_at": ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
+				"view":       encyclopedias.View,
+				"collect":    collect,
 			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"list": res,
-			})
-			return
 		}
+	case 5:
+		history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
+		// 古籍
+		for _, v := range history {
+			var ancient models.Ancient
+			ay.Db.First(&ancient, "id = ?", v.Cid)
+			if ancient.Id == 0 {
+				continue
+			}
+			var collect int64
+			ay.Db.Model(&models.Collect{}).Where("type = 3 and uid = ? and cid = ?", user.Id, v.Cid).Count(&collect)
+			res = append(res, gin.H{
+				"cid":        v.Cid,
+				"id":         v.Id,
+				"title":      ancient.Title,
+				"cover":      ay.Yaml.GetString("domain") + ancient.Cover,
+				"type":       v.Type,
+				"collect":    collect,
+				"created_at": ay.LastTime(int(ancient.CreatedAt.Unix())),
+				"view":       ancient.View,
+			})
+		}
+	case 6:
 	}
+
+	if res == nil {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": []string{},
+		})
+		return
+	} else {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": res,
+		})
+		return
+	}
+
+	//return
+	//
+	//if getForm.Type == 1 {
+	//	//大师
+	//	var row []map[string]interface{}
+	//	var UserMasterLog []models.UserMasterLog
+	//	ay.Db.Order("id desc").Limit(10).Offset(page*10).Find(&UserMasterLog, "uid = ?", user.Id)
+	//	for _, v1 := range UserMasterLog {
+	//		type cc struct {
+	//			models.Master
+	//			Avatar   string `json:"avatar"`
+	//			Nickname string `json:"nickname"`
+	//			Phone    int    `json:"phone"`
+	//		}
+	//		var res []cc
+	//
+	//		ay.Db.Table("sm_user").
+	//			Select("sm_master.*,sm_user.avatar,sm_user.nickname,sm_user.phone,sm_user.id").
+	//			Joins("left join sm_master on sm_user.master_id=sm_master.id").
+	//			Where("sm_user.id = ?", v1.MasterId).
+	//			Find(&res)
+	//
+	//		for _, v := range res {
+	//			var typeName []string
+	//
+	//			for _, v := range strings.Split(v.Type, ",") {
+	//				var masterType models.MasterType
+	//				ay.Db.First(&masterType, "id = ?", v)
+	//				if masterType.Name != "" {
+	//					typeName = append(typeName, masterType.Name)
+	//				}
+	//			}
+	//
+	//			var collect int64
+	//			ay.Db.Model(&models.Collect{}).Where("type = 1 and uid = ? and cid = ?", user.Id, v.Id).Count(&collect)
+	//			row = append(row, map[string]interface{}{
+	//				"id":        v.Id,
+	//				"name":      v.Nickname,
+	//				"sign":      v.Sign,
+	//				"years":     v.Years,
+	//				"online":    v.Online,
+	//				"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
+	//				"rate":      v.Rate,
+	//				"type_name": typeName,
+	//				"phone":     v.Phone,
+	//				"collect":   collect,
+	//			})
+	//		}
+	//	}
+	//	if row == nil {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": []string{},
+	//		})
+	//		return
+	//	} else {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": row,
+	//		})
+	//		return
+	//	}
+	//
+	//} else if getForm.Type == 2 {
+	//	//八字
+	//	var order []models.Order
+	//	ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 1", user.Id).Order("id desc").Find(&order)
+	//
+	//	var pp []Pp
+	//	for _, v := range order {
+	//		pp = append(pp, Pp{
+	//			Type:      2,
+	//			Oid:       v.Oid,
+	//			UserName:  v.UserName,
+	//			Gender:    v.Gender,
+	//			Y:         v.Y,
+	//			M:         v.M,
+	//			D:         v.D,
+	//			CreatedAt: v.CreatedAt.Format("2006-01-02 15:04"),
+	//			Status:    v.Status,
+	//		})
+	//	}
+	//	if pp == nil {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": []string{},
+	//		})
+	//		return
+	//	} else {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": pp,
+	//		})
+	//		return
+	//	}
+	//
+	//} else if getForm.Type == 3 {
+	//	// 排盘
+	//	var order []models.Order
+	//	ay.Db.Limit(10).Offset(page*10).Where("uid = ? and type = 2", user.Id).Order("id desc").Find(&order)
+	//
+	//	var pp []Pp
+	//	for _, v := range order {
+	//		solar := calendar.NewSolar(v.Y, v.M, v.D, v.H, v.I, 0)
+	//		lunar := solar.GetLunar()
+	//		pp = append(pp, Pp{
+	//			Oid:       v.Oid,
+	//			UserName:  v.UserName,
+	//			Gender:    v.Gender,
+	//			Y:         v.Y,
+	//			M:         v.M,
+	//			D:         v.D,
+	//			Type:      3,
+	//			CreatedAt: v.CreatedAt.Format("2006-01-02 15:04"),
+	//			Animal:    lunar.GetYearShengXiaoByLiChun(),
+	//			XingZuo:   fmt.Sprintf("%s", solar.GetXingZuo()),
+	//		})
+	//	}
+	//	if pp == nil {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": []string{},
+	//		})
+	//		return
+	//	} else {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": pp,
+	//		})
+	//		return
+	//	}
+	//}
+	//
+	//if getForm.Type == 6 {
+	//
+	//	var res []gin.H
+	//	for _, v := range history {
+	//		res = append(res, gin.H{
+	//			"data":       v.Data,
+	//			"des":        v.Des,
+	//			"created_at": ay.LastTime(int(v.CreatedAt.Unix())),
+	//		})
+	//	}
+	//
+	//	if res == nil {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": []string{},
+	//		})
+	//		return
+	//	} else {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": res,
+	//		})
+	//		return
+	//	}
+	//} else {
+	//	history := models.UserHistoryModel{}.GetAllPage(user.Id, getForm.Type, page)
+	//
+	//	type rh struct {
+	//		Id        int64  `json:"id"`
+	//		Cid       int64  `json:"cid"`
+	//		Title     string `json:"title"`
+	//		Cover     string `json:"cover"`
+	//		Type      int    `json:"type"`
+	//		CreatedAt string `json:"created_at"`
+	//		View      int64  `json:"view"`
+	//		Collect   int64  `json:"collect"`
+	//	}
+	//	var res []rh
+	//
+	//	for _, v := range history {
+	//		if v.Type == 4 {
+	//			var encyclopedias models.BaiKe
+	//			ay.Db.First(&encyclopedias, "id = ?", v.Cid)
+	//			var collect int64
+	//			ay.Db.Model(&models.Collect{}).Where("type = 4 and uid = ? and cid = ?", user.Id, v.Id).Count(&collect)
+	//
+	//			res = append(res, rh{
+	//				Cid:       v.Cid,
+	//				Id:        v.Id,
+	//				Title:     encyclopedias.Title,
+	//				Cover:     ay.Yaml.GetString("domain") + encyclopedias.Cover,
+	//				Type:      v.Type,
+	//				CreatedAt: ay.LastTime(int(encyclopedias.CreatedAt.Unix())),
+	//				View:      encyclopedias.View,
+	//				Collect:   collect,
+	//			})
+	//		} else if v.Type == 5 {
+	//			var g models.Ancient
+	//			ay.Db.First(&g, "id = ?", v.Cid)
+	//			var collect int64
+	//			ay.Db.Model(&models.Collect{}).Where("type = 4 and uid = ? and cid = ?", user.Id, v.Id).Count(&collect)
+	//
+	//			res = append(res, rh{
+	//				Cid:       v.Cid,
+	//				Id:        v.Id,
+	//				Title:     g.Title,
+	//				Cover:     ay.Yaml.GetString("domain") + g.Cover,
+	//				Type:      v.Type,
+	//				CreatedAt: ay.LastTime(int(g.CreatedAt.Unix())),
+	//				View:      g.View,
+	//				Collect:   collect,
+	//			})
+	//		}
+	//	}
+	//	if res == nil {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": []string{},
+	//		})
+	//		return
+	//	} else {
+	//		ay.Json{}.Msg(c, 200, "success", gin.H{
+	//			"list": res,
+	//		})
+	//		return
+	//	}
+	//}
 
 }
 
@@ -798,16 +905,17 @@ func (con UserController) Ask(c *gin.Context) {
 		}
 
 		res = append(res, map[string]interface{}{
-			"ask_id":     v.Oid,
-			"nickname":   user.NickName,
-			"avatar":     ay.Yaml.GetString("domain") + user.Avatar,
-			"type":       v.Des,
-			"content":    v.Json,
-			"status":     v.Status,
-			"reply":      count,
-			"amount":     v.Amount,
-			"adopt":      adopt,
-			"created_at": v.CreatedAt.Format("2006/01/02"),
+			"ask_id":   v.Oid,
+			"nickname": user.NickName,
+			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
+			"type":     v.Des,
+			"content":  v.Json,
+			"status":   v.Status,
+			"reply":    count,
+			"amount":   v.Amount,
+			"adopt":    adopt,
+			//"created_at": v.CreatedAt.Format("2006/01/02"),
+			"created_at": ay.LastTime1(int(v.CreatedAt.Unix())),
 		})
 	}
 

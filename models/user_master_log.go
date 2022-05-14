@@ -30,7 +30,7 @@ func (con UserMasterLogModel) Save(uid, masterId int64) bool {
 	row := false
 
 	var res UserMasterLog
-	ay.Db.Where("uid = ?", uid).First(&res)
+	ay.Db.Where("uid = ? AND master_id = ?", uid, masterId).First(&res)
 
 	if res.Id == 0 {
 		if err := ay.Db.Create(&UserMasterLog{

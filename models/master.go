@@ -9,6 +9,7 @@ package models
 
 import (
 	"gin/ay"
+	"strings"
 )
 
 type MasterModel struct {
@@ -48,4 +49,73 @@ func (con MasterModel) IsMaser(id int64) (bool, User, Master) {
 	}
 
 	return true, user, master
+}
+
+type UserMaster struct {
+	Master
+	Avatar   string   `json:"avatar"`
+	Nickname string   `json:"nickname"`
+	Phone    string   `json:"phone"`
+	TypeName []string `json:"type_name"`
+}
+
+func (con MasterModel) GetMaster(userId int64) (bool, UserMaster) {
+
+	var row UserMaster
+
+	ay.Db.Table("sm_user").
+		Select("sm_master.*,sm_user.avatar,sm_user.nickname,sm_user.phone,sm_user.id").
+		Joins("left join sm_master on sm_user.master_id=sm_master.id").
+		Where("sm_user.id = ?", userId).
+		First(&row)
+
+	if row.Id == 0 {
+		return false, UserMaster{}
+	} else {
+
+		for _, v := range strings.Split(row.Type, ",") {
+			var masterType MasterType
+			ay.Db.First(&masterType, "id = ?", v)
+			if masterType.Name != "" {
+				row.TypeName = append(row.TypeName, masterType.Name)
+			}
+
+		}
+
+		return true, row
+	}
+
+}
+
+func (con MasterModel) GetMasterPage(page int, isRecommend int, isType int) []UserMaster {
+
+	var row []UserMaster
+
+	res := ay.Db.Table("sm_user").
+		Select("sm_master.*,sm_user.avatar,sm_user.nickname,sm_user.phone,sm_user.id").
+		Joins("left join sm_master on sm_user.master_id=sm_master.id")
+
+	if isRecommend == 1 {
+		res.Where("is_recommend = 1")
+	} else {
+		res.Where("FIND_IN_SET(?,sm_master.type) and sm_user.type = 1", isType)
+	}
+
+	res.Limit(10).
+		Offset(page * 10).
+		Order("sm_user.id desc").
+		Find(&row)
+
+	for k, v1 := range row {
+		for _, v := range strings.Split(v1.Type, ",") {
+			var masterType MasterType
+			ay.Db.First(&masterType, "id = ?", v)
+			if masterType.Name != "" {
+				row[k].TypeName = append(row[k].TypeName, masterType.Name)
+			}
+		}
+	}
+
+	return row
+
 }

@@ -82,6 +82,8 @@ func (con EnvelopesController) Send(c *gin.Context) {
 
 	if err := tx.Create(&order).Error; err == nil {
 		tx.Commit()
+		// 上级消费
+		models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
 		ay.Json{}.Msg(c, 200, "发送成功", gin.H{
 			"oid":    oid,
 			"remark": getForm.Remark,
@@ -199,6 +201,8 @@ func (con EnvelopesController) Reward(c *gin.Context) {
 	master.Amount += getForm.Amount
 	if err := tx.Save(&master).Error; err == nil {
 		tx.Commit()
+		// 上级消费
+		models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
 		ay.Json{}.Msg(c, 200, "打赏成功", gin.H{})
 	} else {
 		tx.Rollback()

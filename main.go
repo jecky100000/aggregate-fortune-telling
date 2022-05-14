@@ -27,7 +27,7 @@ func main() {
 	c := cron.New()
 	//c.AddFunc("45 2 * * *", task.InviteAmount)
 	//c.AddFunc("@every 1s", task.Start)
-	c.AddFunc("@every 2h10m10s", task.Start)
+	c.AddFunc("@every 1h10m10s", task.Start)
 	c.Start()
 
 	r = gin.Default()
