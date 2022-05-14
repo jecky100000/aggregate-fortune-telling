@@ -11,7 +11,6 @@ import (
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 type MasterController struct {
@@ -31,14 +30,6 @@ func (con MasterController) Type(c *gin.Context) {
 type GetMasterListForm struct {
 	Type int `form:"type"`
 	Page int `form:"page"`
-}
-
-type Master struct {
-	Id int64
-	models.Master
-	Avatar   string `json:"avatar"`
-	Nickname string `json:"nickname"`
-	Phone    string `json:"phone"`
 }
 
 // List 获取类型下大师
@@ -61,7 +52,7 @@ func (con MasterController) List(c *gin.Context) {
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
-			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
+			"avatar":    v.Avatar,
 			"rate":      v.Master.Rate,
 			"type_name": v.TypeName,
 			"phone":     v.Phone,
@@ -99,7 +90,7 @@ func (con MasterController) GetRecommend(c *gin.Context) {
 			"sign":      v.Master.Sign,
 			"years":     v.Master.Years,
 			"online":    v.Master.Online,
-			"avatar":    ay.Yaml.GetString("domain") + v.Avatar,
+			"avatar":    v.Avatar,
 			"rate":      v.Master.Rate,
 			"type_name": v.TypeName,
 			"phone":     v.Phone,
@@ -135,62 +126,28 @@ func (con MasterController) Detail(c *gin.Context) {
 		return
 	}
 
+	// 当前用户
+	uid := GetToken(Token)
+
 	var optionUser models.User
-	ay.Db.First(&optionUser, "id = ?", GetToken(Token))
+	ay.Db.First(&optionUser, "id = ?", uid)
 	models.UserMasterLogModel{}.Save(optionUser.Id, user.Id)
 
-	type master struct {
-		models.Master
-		//ImageS   []string `json:"images"`
-		Avatar   string   `json:"avatar"`
-		Name     string   `json:"name"`
-		TypeName []string `json:"type_name"`
-		Phone    string   `json:"phone"`
-		Fans     int64    `json:"fans"`
-		Reply    int64    `json:"reply"`
-	}
-	var res master
-	//ay.Db.Model(&models.Master{}).Where("id = ?", user.MasterId).First(&res)
+	isMaster, res := models.MasterModel{}.GetMaster(getForm.Id)
 
-	ay.Db.Table("sm_master").
-		Select("sm_master.*,sm_user.nickname as name,sm_user.avatar,sm_user.phone").
-		Joins("left join sm_user on sm_master.id=sm_user.master_id").
-		Where("sm_master.id = ?", user.MasterId).
-		First(&res)
-
-	var typeName []string
-
-	for _, v := range strings.Split(res.Type, ",") {
-		var masterType models.MasterType
-		ay.Db.First(&masterType, "id = ?", v)
-		if masterType.Name != "" {
-			typeName = append(typeName, masterType.Name)
-		}
-	}
-	res.TypeName = typeName
-
-	if res.Id == 0 {
+	if !isMaster {
 		ay.Json{}.Msg(c, 400, "大师不存在", gin.H{})
 		return
 	}
-
-	res.Avatar = ay.Yaml.GetString("domain") + res.Avatar
-	res.BackImage = ay.Yaml.GetString("domain") + res.BackImage
-
-	res.Id = user.Id
-
 	// 粉丝
 	var count int64
 	ay.Db.Model(models.Collect{}).Where("type = 1 and cid = ?", res.Id).Count(&count)
-	res.Fans = 50000 + count
+	fans := 50000 + count
 
 	// 回复
 	var count1 int64
 	ay.Db.Model(models.AskReply{}).Where("master_id = ?", res.Id).Count(&count1)
-	res.Reply = 20000 + count1
-
-	// 当前用户
-	uid := GetToken(Token)
+	reply := 20000 + count1
 
 	// 推荐
 	var recommendMaster models.UserRecommendMaster
@@ -211,7 +168,25 @@ func (con MasterController) Detail(c *gin.Context) {
 	}
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
-		"info": res,
+		"info": gin.H{
+			"ask_num":      res.AskNum,
+			"avatar":       res.Avatar,
+			"back_image":   res.BackImage,
+			"created_at":   res.CreatedAt,
+			"fans":         fans,
+			"id":           res.Id,
+			"introduce":    res.Introduce,
+			"is_recommend": res.IsRecommend,
+			"label":        res.Label,
+			"name":         res.Nickname,
+			"online":       res.Online,
+			"phone":        res.Phone,
+			"rate":         res.Rate,
+			"reply":        reply,
+			"sign":         res.Sign,
+			"type_name":    res.TypeName,
+			"years":        res.Years,
+		},
 		"user": gin.H{
 			"is_recommend": isRecommend,
 			"is_collect":   isCollect,

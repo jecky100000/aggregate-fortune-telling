@@ -141,6 +141,7 @@ func (con AncientController) Option(c *gin.Context) {
 			Cover: data.Cover,
 			Cid:   data.Cid,
 			Vcid:  data.Vcid,
+			Type:  2,
 		}); err != nil {
 			ay.Json{}.Msg(c, 400, "创建失败", gin.H{})
 		} else {

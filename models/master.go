@@ -81,6 +81,8 @@ func (con MasterModel) GetMaster(userId int64) (bool, UserMaster) {
 			}
 
 		}
+		row.Avatar = ay.Yaml.GetString("domain") + row.Avatar
+		row.BackImage = ay.Yaml.GetString("domain") + row.BackImage
 
 		return true, row
 	}
@@ -114,6 +116,8 @@ func (con MasterModel) GetMasterPage(page int, isRecommend int, isType int) []Us
 				row[k].TypeName = append(row[k].TypeName, masterType.Name)
 			}
 		}
+		row[k].Avatar = ay.Yaml.GetString("domain") + v1.Avatar
+		row[k].BackImage = ay.Yaml.GetString("domain") + v1.BackImage
 	}
 
 	return row

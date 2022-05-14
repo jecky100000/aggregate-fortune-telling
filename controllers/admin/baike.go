@@ -123,6 +123,7 @@ func (con BaikeController) Option(c *gin.Context) {
 			Title:   data.Title,
 			Cover:   data.Cover,
 			Content: data.Content,
+			Type:    1,
 		})
 		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
