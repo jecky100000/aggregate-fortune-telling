@@ -23,6 +23,7 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("account/detail", admin.AccountController{}.Detail)
 	adminGroup.POST("account/option", admin.AccountController{}.Option)
 	adminGroup.POST("account/delete", admin.AccountController{}.Delete)
+	adminGroup.POST("account/upload", admin.AccountController{}.Upload)
 
 	// 订单
 	adminGroup.GET("order/list", admin.OrderController{}.List)
@@ -98,4 +99,37 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("coupon/detail", admin.CouponController{}.Detail)
 	adminGroup.POST("coupon/option", admin.CouponController{}.Option)
 	adminGroup.POST("coupon/delete", admin.CouponController{}.Delete)
+
+	// 周公解梦
+	adminGroup.GET("dream/list", admin.DreamController{}.List)
+	adminGroup.POST("dream/detail", admin.DreamController{}.Detail)
+	adminGroup.POST("dream/option", admin.DreamController{}.Option)
+	adminGroup.POST("dream/delete", admin.DreamController{}.Delete)
+
+	// 问题示例
+	adminGroup.GET("asklog/list", admin.AskLogController{}.List)
+	adminGroup.POST("asklog/detail", admin.AskLogController{}.Detail)
+	adminGroup.POST("asklog/option", admin.AskLogController{}.Option)
+	adminGroup.POST("asklog/delete", admin.AskLogController{}.Delete)
+
+	// 八字测算金额
+	adminGroup.GET("haulAmount/list", admin.HaulAmountController{}.List)
+	adminGroup.POST("haulAmount/detail", admin.HaulAmountController{}.Detail)
+	adminGroup.POST("haulAmount/option", admin.HaulAmountController{}.Option)
+	adminGroup.POST("haulAmount/delete", admin.HaulAmountController{}.Delete)
+
+	// 八字测算案例
+	adminGroup.GET("haulCases/list", admin.HaulCasesController{}.List)
+	adminGroup.POST("haulCases/detail", admin.HaulCasesController{}.Detail)
+	adminGroup.POST("haulCases/option", admin.HaulCasesController{}.Option)
+	adminGroup.POST("haulCases/delete", admin.HaulCasesController{}.Delete)
+	adminGroup.POST("haulCases/upload", admin.HaulCasesController{}.Upload)
+
+	// 大师
+	adminGroup.POST("master/detail", admin.MasterController{}.Detail)
+	adminGroup.POST("master/option", admin.MasterController{}.Option)
+	adminGroup.POST("master/upload", admin.MasterController{}.Upload)
+
+	adminGroup.GET("master/type", admin.MasterController{}.AllType)
+
 }

@@ -29,6 +29,10 @@ type DreamList struct {
 	Message string `gorm:"column:message" json:"message"`
 }
 
+func (Dream) TableName() string {
+	return "sm_dream"
+}
+
 func (con DreamModel) GetList(title string, limit int) (res []DreamList) {
 	if title == "0" {
 		ay.Db.Table("sm_dream").Order("RAND()").Limit(limit).Select([]string{"id", "title", "message"}).Scan(&res)

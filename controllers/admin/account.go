@@ -22,6 +22,7 @@ type listForm struct {
 	Page     int    `form:"page"`
 	PageSize int    `form:"pageSize"`
 	Key      string `form:"key"`
+	Type     string `form:"type"`
 }
 
 // List 用户列表
@@ -37,28 +38,25 @@ func (con AccountController) List(c *gin.Context) {
 		return
 	}
 
+	var count int64
 	var user []models.User
 
-	var count int64
+	res := ay.Db.Table("sm_user")
+
 	if data.Key != "" {
-		ay.Db.Model(models.User{}).
-			Where("phone like ?", "%"+data.Key+"%").
-			Count(&count)
-		ay.Db.Model(models.User{}).
-			Where("phone like ?", "%"+data.Key+"%").
-			Order("created_at desc").
-			Limit(data.PageSize).
-			Offset((data.Page - 1) * data.PageSize).
-			Find(&user)
-	} else {
-		ay.Db.Model(models.User{}).
-			Count(&count)
-		ay.Db.Model(models.User{}).
-			Limit(data.PageSize).
-			Order("created_at desc").
-			Offset((data.Page - 1) * data.PageSize).
-			Find(&user)
+		res.Where("phone like ?", "%"+data.Key+"%")
 	}
+
+	if data.Type != "" {
+		res.Where("type = ?", data.Type)
+	}
+
+	res.Count(&count)
+
+	res.Order("created_at desc").
+		Limit(data.PageSize).
+		Offset((data.Page - 1) * data.PageSize).
+		Find(&user)
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"list":  user,
@@ -98,6 +96,7 @@ type optionForm struct {
 	Phone    string  `form:"phone"`
 	Nickname string  `form:"nickname"`
 	Amount   float64 `form:"amount"`
+	Avatar   string  `form:"avatar"`
 }
 
 // Option 添加 编辑
@@ -131,6 +130,7 @@ func (con AccountController) Option(c *gin.Context) {
 		user.Amount = data.Amount
 		user.Type = data.Type
 		user.NickName = data.Nickname
+		user.Avatar = data.Avatar
 
 		if err := ay.Db.Save(&user).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
@@ -151,7 +151,7 @@ func (con AccountController) Option(c *gin.Context) {
 			Type:     data.Type,
 			Amount:   data.Amount,
 			Phone:    data.Phone,
-			Avatar:   "/static/user/default.png",
+			Avatar:   data.Avatar,
 			NickName: data.Nickname,
 		}).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
@@ -190,8 +190,21 @@ func (con AccountController) Delete(c *gin.Context) {
 
 	for _, v := range idArr {
 		var user models.User
-		ay.Db.Delete(&user, v)
+		ay.Db.First(&user, v)
+		ay.Db.Delete(&user)
+		ay.Db.Delete(&models.Master{}, user.MasterId)
 	}
 
 	ay.Json{}.Msg(c, 200, "删除成功", gin.H{})
+}
+
+func (con AccountController) Upload(c *gin.Context) {
+
+	code, msg := Upload(c, "user")
+
+	if code != 200 {
+		ay.Json{}.Msg(c, 400, msg, gin.H{})
+	} else {
+		ay.Json{}.Msg(c, 200, msg, gin.H{})
+	}
 }

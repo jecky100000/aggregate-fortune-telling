@@ -16,20 +16,16 @@ type MasterModel struct {
 
 type Master struct {
 	BaseModel
-	Type      string `json:"type"`
-	Sign      string `json:"sign"`
-	Label     string `json:"label"`
-	Introduce string `json:"introduce"`
-	//Avatar    string  `json:"avatar"`
-	Years     int     `json:"years"`
-	Online    int     `json:"online"`
-	Rate      float64 `json:"rate"`
-	AskNum    int     `json:"ask_num"`
-	Uid       int64   `json:"uid"`
-	Fans      int64   `json:"fans"`
-	Reply     int64   `json:"reply"`
-	Image     string  `json:"image"`
-	BackImage string  `json:"back_image"`
+	Type        string  `json:"type"`
+	Sign        string  `json:"sign"`
+	Label       string  `json:"label"`
+	Introduce   string  `json:"introduce"`
+	Years       int     `json:"years"`
+	Online      int     `json:"online"`
+	Rate        float64 `json:"rate"`
+	AskNum      int     `json:"ask_num"`
+	BackImage   string  `json:"back_image"`
+	IsRecommend int     `json:"is_recommend"`
 }
 
 func (Master) TableName() string {

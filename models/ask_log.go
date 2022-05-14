@@ -11,8 +11,8 @@ type AskLogModel struct {
 }
 
 type AskLog struct {
-	Id      int64  `json:"-"`
-	Type    int    `json:"-"`
+	Id      int64  `json:"id"`
+	Type    int    `json:"type"`
 	Content string `json:"content"`
 }
 

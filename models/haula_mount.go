@@ -13,7 +13,7 @@ type HaulAmountModel struct {
 type HaulAmount struct {
 	Id     int64   `gorm:"primaryKey" json:"id"`
 	Amount float64 `gorm:"column:amount" json:"amount"`
-	Sort   string  `gorm:"column:sort" json:"sort"`
+	Sort   int     `gorm:"column:sort" json:"sort"`
 }
 
 func (HaulAmount) TableName() string {

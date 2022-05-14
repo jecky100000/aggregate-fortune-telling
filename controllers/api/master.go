@@ -191,6 +191,8 @@ func (con MasterController) Detail(c *gin.Context) {
 		Name     string   `json:"name"`
 		TypeName []string `json:"type_name"`
 		Phone    string   `json:"phone"`
+		Fans     int64    `json:"fans"`
+		Reply    int64    `json:"reply"`
 	}
 	var res master
 	//ay.Db.Model(&models.Master{}).Where("id = ?", user.MasterId).First(&res)

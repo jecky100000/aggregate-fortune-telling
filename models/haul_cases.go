@@ -14,10 +14,10 @@ type HaulCasesModel struct {
 
 type HaulCases struct {
 	Id    int64  `gorm:"primaryKey" json:"id"`
-	Type  string `gorm:"column:type" json:"type"`
+	Type  int    `gorm:"column:type" json:"type"`
 	Link  string `gorm:"column:link" json:"link"`
 	Cover string `gorm:"column:cover" json:"cover"`
-	Sort  string `gorm:"column:sort" json:"sort"`
+	Sort  int    `gorm:"column:sort" json:"sort"`
 	Name  string `gorm:"column:name" json:"name"`
 }
 

@@ -39,8 +39,8 @@ func Upload(c *gin.Context, address string) (int, string) {
 
 	fileExt := strings.ToLower(path.Ext(file.Filename))
 	log.Println(fileExt)
-	if fileExt != ".png" && fileExt != ".jpg" && fileExt != ".gif" && fileExt != ".jpeg" && fileExt != ".doc" && fileExt != ".docx" && fileExt != ".pdf" {
-		return 400, "上传失败!只允许png,jpg,gif,jpeg,doc,pdf,docx文件"
+	if fileExt != ".png" && fileExt != ".jpg" && fileExt != ".gif" && fileExt != ".jpeg" && fileExt != ".doc" && fileExt != ".docx" && fileExt != ".pdf" && fileExt != ".mp4" {
+		return 400, "上传失败!只允许png,jpg,gif,jpeg,doc,pdf,docx,mp4文件"
 	}
 	fileName := ay.MD5(fmt.Sprintf("%s%s", file.Filename, time.Now().String()))
 	fildDir := fmt.Sprintf("static/upload/admin/"+address+"/%d-%d/", time.Now().Year(), time.Now().Month())
