@@ -132,4 +132,8 @@ func AdminRouters(r *gin.RouterGroup) {
 
 	adminGroup.GET("master/type", admin.MasterController{}.AllType)
 
+	// 系统
+	adminGroup.POST("config/detail", admin.ConfigController{}.Detail)
+	adminGroup.POST("config/option", admin.ConfigController{}.Option)
+
 }

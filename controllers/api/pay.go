@@ -16,7 +16,6 @@ import (
 	"github.com/go-pay/gopay/alipay"
 	"github.com/go-pay/gopay/pkg/util"
 	"github.com/go-pay/gopay/wechat"
-	"log"
 	"strconv"
 	"strings"
 	"time"
@@ -152,7 +151,8 @@ func (con PayController) Do(c *gin.Context) {
 		}
 		if getForm.Type == 1 || getForm.Type == 2 {
 			// 支付宝 微信
-			code, msg := con.Web(order.OutTradeNo, getForm.Type, order.Amount, order.ReturnUrl, GetRequestIP(c))
+			v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
+			code, msg := con.Web(order.OutTradeNo, getForm.Type, order.Amount, order.ReturnUrl, GetRequestIP(c), "八字测算"+v+"元")
 
 			if code == 1 {
 				if getForm.Type == 1 {
@@ -177,8 +177,6 @@ func (con PayController) Do(c *gin.Context) {
 			return
 		}
 
-		log.Println(order.Amount, order.OldAmount, order.Coupon)
-		return
 	}
 
 	if user.Amount < amount {
@@ -216,9 +214,7 @@ func (con PayController) Do(c *gin.Context) {
 
 }
 
-func (con PayController) Web(oid string, payType int, amount float64, returnUrl string, ip string) (int, string) {
-
-	config := models.ConfigModel{}.GetId(1)
+func (con PayController) Web(oid string, payType int, amount float64, returnUrl string, ip string, msg string) (int, string) {
 
 	ctx, _ := context.WithCancel(context.Background())
 
@@ -238,8 +234,8 @@ func (con PayController) Web(oid string, payType int, amount float64, returnUrl 
 			SetNotifyUrl(ay.Yaml.GetString("domain") + "/api/notify/alipay") // 设置异步通知URL
 
 		bm := make(gopay.BodyMap)
-		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
-		bm.Set("subject", "八字测算支付"+v+"元").
+
+		bm.Set("subject", msg).
 			Set("product_code", "QUICK_WAP_PAY").
 			Set("out_trade_no", oid).
 			Set("total_amount", amount).
@@ -267,9 +263,8 @@ func (con PayController) Web(oid string, payType int, amount float64, returnUrl 
 		client.SetCountry(wechat.China)
 
 		bm := make(gopay.BodyMap)
-		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
 		bm.Set("nonce_str", util.RandomString(32)).
-			Set("body", "八字测算支付"+v+"元").
+			Set("body", msg).
 			Set("out_trade_no", oid).
 			Set("total_fee", amount*100).
 			Set("spbill_create_ip", ip).

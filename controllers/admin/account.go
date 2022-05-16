@@ -44,7 +44,7 @@ func (con AccountController) List(c *gin.Context) {
 	res := ay.Db.Table("sm_user")
 
 	if data.Key != "" {
-		res.Where("phone like ?", "%"+data.Key+"%")
+		res.Where("phone like ? or nickname like ?", "%"+data.Key+"%", "%"+data.Key+"%")
 	}
 
 	if data.Type != "" {

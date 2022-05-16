@@ -68,6 +68,8 @@ func (con NotifyController) AliPay(c *gin.Context) {
 		res = con.AddUserAmount(order.Uid, order.Amount)
 	case 1:
 		res = 1
+	case 3:
+		res = 1
 	}
 
 	if res == 1 {
@@ -84,6 +86,14 @@ func (con NotifyController) AliPay(c *gin.Context) {
 		order.TradeNo = notifyReq.Get("trade_no")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)
+
+		if order.Type != 9 {
+			// 上级消费
+			var user models.User
+			ay.Db.First(&user, order.Uid)
+			models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, order.Amount, order.Oid)
+		}
+
 		c.String(http.StatusOK, "%s", "success")
 	} else {
 		c.String(http.StatusOK, "%s", "fail")
@@ -144,6 +154,8 @@ func (con NotifyController) WeChat(c *gin.Context) {
 		res = con.AddUserAmount(order.Uid, order.Amount)
 	case 1:
 		res = 1
+	case 3:
+		res = 1
 	}
 
 	if res == 1 {
@@ -161,6 +173,14 @@ func (con NotifyController) WeChat(c *gin.Context) {
 		order.TradeNo = notifyReq.Get("transaction_id")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)
+
+		if order.Type != 9 {
+			// 上级消费
+			var user models.User
+			ay.Db.First(&user, order.Uid)
+			models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, order.Amount, order.Oid)
+		}
+
 		rsp := new(wechat.NotifyResponse) // 回复微信的数据
 		rsp.ReturnCode = gopay.SUCCESS
 		rsp.ReturnMsg = gopay.OK

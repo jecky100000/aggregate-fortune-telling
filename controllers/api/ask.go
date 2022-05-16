@@ -148,13 +148,15 @@ func (con AskController) Get(c *gin.Context) {
 }
 
 type GetAskSubmitForm struct {
-	UserName string  `form:"username" binding:"required" label:"名称"`
-	Gender   int     `form:"gender" binding:"required" label:"性别"`
-	Birth    string  `form:"birth" binding:"required" label:"生日"`
-	Type     int     `form:"type"`
-	Content  string  `form:"content" binding:"required" label:"内容"`
-	Amount   float64 `form:"amount"`
-	AreaId   int     `form:"area_id" binding:"required" label:"地区id"`
+	UserName  string  `form:"username" binding:"required" label:"名称"`
+	Gender    int     `form:"gender" binding:"required" label:"性别"`
+	Birth     string  `form:"birth" binding:"required" label:"生日"`
+	Type      int     `form:"type"`
+	Content   string  `form:"content" binding:"required" label:"内容"`
+	Amount    float64 `form:"amount"`
+	AreaId    int     `form:"area_id" binding:"required" label:"地区id"`
+	PayType   int     `form:"pay_type" binding:"required" label:"支付类型"`
+	ReturnUrl string  `form:"return_url" binding:"required" label:"回调地址"`
 }
 
 func (con AskController) Submit(c *gin.Context) {
@@ -180,15 +182,18 @@ func (con AskController) Submit(c *gin.Context) {
 			return
 		}
 
-		if user.Amount < amount {
-			ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
-			return
-		}
+		if getForm.PayType == 3 {
+			// 余额支付
+			if user.Amount < amount {
+				ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
+				return
+			}
 
-		user.Amount = user.Amount - amount
-		if err := ay.Db.Save(&user).Error; err != nil {
-			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
-			return
+			user.Amount = user.Amount - amount
+			if err := ay.Db.Save(&user).Error; err != nil {
+				ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+				return
+			}
 		}
 	}
 
@@ -203,7 +208,7 @@ func (con AskController) Submit(c *gin.Context) {
 		Des:        des,
 		Amount:     getForm.Amount,
 		Uid:        user.Id,
-		Status:     0,
+		Status:     -1,
 		UserName:   getForm.UserName,
 		Gender:     getForm.Gender,
 		Appid:      Appid,
@@ -212,15 +217,48 @@ func (con AskController) Submit(c *gin.Context) {
 		Op:         2,
 		OldAmount:  getForm.Amount,
 		Birthday:   getForm.Birth,
-		Json:       getForm.Content,
+		Content:    getForm.Content,
 		AreaId:     getForm.AreaId,
+		ReturnUrl:  getForm.ReturnUrl,
 	}
 
 	ay.Db.Create(order)
 
+	if getForm.PayType != 3 {
+		if getForm.PayType == 1 || getForm.PayType == 2 {
+			// 支付宝 微信
+			v := strconv.FormatFloat(order.Amount, 'g', -1, 64)
+			code, msg := PayController{}.Web(order.OutTradeNo, getForm.PayType, order.Amount, getForm.ReturnUrl, GetRequestIP(c), "在线提问"+v+"元")
+
+			if code == 1 {
+				if getForm.Type == 1 {
+					ay.Json{}.Msg(c, 200, "success", gin.H{
+						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.OutTradeNo,
+					})
+					return
+				} else {
+					ay.Json{}.Msg(c, 200, "success", gin.H{
+						"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.OutTradeNo,
+					})
+					return
+				}
+
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
+
+		} else {
+			ay.Json{}.Msg(c, 400, "支付类型错误", gin.H{})
+			return
+		}
+	}
+
 	if order.Id == 0 {
 		ay.Json{}.Msg(c, 400, "数据错误，请联系管理员", gin.H{})
 	} else {
+		order.Status = 0
+		ay.Db.Save(&order)
 		// 上级消费
 		models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
 
@@ -321,7 +359,7 @@ func (con AskController) Detail(c *gin.Context) {
 		"nickname": user.NickName,
 		"amount":   order.Amount,
 		"reply":    count,
-		"content":  order.Json,
+		"content":  order.Content,
 		"type":     order.Des,
 		//"created_at": order.CreatedAt.Format("2006/01/02"),
 		"created_at": ay.LastTime1(int(order.CreatedAt.Unix())),

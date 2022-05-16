@@ -672,7 +672,7 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	var order []models.Order
-	ay.Db.Where("type = 3 and uid = ?", user.Id).Order("created_at desc").Limit(10).Offset((getForm.Page) * 10).Find(&order)
+	ay.Db.Where("type = 3 and uid = ? and status != -1", user.Id).Order("created_at desc").Limit(10).Offset((getForm.Page) * 10).Find(&order)
 
 	var res []map[string]interface{}
 
@@ -693,7 +693,7 @@ func (con UserController) Ask(c *gin.Context) {
 			"nickname": user.NickName,
 			"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
 			"type":     v.Des,
-			"content":  v.Json,
+			"content":  v.Content,
 			"status":   v.Status,
 			"reply":    count,
 			"amount":   v.Amount,

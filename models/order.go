@@ -42,6 +42,7 @@ type Order struct {
 	Json       string  `gorm:"column:json" json:"json"`
 	PayTime    string  `gorm:"column:pay_time" json:"pay_time"`
 	Birthday   string  `gorm:"column:birthday" json:"birthday"`
+	Content    string  `gorm:"column:content" json:"content"`
 	Discount   float64 `gorm:"column:discount" json:"discount"`
 }
 
