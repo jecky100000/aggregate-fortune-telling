@@ -16,6 +16,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -322,4 +323,16 @@ func Summary(content string, count int) string {
 	cont := []rune(content)
 
 	return string(cont[:count])
+}
+
+func GetDirAll(localDir string) int {
+	var num int
+	filepath.Walk(localDir, func(filename string, fi os.FileInfo, err error) error {
+		if fi.IsDir() {
+			return nil
+		}
+		num++
+		return nil
+	})
+	return num
 }

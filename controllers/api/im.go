@@ -26,7 +26,8 @@ func (con ImController) Notify(c *gin.Context) {
 	log.Println(string(bodyBytes))
 
 	if cmd == "State.StateChange" {
-		con.Online(bodyBytes)
+		// 在线
+		//con.Online(bodyBytes)
 	}
 
 }

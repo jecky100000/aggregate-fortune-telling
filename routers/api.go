@@ -18,6 +18,7 @@ func ApiRouters(r *gin.RouterGroup) {
 
 	apiGroup.GET("home/main", api.HomeController{}.Home)
 	apiGroup.GET("home/config", api.HomeController{}.Config)
+	apiGroup.GET("home/adv", api.HomeController{}.Adv)
 
 	// 登入
 	apiGroup.POST("user/login", api.LoginController{}.Login)
@@ -109,6 +110,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("invite/list", api.InviteController{}.List)
 	apiGroup.POST("invite/withdraw", api.InviteController{}.Withdraw)
 	apiGroup.POST("invite/do", api.InviteController{}.Do)
+	apiGroup.POST("invite/share", api.InviteController{}.Share)
 
 	apiGroup.Any("im/notify", api.ImController{}.Notify)
 

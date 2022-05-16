@@ -11,9 +11,31 @@ import (
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type HomeController struct {
+}
+
+func (con HomeController) Adv(c *gin.Context) {
+	// 广告
+	t, _ := strconv.Atoi(c.Query("type"))
+	adv := models.AdvModel{}.GetType(t)
+
+	for k, v := range adv {
+		adv[k].Image = ay.Yaml.GetString("domain") + v.Image
+	}
+
+	if adv != nil {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": adv,
+		})
+	} else {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"list": []string{},
+		})
+	}
+
 }
 
 func (con HomeController) Home(c *gin.Context) {
@@ -63,5 +85,6 @@ func (con HomeController) Config(c *gin.Context) {
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
 		"adv":         adv,
+		"invite_rate": config.InviteRate,
 	})
 }

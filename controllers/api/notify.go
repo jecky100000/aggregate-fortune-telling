@@ -71,6 +71,14 @@ func (con NotifyController) AliPay(c *gin.Context) {
 	}
 
 	if res == 1 {
+		// 优惠卷设置过期
+		var coupon models.Coupon
+		ay.Db.First(&coupon, "id = ?", order.Coupon)
+		if coupon.Id != 0 {
+			coupon.Status = 1
+			coupon.UsedAt = time.Now().Format("2006-01-02 15:04:05")
+			ay.Db.Save(&coupon)
+		}
 		order.Status = 1
 		order.PayType = 1
 		order.TradeNo = notifyReq.Get("trade_no")
@@ -139,6 +147,15 @@ func (con NotifyController) WeChat(c *gin.Context) {
 	}
 
 	if res == 1 {
+		// 优惠卷设置过期
+		var coupon models.Coupon
+		ay.Db.First(&coupon, "id = ?", order.Coupon)
+		if coupon.Id != 0 {
+			coupon.Status = 1
+			coupon.UsedAt = time.Now().Format("2006-01-02 15:04:05")
+			ay.Db.Save(&coupon)
+		}
+
 		order.Status = 1
 		order.PayType = 2
 		order.TradeNo = notifyReq.Get("transaction_id")

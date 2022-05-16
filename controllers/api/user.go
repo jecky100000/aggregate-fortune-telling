@@ -233,7 +233,7 @@ func (con UserController) History(c *gin.Context) {
 		var order []models.Order
 
 		if getForm.Type == 1 {
-			ay.Db.Where("uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0))", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0) OR type = 5 OR type = 7)", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 2 {
 			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 3 {
@@ -316,6 +316,7 @@ type GetUserControllerWithdrawal struct {
 	Type    int     `form:"type" binding:"required" label:"类型"`
 	Amount  float64 `form:"amount" binding:"required" label:"金额"`
 	Account string  `form:"account" binding:"required" label:"账号"`
+	Name    string  `form:"name" binding:"required" label:"姓名"`
 }
 
 // Withdrawal 提现
@@ -369,6 +370,7 @@ func (con UserController) Withdrawal(c *gin.Context) {
 		Op:         2,
 		OldAmount:  getForm.Amount,
 		Json:       getForm.Account,
+		UserName:   getForm.Name,
 	}
 
 	ay.Db.Create(order)

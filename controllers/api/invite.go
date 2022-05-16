@@ -8,12 +8,22 @@
 package api
 
 import (
+	"fmt"
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
+	"image"
+	"image/draw"
+	"image/jpeg"
+	"image/png"
+	"math/rand"
+	"os"
+	"strconv"
+	"time"
 )
 
 type InviteController struct {
+	CommonController
 }
 
 type InviteListForm struct {
@@ -187,5 +197,61 @@ func (con InviteController) Do(c *gin.Context) {
 		ay.Json{}.Msg(c, 400, "提现失败", gin.H{})
 
 	}
+
+}
+
+type InviteShareForm struct {
+	Link string `form:"link" binding:"required" label:"地址"`
+}
+
+// Share 邀请好友分享
+func (con InviteController) Share(c *gin.Context) {
+	var data InviteShareForm
+	if err := c.ShouldBind(&data); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	localDir := "static/image/back"
+
+	num := ay.GetDirAll(localDir)
+	k := rand.Intn(num)
+
+	fileName := strconv.Itoa(k) + ".jpg"
+	filePath := localDir + "/" + fileName
+
+	qrPath := con.MakeQrCode(data.Link)
+
+	imgFile, _ := os.Open(filePath)
+	defer imgFile.Close()
+	img, _ := jpeg.Decode(imgFile)
+
+	wmbFile, _ := os.Open(qrPath)
+	defer wmbFile.Close()
+	wmbImg, _ := png.Decode(wmbFile)
+
+	//把水印写在右下角
+	offset := image.Pt(550, 1119)
+	b := img.Bounds()
+	m := image.NewRGBA(b)
+
+	//image.ZP代表Point结构体，目标的源点，即(0,0)
+	//draw.Src源图像透过遮罩后，替换掉目标图像
+	//draw.Over源图像透过遮罩后，覆盖在目标图像上（类似图层）
+	draw.Draw(m, b, img, image.ZP, draw.Src)
+	draw.Draw(m, wmbImg.Bounds().Add(offset), wmbImg, image.ZP, draw.Over)
+
+	//生成新图片new.jpg,并设置图片质量
+	name := ay.MD5(fmt.Sprintf("%s%s", data.Link, time.Now().String())) + ".jpg"
+	fileDir := fmt.Sprintf("static/user/back/%d-%d/", time.Now().Year(), time.Now().Month())
+	ay.CreateMutiDir(fileDir)
+
+	imgW, _ := os.Create(fileDir + name)
+	jpeg.Encode(imgW, m, &jpeg.Options{100})
+	defer imgW.Close()
+
+	ay.Json{}.Msg(c, 200, "success", gin.H{
+		"link": ay.Yaml.GetString("domain") + "/" + fileDir + name,
+	})
 
 }

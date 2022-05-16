@@ -84,34 +84,29 @@ func (con AskController) Main(c *gin.Context) {
 			"rate":             v.Rate,
 		})
 	}
-	fw := []string{
-		"婚恋情感", "事业财运", "命运详批", "事业指点",
-	}
-	var dynamic []map[string]string
+	//fw := []string{
+	//	"婚恋情感", "事业财运", "命运详批", "事业指点",
+	//}
+	var dynamic []string
 	var phone string
-	var name string
 	type mst struct {
 		models.Master
 		Nickname string `json:"nickname"`
 	}
 
-	var res []mst
-
-	ay.Db.Table("sm_user").
-		Select("sm_user.nickname").
-		Joins("left join sm_master on sm_user.master_id=sm_master.id").
-		Where("sm_user.type = 1").
-		First(&res)
+	//var res []mst
+	//
+	//ay.Db.Table("sm_user").
+	//	Select("sm_user.nickname").
+	//	Joins("left join sm_master on sm_user.master_id=sm_master.id").
+	//	Where("sm_user.type = 1").
+	//	First(&res)
 
 	for i := 0; i < 10; i++ {
 		phone = MakePhone()
-		name = res[rand.Intn(len(res))].Nickname
+		//name = res[rand.Intn(len(res))].Nickname
 		//dynamic = append(dynamic, phone+" 购买了 "+name+" 的"+fw[rand.Intn(len(fw)-1)]+"服务")
-		dynamic = append(dynamic, map[string]string{
-			"phone": phone,
-			"name":  name,
-			"info":  fw[rand.Intn(len(fw))],
-		})
+		dynamic = append(dynamic, "尾号"+phone+"用户"+strconv.Itoa(rand.Intn(58)+1)+"分钟前发布"+strconv.Itoa(rand.Intn(200)+1)+"元悬赏找到心仪大师")
 	}
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
@@ -237,18 +232,19 @@ func (con AskController) Submit(c *gin.Context) {
 }
 
 func MakePhone() string {
-	top := []string{
-		"134", "135", "136", "137", "138", "139", "147", "150", "121", "152", "157", "158", "159", "165",
-		"172", "178", "182", "183", "184", "187", "188", "198",
-		"130", "131", "132", "145", "155", "156", "166", "171", "175", "176", "185", "186",
-		"133", "149", "153", "173", "177", "180", "181", "189", "199",
-	}
+	//top := []string{
+	//	"134", "135", "136", "137", "138", "139", "147", "150", "121", "152", "157", "158", "159", "165",
+	//	"172", "178", "182", "183", "184", "187", "188", "198",
+	//	"130", "131", "132", "145", "155", "156", "166", "171", "175", "176", "185", "186",
+	//	"133", "149", "153", "173", "177", "180", "181", "189", "199",
+	//}
 
-	topNum := top[rand.Intn(len(top)-1)]
+	//topNum := top[rand.Intn(len(top)-1)]
 
 	s := strconv.Itoa(rand.Intn(9)) + strconv.Itoa(rand.Intn(9)) + strconv.Itoa(rand.Intn(9)) + strconv.Itoa(rand.Intn(9))
 
-	return topNum + "****" + s
+	//return topNum + "****" + s
+	return s
 }
 
 type GetAskDetailForm struct {
@@ -285,7 +281,7 @@ func (con AskController) Detail(c *gin.Context) {
 	}
 	var ss []S
 	ay.Db.Table("sm_ask_reply").
-		Select("sm_ask_reply.id as reply_id,sm_ask_reply.master_id,sm_user.avatar,sm_master.name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
+		Select("sm_ask_reply.id as reply_id,sm_ask_reply.master_id,sm_user.avatar,sm_user.nickname as name,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt").
 		Joins("left join sm_user on sm_user.id=sm_ask_reply.master_id").
 		Joins("left join sm_master on sm_user.master_id=sm_master.id").
 		Where("sm_ask_reply.ask_id", getForm.AskId).

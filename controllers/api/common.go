@@ -1,9 +1,12 @@
 package api
 
 import (
+	"fmt"
 	"gin/ay"
 	"github.com/gin-gonic/gin"
+	qrcode "github.com/skip2/go-qrcode"
 	"strconv"
+	"time"
 )
 
 var (
@@ -58,4 +61,21 @@ func DateFormat(y, m, d, h, i, s int) string {
 	}
 
 	return strconv.Itoa(y) + "-" + vm + "-" + vd + " " + vh + ":" + vi + ":" + vs
+}
+
+func (con CommonController) MakeQrCode(text string) string {
+	name := ay.MD5(fmt.Sprintf("%s%s", text, time.Now().String())) + ".png"
+	fileDir := fmt.Sprintf("static/qrcode/%d-%d/", time.Now().Year(), time.Now().Month())
+
+	err := ay.CreateMutiDir(fileDir)
+	if err != nil {
+		return ""
+	}
+
+	err = qrcode.WriteFile(text, qrcode.Medium, 152, fileDir+name)
+	if err != nil {
+		return ""
+	}
+	return fileDir + name
+
 }

@@ -35,6 +35,10 @@ func (con AdvController) List(c *gin.Context) {
 	var count int64
 	res := ay.Db.Table("sm_adv")
 
+	if data.Type != "" {
+		res.Where("sm_adv.type = ?", data.Type)
+	}
+
 	row := res
 
 	row.Count(&count)
