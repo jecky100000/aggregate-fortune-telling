@@ -1,0 +1,2789 @@
+{
+	"info": {
+		"_postman_id": "2f0a5568-97bc-4381-a1e5-93fb869d90e7",
+		"name": "聚合",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "六爻",
+			"item": [
+				{
+					"name": "详情",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "data",
+									"value": "1,1,1,1,1,1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/divination/get",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"divination",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取信息",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "from",
+								"value": "{{from}}",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/divination/init",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"divination",
+								"init"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "周公解梦",
+			"item": [
+				{
+					"name": "首页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/dream/main",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"dream",
+								"main"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "搜索",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "title",
+									"value": "八",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/dream/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"dream",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "解梦详情",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/dream/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"dream",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "八字",
+			"item": [
+				{
+					"name": "订单",
+					"item": [
+						{
+							"name": "详情",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "oid",
+											"value": "202205162156186074240001",
+											"description": "订单号",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/haul/detail",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"haul",
+										"detail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "生成订单",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "Form",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "username",
+											"value": "云青",
+											"description": "用户名",
+											"type": "text"
+										},
+										{
+											"key": "y",
+											"value": "1999",
+											"description": "年",
+											"type": "text"
+										},
+										{
+											"key": "m",
+											"value": "012",
+											"description": "月",
+											"type": "text"
+										},
+										{
+											"key": "d",
+											"value": "01",
+											"description": "日",
+											"type": "text"
+										},
+										{
+											"key": "h",
+											"value": "0",
+											"description": "时",
+											"type": "text"
+										},
+										{
+											"key": "appid",
+											"value": "1",
+											"description": "应用id h5 1 android 2 ios 3 百度小程序 4微信小程序",
+											"type": "text",
+											"disabled": true
+										},
+										{
+											"key": "gender",
+											"value": "1",
+											"description": "性别 1男 2女",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/haul/submit",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"haul",
+										"submit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "优惠卷",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "id",
+											"value": "1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/haul/coupon",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"haul",
+										"coupon"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "首页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/haul/main",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"haul",
+								"main"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "通知",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/haul/notice",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"haul",
+								"notice"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "用户",
+			"item": [
+				{
+					"name": "大师索要红包",
+					"item": [
+						{
+							"name": "发起索要",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{master_token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "urlencoded",
+									"urlencoded": [
+										{
+											"key": "amount",
+											"value": "10",
+											"description": "金额",
+											"type": "text"
+										},
+										{
+											"key": "to",
+											"value": "18505220612",
+											"description": "用户手机号",
+											"type": "text"
+										},
+										{
+											"key": "remark",
+											"value": "",
+											"description": "备注",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/force/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"force",
+										"send"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "红包详情",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{master_token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "oid",
+											"value": "202205171715445013120001",
+											"description": "订单号",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/force/detail",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"force",
+										"detail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "用户支付",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "oid",
+											"value": "202205171715445013120001",
+											"description": "订单号",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/force/do",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"force",
+										"do"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "用户发送红包",
+					"item": [
+						{
+							"name": "大师接收红包",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{master_token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "oid",
+											"value": "202205161603385358140028",
+											"description": "订单号",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/envelopes/receive",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"envelopes",
+										"receive"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "红包详情",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "oid",
+											"value": "202205161603385358140028",
+											"description": "订单号",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/envelopes/detail",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"envelopes",
+										"detail"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "发红包",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									},
+									{
+										"key": "From",
+										"value": "{{from}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "amount",
+											"value": "1",
+											"description": "金额",
+											"type": "text"
+										},
+										{
+											"key": "to",
+											"value": "17712946664",
+											"description": "大师手机号",
+											"type": "text"
+										},
+										{
+											"key": "remark",
+											"value": "",
+											"description": "备注",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{url}}/api/envelopes/send",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"envelopes",
+										"send"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "修改信息",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "nickname",
+									"value": "1",
+									"description": "昵称",
+									"type": "text"
+								},
+								{
+									"key": "avatar",
+									"value": "/ass.png",
+									"description": "头像",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "1",
+									"description": "性别 1男 2女",
+									"type": "text"
+								},
+								{
+									"key": "birthday",
+									"value": "2010-01-12",
+									"description": "生日",
+									"type": "text"
+								},
+								{
+									"key": "area_id",
+									"value": "1",
+									"description": "地区id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/edit",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取信息",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": []
+						},
+						"url": {
+							"raw": "{{url}}/api/user/info",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "上传头像",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/Administrator/Pictures/1.jpg"
+								},
+								{
+									"key": "filename",
+									"value": "123.png",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/upload",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "优惠卷",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/coupon",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"coupon"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "收藏",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "类型 1大师 2百科 3古籍",
+									"type": "text"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/collect",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"collect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "消费记录",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "1",
+									"description": "类型 1消费 2充值 3提现 4奖励",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/history",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"history"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提现",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "1 支付宝 2微信",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "1",
+									"description": "金钱",
+									"type": "text"
+								},
+								{
+									"key": "account",
+									"value": "acc@aaayun,cc",
+									"description": "账号",
+									"type": "text"
+								},
+								{
+									"key": "name",
+									"value": "姓名",
+									"description": "姓名",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/withdrawal",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"withdrawal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "历史记录",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "类型 1大师 2八字 3排盘 4文章 5古籍 6卜卦",
+									"type": "text"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/log",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"log"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提问记录",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/user/ask",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"ask"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "打赏大师",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amount",
+									"value": "1",
+									"description": "金额",
+									"type": "text"
+								},
+								{
+									"key": "to",
+									"value": "17712946664",
+									"description": "大师手机号",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/envelopes/reward",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"envelopes",
+								"reward"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "百科/古籍",
+			"item": [
+				{
+					"name": "古籍详情",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "aid",
+									"value": "13",
+									"description": "古籍id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ancient/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ancient",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "百科详情",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "37674",
+									"description": "百科id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/baike/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"baike",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "搜索",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "2gvtC6ahlC6bJSmaHD5ZnEkBAoLN-QMWTcozTLw==",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "2",
+									"description": "类型 1百科 2古籍 3全部",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "三",
+									"description": "关键字",
+									"type": "text"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "分页",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/notice/search",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"notice",
+								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "古籍目录",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "aid",
+									"value": "1",
+									"description": "古籍id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ancient/classify",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ancient",
+								"classify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "日历",
+			"item": [
+				{
+					"name": "获取",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "y",
+									"value": "2022",
+									"type": "text"
+								},
+								{
+									"key": "m",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "d",
+									"value": "21",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/calender/get",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"calender",
+								"get"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "排盘",
+			"item": [
+				{
+					"name": "生成订单",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "云青",
+									"description": "姓名",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "1",
+									"description": "性别 1男 2女",
+									"type": "text"
+								},
+								{
+									"key": "y",
+									"value": "1999",
+									"description": "年",
+									"type": "text"
+								},
+								{
+									"key": "m",
+									"value": "6",
+									"description": "月",
+									"type": "text"
+								},
+								{
+									"key": "d",
+									"value": "12",
+									"description": "日",
+									"type": "text"
+								},
+								{
+									"key": "h",
+									"value": "12",
+									"description": "时",
+									"type": "text"
+								},
+								{
+									"key": "i",
+									"value": "6",
+									"description": "分",
+									"type": "text"
+								},
+								{
+									"key": "area_id",
+									"value": "1",
+									"description": "地区id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/plate/submit",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plate",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "详情",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "oid",
+									"value": "202202260956518246120006",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/plate/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plate",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "首页信息",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "y",
+									"value": "2000",
+									"description": "年",
+									"type": "text"
+								},
+								{
+									"key": "m",
+									"value": "1",
+									"description": "月",
+									"type": "text"
+								},
+								{
+									"key": "d",
+									"value": "2",
+									"description": "日",
+									"type": "text"
+								},
+								{
+									"key": "h",
+									"value": "3",
+									"description": "时",
+									"type": "text"
+								},
+								{
+									"key": "i",
+									"value": "4",
+									"description": "分",
+									"type": "text"
+								},
+								{
+									"key": "area_id",
+									"value": "5",
+									"description": "地区id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/plate/info",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plate",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取流年",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "oid",
+									"value": "202202191636563960400001",
+									"description": "订单号",
+									"type": "text"
+								},
+								{
+									"key": "key",
+									"value": "0",
+									"description": "大运序号",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/plate/year",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plate",
+								"year"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取流月",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "oid",
+									"value": "202202191636563960400001",
+									"description": "订单号",
+									"type": "text"
+								},
+								{
+									"key": "key",
+									"value": "1",
+									"description": "流年序号",
+									"type": "text"
+								},
+								{
+									"key": "index",
+									"value": "1",
+									"description": "大运序号",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/plate/month",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"plate",
+								"month"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "登入",
+			"item": [
+				{
+					"name": "手机登入",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "From",
+								"value": "1",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "18505220612",
+									"description": "手机号",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "123456",
+									"description": "验证码",
+									"type": "text"
+								},
+								{
+									"key": "aff",
+									"value": "BXPDGW",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "小程序登入",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "From",
+								"value": "2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "code",
+									"value": "123",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "发送验证码",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "phone",
+									"value": "13225162964",
+									"description": "手机号",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/user/send",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"user",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "百度账号绑定",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "From",
+								"value": "2",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "session_key",
+									"value": "27863ce8f32f35c4a4c73545c453b548",
+									"type": "text"
+								},
+								{
+									"key": "iv",
+									"value": "27863ce8f32f35c4a4c73w==1",
+									"type": "text"
+								},
+								{
+									"key": "encryptedData",
+									"value": "Qy2Gp71faKqLnVMmQ3rI11wIOwrn/pMxX2434W4/YSd7Bm4N3GBk32Nnub3ZaRhGCdBmUew3QDJEtWVPMwT0uO7YW8gJcN5suqxaJ1Vd8gE=",
+									"type": "text"
+								},
+								{
+									"key": "openid",
+									"value": "43RElGyf0vSYmh64ukV1gQeBJM",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/login/baidu/bind",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"login",
+								"baidu",
+								"bind"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "文章",
+			"item": [
+				{
+					"name": "文章详情",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/news/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"news",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "所有分类",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "0",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/news/type",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"news",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分类下所有文章",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "分类id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/news/all",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"news",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取推荐文章",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "1 解梦 2算命 3排盘 4百科 5古籍 6日历 7大师",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/news/recommend",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"news",
+								"recommend"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "在线大师",
+			"item": [
+				{
+					"name": "获取类型",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/master/type",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"master",
+								"type"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取大师列表",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "类型",
+									"type": "text"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/master/list",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"master",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "大师详细",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "43",
+									"description": "大师id",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/master/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"master",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "推荐大师",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/master/recommend",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"master",
+								"recommend"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取推荐大师",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "id",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/master/recommend",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"master",
+								"recommend"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "支付",
+			"item": [
+				{
+					"name": "充值",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"description": "1 支付宝 2微信",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "1",
+									"description": "金额",
+									"type": "text"
+								},
+								{
+									"key": "return_url",
+									"value": "http://baidu.com",
+									"description": "回调地址",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/pay/recharge",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pay",
+								"recharge"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "统一支付",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amount_id",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "oid",
+									"value": "202205161130131814640010",
+									"description": "订单号",
+									"type": "text"
+								},
+								{
+									"key": "coupon",
+									"value": "53",
+									"description": "优惠卷id",
+									"type": "text"
+								},
+								{
+									"key": "return",
+									"value": "1",
+									"description": "返回支付",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "type",
+									"value": "2",
+									"description": "1支付宝 2微信 3余额",
+									"type": "text"
+								},
+								{
+									"key": "return_url",
+									"value": "",
+									"description": "返回地址",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/pay/do",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pay",
+								"do"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "测算卜卦",
+			"item": [
+				{
+					"name": "首页",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/ask/main",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ask",
+								"main"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提交",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "张三",
+									"description": "姓名",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "1",
+									"description": "性别 1男 2女",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "5",
+									"description": "类型 0快问大师 1 婚恋情感 2事业财运 3命运详批 4事业指点 5其他",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "5",
+									"description": "金额",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "内容",
+									"description": "问题描述",
+									"type": "text"
+								},
+								{
+									"key": "birth",
+									"value": "2011-08-01",
+									"type": "text"
+								},
+								{
+									"key": "is_free",
+									"value": "0",
+									"description": "是否免费 1是 0否",
+									"type": "text"
+								},
+								{
+									"key": "area_id",
+									"value": "1",
+									"description": "区域id",
+									"type": "text"
+								},
+								{
+									"key": "pay_type",
+									"value": "1",
+									"description": "1支付宝 2微信 3余额",
+									"type": "text"
+								},
+								{
+									"key": "return_url",
+									"value": "",
+									"description": "回调地址",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ask/submit",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ask",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取提问信息",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "type",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ask/get",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ask",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提问详情",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "ask_id",
+									"value": "202205101639191742480068",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ask/detail",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ask",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "采纳",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "reply_id",
+									"value": "6",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/ask/adopt",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"ask",
+								"adopt"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "邀请",
+			"item": [
+				{
+					"name": "列表",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/invite/list",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"invite",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "消费记录",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "page",
+									"value": "1",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/invite/withdraw",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"invite",
+								"withdraw"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "提现",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							},
+							{
+								"key": "From",
+								"value": "{{from}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "amount",
+									"value": "5",
+									"description": "金额",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/invite/do",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"invite",
+								"do"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "分享",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "link",
+									"value": "http://baidu.com",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/api/invite/share",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"invite",
+								"share"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "获取地区",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/area/get",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"area",
+						"get"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "收藏/取消收藏",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{token}}",
+						"type": "text"
+					},
+					{
+						"key": "From",
+						"value": "{{from}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "type",
+							"value": "2",
+							"description": "类型 1大师 2百科 3古籍",
+							"type": "text"
+						},
+						{
+							"key": "id",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/collect/set",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"collect",
+						"set"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "首页",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/home/main",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"main"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取配置",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/home/config",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"config"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取广告图片",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/home/adv?type=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"adv"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "1",
+							"description": "1 首页 2 百科 3 古籍 4首页返回 5提问 6 解梦 7卜卦"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取所有大师",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/home/getAllMaster?key=anderyly",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"home",
+						"getAllMaster"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "anderyly"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
