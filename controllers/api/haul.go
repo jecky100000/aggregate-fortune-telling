@@ -187,8 +187,11 @@ func (con HaulController) Detail(c *gin.Context) {
 		amount[k].Amount = v.Amount * config.Rate
 	}
 
+	var count int64
+	ay.Db.Model(&models.Order{}).Count(&count)
 	res["amount"] = amount
 	res["return_amount"] = config.HaulAmount
+	res["num"] = 10000 + count
 
 	if order.Status != 1 {
 		res["isPay"] = false

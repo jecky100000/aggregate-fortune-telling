@@ -91,7 +91,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	bm := make(gopay.BodyMap)
 	v := strconv.FormatFloat(order.Amount*config.Rate, 'g', -1, 64)
 	bm.Set("nonce_str", util.RandomString(32)).
-		Set("body", "充值"+v+"元").
+		Set("body", "消费"+v+"元").
 		Set("out_trade_no", order.OutTradeNo).
 		Set("total_fee", order.Amount*100).
 		Set("spbill_create_ip", api.GetRequestIP(c)).

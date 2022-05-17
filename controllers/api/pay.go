@@ -180,7 +180,7 @@ func (con PayController) Do(c *gin.Context) {
 	}
 
 	if user.Amount < amount {
-		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "余额不足，请选择其他支付方式", gin.H{})
 		return
 	}
 

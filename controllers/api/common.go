@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"gin/ay"
+	"gin/models"
 	"github.com/gin-gonic/gin"
 	qrcode "github.com/skip2/go-qrcode"
 	"strconv"
@@ -19,6 +20,21 @@ type CommonController struct {
 
 func (con CommonController) A() {
 
+}
+
+func AuthMaster() (bool, string, models.User) {
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+
+	if user.Id == 0 {
+		return false, "大师不存在", user
+	}
+
+	if user.Type != 1 {
+		return false, "大师不存在", user
+	}
+
+	return true, "", user
 }
 
 func GetRequestIP(c *gin.Context) string {

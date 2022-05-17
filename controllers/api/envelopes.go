@@ -121,7 +121,7 @@ func (con EnvelopesController) Detail(c *gin.Context) {
 		ay.Json{}.Msg(c, 400, "订单不存在", gin.H{})
 		return
 	}
-	ay.Json{}.Msg(c, 200, "发送成功", gin.H{
+	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"avatar":   ay.Yaml.GetString("domain") + user.Avatar,
 		"remark":   order.Remark,
 		"amount":   order.Amount,
@@ -208,4 +208,63 @@ func (con EnvelopesController) Reward(c *gin.Context) {
 		tx.Rollback()
 		ay.Json{}.Msg(c, 400, "数据错误", gin.H{})
 	}
+}
+
+type envelopesReceiveForm struct {
+	Oid string `form:"oid" binding:"required" label:"订单号"`
+}
+
+// Receive 大师接收红包
+func (con EnvelopesController) Receive(c *gin.Context) {
+	var getForm envelopesReceiveForm
+	if err := c.ShouldBind(&getForm); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+
+	isMaster, msg, master := AuthMaster()
+	if !isMaster {
+		ay.Json{}.Msg(c, 401, msg, gin.H{})
+		return
+	}
+
+	var order models.Order
+	ay.Db.Where("oid = ? and type = 7", getForm.Oid).First(&order)
+
+	if order.Id == 0 {
+		ay.Json{}.Msg(c, 400, "红包不存在", gin.H{})
+		return
+	}
+
+	if order.ToUid != master.Id {
+		ay.Json{}.Msg(c, 400, "这不是您的红包", gin.H{})
+		return
+	}
+
+	if order.Status == 1 {
+		ay.Json{}.Msg(c, 400, "该红包已领取过", gin.H{})
+		return
+	}
+
+	tx := ay.Db.Begin()
+
+	order.Status = 1
+
+	if err := tx.Save(&order).Error; err == nil {
+		master.Amount += order.Amount
+		if err := tx.Save(&master).Error; err == nil {
+			tx.Commit()
+			ay.Json{}.Msg(c, 200, "成功领取红包", gin.H{})
+			return
+		} else {
+			tx.Rollback()
+			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+			return
+		}
+	} else {
+		tx.Rollback()
+		ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+		return
+	}
+
 }

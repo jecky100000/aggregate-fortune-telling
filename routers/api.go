@@ -19,6 +19,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.GET("home/main", api.HomeController{}.Home)
 	apiGroup.GET("home/config", api.HomeController{}.Config)
 	apiGroup.GET("home/adv", api.HomeController{}.Adv)
+	apiGroup.GET("home/getAllMaster", api.HomeController{}.GetMasterPhone)
 
 	// 登入
 	apiGroup.POST("user/login", api.LoginController{}.Login)
@@ -42,9 +43,18 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("user/withdrawal", api.UserController{}.Withdrawal)
 	apiGroup.POST("user/log", api.UserController{}.Log)
 	apiGroup.POST("user/ask", api.UserController{}.Ask)
+
+	// 红包
 	apiGroup.POST("envelopes/send", api.EnvelopesController{}.Send)
 	apiGroup.POST("envelopes/reward", api.EnvelopesController{}.Reward)
 	apiGroup.POST("envelopes/detail", api.EnvelopesController{}.Detail)
+	apiGroup.POST("envelopes/receive", api.EnvelopesController{}.Receive)
+
+	// 索要红包
+	apiGroup.POST("force/send", api.ForceController{}.Send)
+	apiGroup.POST("force/do", api.ForceController{}.Do)
+	apiGroup.POST("force/detail", api.ForceController{}.Detail)
+	//apiGroup.POST("envelopes/receive", api.ForceController{}.Receive)
 
 	// 六爻
 	apiGroup.GET("divination/init", api.HexapodController{}.Index)
