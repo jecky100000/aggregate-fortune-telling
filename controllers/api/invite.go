@@ -168,7 +168,7 @@ func (con InviteController) Do(c *gin.Context) {
 	//}
 
 	if user.InviteAmount < data.Amount {
-		ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
 		return
 	}
 	OldAmount := user.Amount

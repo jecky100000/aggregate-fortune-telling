@@ -41,7 +41,7 @@ func (con EnvelopesController) Send(c *gin.Context) {
 	}
 
 	if user.Amount < getForm.Amount {
-		ay.Json{}.Msg(c, 400, "账户余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "账户余额不足", gin.H{})
 		return
 	}
 
@@ -153,7 +153,7 @@ func (con EnvelopesController) Reward(c *gin.Context) {
 	}
 
 	if user.Amount < getForm.Amount {
-		ay.Json{}.Msg(c, 400, "账户余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "账户余额不足", gin.H{})
 		return
 	}
 

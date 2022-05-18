@@ -81,11 +81,19 @@ func (con HomeController) Config(c *gin.Context) {
 	for k, v := range adv {
 		adv[k].Image = ay.Yaml.GetString("domain") + v.Image
 	}
+
+	var shareText []string
+
+	s := models.ShareTextModel{}.GetAll()
+	for _, v := range s {
+		shareText = append(shareText, v.Content)
+	}
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"kf_link":     config.Kf,
 		"master_link": config.MasterLink,
 		"adv":         adv,
 		"invite_rate": config.InviteRate,
+		"share_text":  shareText,
 	})
 }
 

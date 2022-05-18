@@ -117,7 +117,7 @@ func (con ForceController) Do(c *gin.Context) {
 	ay.Db.Where("id = ?", order.Uid).First(&master)
 
 	if requestUser.Amount < order.Amount {
-		ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
 		return
 	}
 

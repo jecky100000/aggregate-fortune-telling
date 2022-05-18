@@ -42,7 +42,7 @@ func (con DreamController) List(c *gin.Context) {
 	res := ay.Db.Table("sm_dream")
 
 	if data.Key != "" {
-		res.Where("sm_dream.title like ?", "%"+data.Key+"%")
+		res.Where("sm_dream.title like ? or sm_dream.message like ?", "%"+data.Key+"%", "%"+data.Key+"%")
 	}
 
 	row := res

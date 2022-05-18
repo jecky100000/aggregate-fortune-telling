@@ -344,7 +344,7 @@ func (con UserController) Withdrawal(c *gin.Context) {
 	}
 
 	if user.Amount < getForm.Amount {
-		ay.Json{}.Msg(c, 400, "余额不足", gin.H{})
+		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
 		return
 	}
 

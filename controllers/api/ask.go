@@ -185,7 +185,7 @@ func (con AskController) Submit(c *gin.Context) {
 		if getForm.PayType == 3 {
 			// 余额支付
 			if user.Amount < amount {
-				ay.Json{}.Msg(c, 400, "余额不足，请选择其他支付方式", gin.H{})
+				ay.Json{}.Msg(c, 406, "余额不足，请选择其他支付方式", gin.H{})
 				return
 			}
 
