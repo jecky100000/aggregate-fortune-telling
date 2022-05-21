@@ -52,11 +52,20 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	oid := c.Query("oid")
 	code := c.Query("code")
 
+	if oid == "" {
+		c.String(200, "订单号不能为空")
+		return
+	}
+
+	if code == "" {
+		c.String(200, "code不能为空")
+		return
+	}
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", oid)
 
-	out_trade_no := ay.MakeOrder(time.Now())
-	order.OutTradeNo = out_trade_no
+	outTradeNo := ay.MakeOrder(time.Now())
+	order.OutTradeNo = outTradeNo
 	ay.Db.Save(&order)
 
 	config := models.ConfigModel{}.GetId(1)
@@ -148,8 +157,15 @@ if (typeof WeixinJSBridge == "undefined"){
 
 func (con Controller) Wechat(c *gin.Context) {
 
+	oid := c.Query("oid")
+
+	if oid == "" {
+		c.String(200, "订单号不能为空")
+		return
+	}
+
 	var order models.Order
-	ay.Db.First(&order, "oid = ?", c.Query("oid"))
+	ay.Db.First(&order, "oid = ?", oid)
 	if order.Id == 0 {
 		c.String(200, "订单错误")
 		return
@@ -164,9 +180,9 @@ func (con Controller) Wechat(c *gin.Context) {
 	ay.Db.First(&pay, "id = ?", 6)
 
 	if con.IsWechat(c) {
-		redirect_uri := url.QueryEscape(ay.Yaml.GetString("domain") + "/pay/open?oid=" + c.Query("oid"))
-		urlx := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + pay.Appid + "&redirect_uri=" + redirect_uri + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect"
-		c.Redirect(http.StatusTemporaryRedirect, urlx)
+		redirectUri := url.QueryEscape(ay.Yaml.GetString("domain") + "/pay/open?oid=" + order.Oid)
+		urlX := "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" + pay.Appid + "&redirect_uri=" + redirectUri + "&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect"
+		c.Redirect(http.StatusTemporaryRedirect, urlX)
 		//c.Header("Content-Type", "text/html; charset=utf-8")
 		//c.String(200, `<script type="text/javascript">window.location.href="`+urlx+`"</script>`)
 		//c.String(200, urlx)

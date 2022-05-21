@@ -104,7 +104,7 @@ func (con HaulModel) GetYunShi(bz []string) string {
 		j++
 	}
 	str := ""
-	startStr := "<font color=blue>"
+	startStr := "<font color='#ffcc33'>"
 
 	for k, v := range key {
 		var liuyue models.LiuYue

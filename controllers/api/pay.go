@@ -157,12 +157,12 @@ func (con PayController) Do(c *gin.Context) {
 			if code == 1 {
 				if getForm.Type == 1 {
 					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.OutTradeNo,
+						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
 					})
 					return
 				} else {
 					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.OutTradeNo,
+						"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
 					})
 					return
 				}

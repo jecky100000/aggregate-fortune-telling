@@ -231,7 +231,7 @@ func (con AskController) Submit(c *gin.Context) {
 			code, msg := PayController{}.Web(order.OutTradeNo, getForm.PayType, order.Amount, getForm.ReturnUrl, GetRequestIP(c), "在线提问"+v+"元")
 
 			if code == 1 {
-				if getForm.Type == 1 {
+				if getForm.PayType == 1 {
 					ay.Json{}.Msg(c, 200, "success", gin.H{
 						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.OutTradeNo,
 					})
