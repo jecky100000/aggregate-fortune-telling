@@ -228,23 +228,18 @@ func (con AskController) Submit(c *gin.Context) {
 		if getForm.PayType == 1 || getForm.PayType == 2 {
 			// 支付宝 微信
 			v := strconv.FormatFloat(order.Amount, 'g', -1, 64)
-			code, msg := PayController{}.Web(order.OutTradeNo, getForm.PayType, order.Amount, getForm.ReturnUrl, GetRequestIP(c), "在线提问"+v+"元")
+			order.Des = "在线提问" + v + "元"
+			ay.Db.Save(&order)
 
-			if code == 1 {
-				if getForm.PayType == 1 {
-					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.OutTradeNo,
-					})
-					return
-				} else {
-					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.OutTradeNo,
-					})
-					return
-				}
-
+			if getForm.PayType == 1 {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+				})
+				return
 			} else {
-				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+				})
 				return
 			}
 

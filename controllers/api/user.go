@@ -130,6 +130,7 @@ func (con UserController) Info(c *gin.Context) {
 	}
 
 	var frozenInviteAmount float64
+
 	ay.Db.Table("sm_user_invite_consumption").Where("pid = ? AND status=0", user.Id).Pluck("SUM(amount)", &frozenInviteAmount)
 
 	UserSig, _ := tencentyun.GenUserSig(ay.Yaml.GetInt("im.appid"), ay.Yaml.GetString("im.key"), user.Phone, 3600*24)
@@ -233,7 +234,7 @@ func (con UserController) History(c *gin.Context) {
 		var order []models.Order
 
 		if getForm.Type == 1 {
-			ay.Db.Where("(uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0) OR type = 5 OR type = 7) OR (to_uid = ? and type = 6 and status = 1))", user.Id, user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("(uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0 and status >= 0) OR type = 5 OR type = 7) OR (to_uid = ? and type = 6 and status = 1))", user.Id, user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 2 {
 			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 3 {
@@ -280,7 +281,7 @@ func (con UserController) History(c *gin.Context) {
 		ay.Db.Table("sm_user_invite_consumption").
 			Select("sm_user_invite_consumption.amount,sm_user_invite_consumption.created_at,sm_user_invite_consumption.status,sm_user.nickname").
 			Joins("left join sm_user on sm_user_invite_consumption.uid = sm_user.id").
-			Where("sm_user_invite_consumption.pid = ?", user.Id).
+			Where("sm_user_invite_consumption.pid = ? and sm_user_invite_consumption.amount != 0", user.Id).
 			Order("created_at desc").
 			Limit(10).
 			Offset(page * 10).
@@ -528,7 +529,7 @@ func (con UserController) Log(c *gin.Context) {
 			}
 
 			var collect int64
-			ay.Db.Model(&models.UserMasterLog{}).Where("uid = ? and cid = ?", user.Id, v.MasterId).Count(&collect)
+			ay.Db.Model(&models.UserMasterLog{}).Where("uid = ? and master_id = ?", user.Id, v.MasterId).Count(&collect)
 
 			res = append(res, gin.H{
 				"id":        v.Id,
@@ -672,7 +673,7 @@ func (con UserController) Ask(c *gin.Context) {
 	}
 
 	var order []models.Order
-	ay.Db.Where("type = 3 and uid = ? and status != -1", user.Id).Order("created_at desc").Limit(10).Offset((getForm.Page) * 10).Find(&order)
+	ay.Db.Where("type = 3 and uid = ? and status >= 0", user.Id).Order("created_at desc").Limit(10).Offset((getForm.Page) * 10).Find(&order)
 
 	var res []map[string]interface{}
 

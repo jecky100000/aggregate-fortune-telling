@@ -8,14 +8,9 @@
 package api
 
 import (
-	"context"
 	"gin/ay"
 	"gin/models"
 	"github.com/gin-gonic/gin"
-	"github.com/go-pay/gopay"
-	"github.com/go-pay/gopay/alipay"
-	"github.com/go-pay/gopay/pkg/util"
-	"github.com/go-pay/gopay/wechat"
 	"strconv"
 	"strings"
 	"time"
@@ -150,25 +145,22 @@ func (con PayController) Do(c *gin.Context) {
 			return
 		}
 		if getForm.Type == 1 || getForm.Type == 2 {
-			// 支付宝 微信
+
 			v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
-			code, msg := con.Web(order.OutTradeNo, getForm.Type, order.Amount, order.ReturnUrl, GetRequestIP(c), "八字测算"+v+"元")
-
-			if code == 1 {
-				if getForm.Type == 1 {
-					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
-					})
-					return
-				} else {
-					ay.Json{}.Msg(c, 200, "success", gin.H{
-						"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
-					})
-					return
-				}
-
+			order.Des = "八字测算" + v + "元"
+			if err := ay.Db.Save(&order).Error; err != nil {
+				ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+				return
+			}
+			if getForm.Type == 1 {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+				})
+				return
 			} else {
-				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+				})
 				return
 			}
 
@@ -212,88 +204,4 @@ func (con PayController) Do(c *gin.Context) {
 
 	ay.Json{}.Msg(c, 200, "支付成功", gin.H{})
 
-}
-
-func (con PayController) Web(oid string, payType int, amount float64, returnUrl string, ip string, msg string) (int, string) {
-
-	ctx, _ := context.WithCancel(context.Background())
-
-	if payType == 1 {
-
-		var pay models.Pay
-		ay.Db.First(&pay, "id = ?", 7)
-
-		client, err := alipay.NewClient(pay.Appid, pay.VKey, true)
-		if err != nil {
-			return 0, err.Error()
-		}
-		client.SetLocation(alipay.LocationShanghai).
-			SetCharset(alipay.UTF8).                                         // 设置字符编码，不设置默认 utf-8
-			SetSignType(alipay.RSA2).                                        // 设置签名类型，不设置默认 RSA2
-			SetReturnUrl(returnUrl).                                         // 设置返回URL
-			SetNotifyUrl(ay.Yaml.GetString("domain") + "/api/notify/alipay") // 设置异步通知URL
-
-		bm := make(gopay.BodyMap)
-
-		bm.Set("subject", msg).
-			Set("product_code", "QUICK_WAP_PAY").
-			Set("out_trade_no", oid).
-			Set("total_amount", amount).
-			Set("quit_url", returnUrl) // 中途退出
-
-		aliRsp, err := client.TradeWapPay(ctx, bm)
-
-		if err != nil {
-			return 0, err.Error()
-		}
-		var order models.Order
-		ay.Db.First(&order, "oid = ?", oid)
-		order.Json = aliRsp
-		ay.Db.Save(&order)
-
-		return 1, ""
-	} else if payType == 2 {
-		// 微信支付 jsapi需要跳转页面获取openid
-		var pay models.Pay
-		ay.Db.First(&pay, "id = ?", 6)
-
-		client := wechat.NewClient(pay.Appid, pay.MchId, pay.VKey, true)
-		// 打开Debug开关，输出请求日志，默认关闭
-		//client.DebugSwitch = gopay.DebugOn
-		client.SetCountry(wechat.China)
-
-		bm := make(gopay.BodyMap)
-		bm.Set("nonce_str", util.RandomString(32)).
-			Set("body", msg).
-			Set("out_trade_no", oid).
-			Set("total_fee", amount*100).
-			Set("spbill_create_ip", ip).
-			Set("notify_url", ay.Yaml.GetString("domain")+"/api/notify/wechat").
-			Set("trade_type", "MWEB").
-			Set("device_info", "WEB").
-			Set("sign_type", "MD5").
-			SetBodyMap("scene_info", func(bm gopay.BodyMap) {
-				bm.SetBodyMap("h5_info", func(bm gopay.BodyMap) {
-					bm.Set("type", "Wap")
-					bm.Set("wap_url", ay.Yaml.GetString("domain"))
-					bm.Set("wap_name", "H5测试支付")
-				})
-			}) /*.Set("openid", "o0Df70H2Q0fY8JXh1aFPIRyOBgu8")*/
-
-		wxRsp, err := client.UnifiedOrder(ctx, bm)
-
-		if err != nil {
-			return 0, err.Error()
-		}
-
-		var order models.Order
-		ay.Db.First(&order, "oid = ?", oid)
-		order.Json = wxRsp.MwebUrl
-		ay.Db.Save(&order)
-		return 1, ""
-	} else {
-		return 0, "支付类型不正确"
-	}
-
-	return 0, ""
 }

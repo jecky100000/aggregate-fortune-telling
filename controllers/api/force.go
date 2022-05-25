@@ -190,6 +190,7 @@ func (con ForceController) Detail(c *gin.Context) {
 	ay.Json{}.Msg(c, 200, "success", gin.H{
 		"master_avatar":   ay.Yaml.GetString("domain") + master.Avatar,
 		"master_nickname": master.NickName,
+		"master_phone":    master.Phone,
 		"user_avatar":     ay.Yaml.GetString("domain") + user.Avatar,
 		"user_nickname":   user.NickName,
 		"remark":          order.Remark,

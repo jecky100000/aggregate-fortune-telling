@@ -119,7 +119,7 @@ func (con InviteController) Withdraw(c *gin.Context) {
 	ay.Db.Table("sm_user_invite_consumption").
 		Select("sm_user.nickname,sm_user.phone,sm_user.avatar,sm_user_invite_consumption.created_at,sm_user_invite_consumption.amount,sm_user_invite_consumption.status,sm_user_invite_consumption.oid").
 		Joins("left join sm_user on sm_user_invite_consumption.uid=sm_user.id").
-		Where("sm_user_invite_consumption.pid = ?", user.Id).
+		Where("sm_user_invite_consumption.pid = ? and sm_user_invite_consumption.amount != 0", user.Id).
 		Order("sm_user_invite_consumption.created_at desc").
 		Limit(10).
 		Offset(page * 10).
@@ -202,6 +202,8 @@ func (con InviteController) Do(c *gin.Context) {
 
 type InviteShareForm struct {
 	Link string `form:"link" binding:"required" label:"地址"`
+	Id   string `form:"id"`
+	IsQr int    `form:"is_qr"`
 }
 
 // Share 邀请好友分享
@@ -214,13 +216,25 @@ func (con InviteController) Share(c *gin.Context) {
 
 	localDir := "static/image/back"
 
-	num := ay.GetDirAll(localDir)
-	k := rand.Intn(num)
+	fileName := ""
+	if data.Id == "" {
+		num := ay.GetDirAll(localDir)
+		k := rand.Intn(num)
+		fileName = strconv.Itoa(k) + ".jpg"
+	} else {
+		fileName = data.Id + ".jpg"
+	}
 
-	fileName := strconv.Itoa(k) + ".jpg"
 	filePath := localDir + "/" + fileName
 
 	qrPath := con.MakeQrCode(data.Link)
+
+	if data.IsQr == 1 {
+		ay.Json{}.Msg(c, 200, "success", gin.H{
+			"link": ay.Yaml.GetString("domain") + "/" + qrPath,
+		})
+		return
+	}
 
 	imgFile, _ := os.Open(filePath)
 	defer imgFile.Close()

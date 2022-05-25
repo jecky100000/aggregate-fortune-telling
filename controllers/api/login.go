@@ -351,7 +351,7 @@ func (con LoginController) Send(c *gin.Context) {
 	var count int64
 	ay.Db.Model(&models.Sms{}).Where("ip = ? and phone = ? and ymd = ?", ip, phone, time.Now().Format("20060102")).Count(&count)
 
-	if count > 3 {
+	if count > ay.Yaml.GetInt64("sms.count") {
 		ay.Json{}.Msg(c, 400, "短信发送上限", gin.H{})
 		return
 	}
