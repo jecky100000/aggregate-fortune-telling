@@ -39,13 +39,21 @@ func (con Controller) AliPay(c *gin.Context) {
 		return
 	}
 
+	returnUrl := c.Query("return_url")
+	if returnUrl != "" {
+		returnUrl, _ = url.QueryUnescape(returnUrl)
+		order.ReturnUrl = returnUrl
+	} else {
+		returnUrl = order.ReturnUrl
+	}
+
 	order.OutTradeNo = ay.MakeOrder(time.Now())
 	if err := ay.Db.Save(&order).Error; err != nil {
 		c.String(200, "请联系管理员")
 		return
 	}
 
-	code, msg := con.Web(order.OutTradeNo, 1, order.Amount, order.ReturnUrl, api.GetRequestIP(c), order.Des)
+	code, msg := con.Web(order.OutTradeNo, 1, order.Amount, returnUrl, api.GetRequestIP(c), order.Des)
 
 	if code == 1 {
 		c.Redirect(http.StatusMovedPermanently, msg)
@@ -191,6 +199,14 @@ func (con Controller) Wechat(c *gin.Context) {
 		return
 	}
 
+	returnUrl := c.Query("return_url")
+	if returnUrl != "" {
+		returnUrl, _ = url.QueryUnescape(returnUrl)
+		order.ReturnUrl = returnUrl
+	} else {
+		returnUrl = order.ReturnUrl
+	}
+
 	order.OutTradeNo = ay.MakeOrder(time.Now())
 	if err := ay.Db.Save(&order).Error; err != nil {
 		c.String(200, "请联系管理员")
@@ -208,7 +224,7 @@ func (con Controller) Wechat(c *gin.Context) {
 		return
 	} else {
 
-		code, msg := con.Web(order.OutTradeNo, 2, order.Amount, order.ReturnUrl, api.GetRequestIP(c), order.Des)
+		code, msg := con.Web(order.OutTradeNo, 2, order.Amount, returnUrl, api.GetRequestIP(c), order.Des)
 
 		if code == 1 {
 			log.Println(msg)

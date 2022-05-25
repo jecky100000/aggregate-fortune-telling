@@ -67,7 +67,7 @@ func (con EnvelopesController) Send(c *gin.Context) {
 		ToUid:      master.Id,
 		Remark:     getForm.Remark,
 		PayType:    9,
-		ReturnUrl:  getForm.ReturnUrl,
+		ReturnUrl:  getForm.ReturnUrl + "&oid=" + oid,
 	}
 
 	if err := ay.Db.Create(&order).Error; err != nil {
