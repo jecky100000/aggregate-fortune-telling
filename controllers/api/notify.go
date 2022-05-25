@@ -70,6 +70,14 @@ func (con NotifyController) AliPay(c *gin.Context) {
 		res = 1
 	case 3:
 		res = 1
+	case 5:
+		// 增加大师余额
+		res = con.AddMasterAmount(order.Uid, order.ToUid, order.Amount, order.Oid)
+	case 7:
+		res = 1
+	case 6:
+		// 增加大师余额
+		res = con.AddMasterAmount(order.ToUid, order.Uid, order.Amount, order.Oid)
 	}
 
 	if res == 1 {
@@ -81,13 +89,17 @@ func (con NotifyController) AliPay(c *gin.Context) {
 			coupon.UsedAt = time.Now().Format("2006-01-02 15:04:05")
 			ay.Db.Save(&coupon)
 		}
-		order.Status = 1
+		if order.Type == 3 || order.Type == 7 {
+			order.Status = 0
+		} else {
+			order.Status = 1
+		}
 		order.PayType = 1
 		order.TradeNo = notifyReq.Get("trade_no")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)
 
-		if order.Type != 9 {
+		if order.Type != 9 && order.Type != 7 && order.Type != 6 {
 			// 上级消费
 			var user models.User
 			ay.Db.First(&user, order.Uid)
@@ -156,6 +168,14 @@ func (con NotifyController) WeChat(c *gin.Context) {
 		res = 1
 	case 3:
 		res = 1
+	case 5:
+		// 增加大师余额
+		res = con.AddMasterAmount(order.Uid, order.ToUid, order.Amount, order.Oid)
+	case 7:
+		res = 1
+	case 6:
+		// 增加大师余额
+		res = con.AddMasterAmount(order.ToUid, order.Uid, order.Amount, order.Oid)
 	}
 
 	if res == 1 {
@@ -168,13 +188,18 @@ func (con NotifyController) WeChat(c *gin.Context) {
 			ay.Db.Save(&coupon)
 		}
 
-		order.Status = 1
+		if order.Type == 3 || order.Type == 7 {
+			order.Status = 0
+		} else {
+			order.Status = 1
+		}
+
 		order.PayType = 2
 		order.TradeNo = notifyReq.Get("transaction_id")
 		order.PayTime = time.Now().Format("2006-01-02 15:04:05")
 		ay.Db.Save(&order)
 
-		if order.Type != 9 {
+		if order.Type != 9 && order.Type != 7 && order.Type != 6 {
 			// 上级消费
 			var user models.User
 			ay.Db.First(&user, order.Uid)
@@ -215,5 +240,21 @@ func (con NotifyController) AddUserAmount(uid int64, amount float64) int {
 func (con NotifyController) CheckErr(err error) {
 	if err != nil {
 		log.Println(err)
+	}
+}
+
+func (con NotifyController) AddMasterAmount(uid int64, toUid int64, amount float64, oid string) int {
+	var master models.User
+	ay.Db.Where("id = ?", toUid).First(&master)
+
+	if master.Id == 0 {
+		return 0
+	}
+	// 增加大师余额
+	master.Amount += amount
+	if err := ay.Db.Save(&master).Error; err == nil {
+		return 1
+	} else {
+		return 0
 	}
 }

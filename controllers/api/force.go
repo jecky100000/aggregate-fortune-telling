@@ -68,7 +68,7 @@ func (con ForceController) Send(c *gin.Context) {
 	if err := tx.Create(&order).Error; err == nil {
 		tx.Commit()
 		// 上级消费
-		models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
+		//models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, getForm.Amount, oid)
 		ay.Json{}.Msg(c, 200, "发送成功", gin.H{
 			"oid":    oid,
 			"remark": getForm.Remark,
@@ -79,9 +79,15 @@ func (con ForceController) Send(c *gin.Context) {
 	}
 }
 
+type forceDoForm struct {
+	Oid       float64 `form:"oid" binding:"required" label:"订单号"`
+	PayType   int     `form:"pay_type" binding:"required" label:"支付方式"`
+	ReturnUrl string  `form:"return_url" binding:"required" label:"同步地址"`
+}
+
 // Do 支付
 func (con ForceController) Do(c *gin.Context) {
-	var getForm forceDetailForm
+	var getForm forceDoForm
 	if err := c.ShouldBind(&getForm); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -116,25 +122,31 @@ func (con ForceController) Do(c *gin.Context) {
 	var master models.User
 	ay.Db.Where("id = ?", order.Uid).First(&master)
 
-	if requestUser.Amount < order.Amount {
-		ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
-		return
-	}
+	if getForm.PayType == 3 {
+		if requestUser.Amount < order.Amount {
+			ay.Json{}.Msg(c, 406, "余额不足", gin.H{})
+			return
+		}
 
-	tx := ay.Db.Begin()
+		tx := ay.Db.Begin()
 
-	order.Status = 1
+		order.Status = 1
 
-	if err := tx.Save(&order).Error; err == nil {
-		master.Amount += order.Amount
-		// 增加大师余额
-		if err := tx.Save(&master).Error; err == nil {
-			// 扣钱用户
-			requestUser.Amount -= order.Amount
-			if err := tx.Save(&requestUser).Error; err == nil {
-				tx.Commit()
-				ay.Json{}.Msg(c, 200, "成功支付", gin.H{})
-				return
+		if err := tx.Save(&order).Error; err == nil {
+			master.Amount += order.Amount
+			// 增加大师余额
+			if err := tx.Save(&master).Error; err == nil {
+				// 扣钱用户
+				requestUser.Amount -= order.Amount
+				if err := tx.Save(&requestUser).Error; err == nil {
+					tx.Commit()
+					ay.Json{}.Msg(c, 200, "成功支付", gin.H{})
+					return
+				} else {
+					tx.Rollback()
+					ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+					return
+				}
 			} else {
 				tx.Rollback()
 				ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
@@ -146,9 +158,20 @@ func (con ForceController) Do(c *gin.Context) {
 			return
 		}
 	} else {
-		tx.Rollback()
-		ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
-		return
+		order.ReturnUrl = getForm.ReturnUrl
+		ay.Db.Save(&order)
+
+		if getForm.PayType == 1 {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+			})
+			return
+		} else {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+			})
+			return
+		}
 	}
 
 }

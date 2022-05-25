@@ -234,7 +234,7 @@ func (con UserController) History(c *gin.Context) {
 		var order []models.Order
 
 		if getForm.Type == 1 {
-			ay.Db.Where("(uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0 and status >= 0) OR type = 5 OR type = 7) OR (to_uid = ? and type = 6 and status = 1))", user.Id, user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
+			ay.Db.Where("(uid = ? AND ((type = 1 and status != 0) OR (type = 3 and amount > 0 and status >= 0) OR type = 5 OR (type = 7 and status > -1)) OR (to_uid = ? and type = 6 and status = 1))", user.Id, user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 2 {
 			ay.Db.Where("uid = ? and type = 9 and status = 1", user.Id).Order("created_at desc").Limit(10).Offset(page * 10).Find(&order)
 		} else if getForm.Type == 3 {
