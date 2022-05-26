@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"log"
+	"time"
 )
 
 type ImController struct {
@@ -21,6 +22,7 @@ type ImController struct {
 
 func (con ImController) Notify(c *gin.Context) {
 	cmd := c.Query("CallbackCommand")
+	ClientIP := c.Query("ClientIP")
 	log.Println(cmd)
 	bodyBytes, _ := ioutil.ReadAll(c.Request.Body)
 	log.Println(string(bodyBytes))
@@ -28,6 +30,8 @@ func (con ImController) Notify(c *gin.Context) {
 	if cmd == "State.StateChange" {
 		// 在线
 		//con.Online(bodyBytes)
+	} else if cmd == "C2C.CallbackAfterSendMsg" {
+		con.Msg(bodyBytes, ClientIP)
 	}
 
 }
@@ -57,7 +61,7 @@ func (con ImController) Online(str []byte) {
 
 }
 
-func (con ImController) Msg(str []byte) {
+func (con ImController) Msg(str []byte, ip string) {
 
 	type msg struct {
 		MsgBody []struct {
@@ -81,5 +85,29 @@ func (con ImController) Msg(str []byte) {
 
 	var data msg
 	json.Unmarshal(str, &data)
+
+	vt := 0
+
+	for _, v := range data.MsgBody {
+		if v.MsgType == "TIMTextElem" {
+			vt = 1
+		}
+
+		var date int64 = int64(data.MsgTime)
+		t := time.Unix(date, 0)
+		stamp, _ := time.ParseInLocation("2006-01-02 15:04:05", t.Format("2006-01-02 15:04:05"), time.Local)
+		ay.Db.Create(&models.Msg{
+			Type:           vt,
+			Account:        data.FromAccount,
+			ToAccount:      data.ToAccount,
+			Content:        v.MsgContent.Text,
+			MsgSeq:         data.MsgSeq,
+			MsgKey:         data.MsgKey,
+			SendAt:         models.MyTime{Time: stamp},
+			Ip:             ip,
+			SendMsgResult:  data.SendMsgResult,
+			OnlineOnlyFlag: data.OnlineOnlyFlag,
+		})
+	}
 
 }

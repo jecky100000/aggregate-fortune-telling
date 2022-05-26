@@ -7,7 +7,7 @@ import (
 )
 
 func Sql() {
-	dsn := Yaml.GetString("mysql.user") + ":" + Yaml.GetString("mysql.password") + "@tcp(" + Yaml.GetString("mysql.localhost") + ":" + Yaml.GetString("mysql.port") + ")/" + Yaml.GetString("mysql.database") + "?parseTime=true&loc=Local"
+	dsn := Yaml.GetString("mysql.user") + ":" + Yaml.GetString("mysql.password") + "@tcp(" + Yaml.GetString("mysql.localhost") + ":" + Yaml.GetString("mysql.port") + ")/" + Yaml.GetString("mysql.database") + "?charset=utf8mb4&parseTime=true&loc=Local"
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		fmt.Println("数据库连接失败：", err)

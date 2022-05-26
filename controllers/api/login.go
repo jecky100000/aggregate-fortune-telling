@@ -391,6 +391,7 @@ func (con LoginController) MakeImAccount(phone string) (int, string) {
 	}
 	var r rj
 	json.Unmarshal([]byte(imMsg), &r)
+	log.Println(r)
 	if r.ErrorCode != 0 {
 		return 0, r.ErrorInfo
 	} else {

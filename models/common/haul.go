@@ -12,6 +12,7 @@ import (
 	"gin/ay"
 	"gin/models"
 	"github.com/6tail/lunar-go/calendar"
+	"log"
 	"strconv"
 	"time"
 )
@@ -61,9 +62,9 @@ func (con HaulModel) Detail(y, m, d, h, i, s int) (*calendar.EightChar, []string
 	}
 }
 
-func (con HaulModel) GetYunShi(bz []string) string {
-	lunar := calendar.NewLunarFromYmd(2022, 12, 7)
-	//lunar := solar.GetLunar()
+func (con HaulModel) Get24(y, m, d, bu int) ([]string, []string, []string) {
+
+	lunar := calendar.NewLunarFromYmd(y, m, d)
 	jieQi := lunar.GetJieQiTable()
 
 	var arr []string
@@ -75,9 +76,13 @@ func (con HaulModel) GetYunShi(bz []string) string {
 
 	start := ""
 	for i := lunar.GetJieQiList().Front(); i != nil; i = i.Next() {
-		name := i.Value.(string)
-		arr = append(arr, jieQi[name].ToYmdHms())
 
+		name := i.Value.(string)
+
+		stamp, _ := time.ParseInLocation("2006-01-02 15:04:05", jieQi[name].ToYmdHms(), time.Local)
+		if stamp.Unix() < time.Now().Unix() {
+			continue
+		}
 		if j > 24 {
 			break
 		}
@@ -87,15 +92,26 @@ func (con HaulModel) GetYunShi(bz []string) string {
 			j++
 			continue
 		} else if j%2 == 0 {
-			s, _ := time.Parse("2006-01-02 15:04:05", jieQi[name].ToYmdHms())
-			solarL := calendar.NewLunarFromYmd(s.Year(), int(s.Month()), s.Day())
+
+			arr = append(arr, jieQi[name].ToYmdHms())
+			s, _ := time.Parse("2006-01-02 15:04:05", start)
+
+			oldTime := s.AddDate(0, 0, +1)
+
+			solar := calendar.NewSolarFromYmd(oldTime.Year(), int(oldTime.Month()), oldTime.Day())
+			solarL := solar.GetLunar()
 			ss := solarL.GetEightChar().GetMonth()
+
 			key = append(key, start+" ~ "+jieQi[name].ToYmdHms())
 			start = jieQi[name].ToYmdHms()
 			value = append(value, ss)
+
 		} else if j == 24 {
-			s, _ := time.Parse("2006-01-02 15:04:05", jieQi[name].ToYmdHms())
-			solarL := calendar.NewLunarFromYmd(s.Year(), int(s.Month()), s.Day())
+			log.Println("ssf" + jieQi[name].ToYmdHms())
+			//s, _ := time.Parse("2006-01-02 15:04:05", jieQi[name].ToYmdHms())
+			s, _ := time.Parse("2006-01-02 15:04:05", start)
+			oldTime := s.AddDate(0, 0, +1)
+			solarL := calendar.NewLunarFromYmd(oldTime.Year(), int(oldTime.Month()), oldTime.Day())
 			ss := solarL.GetEightChar().GetMonth()
 			key = append(key, start+" ~ "+jieQi[name].ToYmdHms())
 			value = append(value, ss)
@@ -103,6 +119,39 @@ func (con HaulModel) GetYunShi(bz []string) string {
 
 		j++
 	}
+
+	return value, key, arr
+}
+
+func (con HaulModel) GetYunShi(bz []string) string {
+	y, _ := strconv.Atoi(time.Now().Format("2006"))
+	m, _ := strconv.Atoi(time.Now().Format("01"))
+	d, _ := strconv.Atoi(time.Now().Format("02"))
+
+	value, key, arr := con.Get24(y, m, d, 0)
+
+	if len(arr) < 12 {
+		value1, key1, arr1 := con.Get24(y+1, m, d, 1)
+		num := 12 - len(arr)
+		lastTime := arr[len(arr)-1]
+		log.Println(value1, arr1)
+		for k, v := range arr1 {
+			if num == 0 {
+				break
+			}
+			stamp, _ := time.ParseInLocation("2006-01-02 15:04:05", v, time.Local)
+			stamp1, _ := time.ParseInLocation("2006-01-02 15:04:05", lastTime, time.Local)
+			stamp2, _ := time.ParseInLocation("2006-01-02 15:04:05", arr[len(arr)-1], time.Local)
+			if stamp.Unix() < stamp1.Unix() || stamp.Unix() <= stamp2.Unix() {
+				continue
+			}
+			arr = append(arr, arr1[k])
+			value = append(value, value1[k])
+			key = append(key, key1[k])
+			num--
+		}
+	}
+
 	str := ""
 	startStr := "<font color='#ffcc33'>"
 
