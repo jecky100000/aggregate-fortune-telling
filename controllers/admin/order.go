@@ -46,6 +46,7 @@ type returnList struct {
 	Json         string        `json:"json"`
 	PayTime      string        `json:"pay_time"`
 	Birthday     string        `json:"birthday"`
+	Content      string        `json:"content"`
 }
 
 // List 用户列表

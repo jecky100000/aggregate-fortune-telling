@@ -14,19 +14,18 @@ import (
 	"strings"
 )
 
-type AskLogController struct {
+type AskReplyController struct {
 }
 
-type askLogListForm struct {
+type askReplyListForm struct {
 	Page     int    `form:"page"`
 	PageSize int    `form:"pageSize"`
 	Key      string `form:"key"`
-	Type     string `form:"type"`
 }
 
 // List 列表
-func (con AskLogController) List(c *gin.Context) {
-	var data askLogListForm
+func (con AskReplyController) List(c *gin.Context) {
+	var data askReplyListForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -37,26 +36,31 @@ func (con AskLogController) List(c *gin.Context) {
 		return
 	}
 
-	var list []models.AskLog
+	type rj struct {
+		Id          int64         `json:"id"`
+		MasterPhone string        `json:"master_phone"`
+		MasterName  string        `json:"master_name"`
+		Adopt       int           `json:"adopt"`
+		CreatedAt   models.MyTime `json:"created_at"`
+		Content     string        `json:"content"`
+	}
+
+	var list []rj
 
 	var count int64
-	res := ay.Db.Table("sm_ask_log")
-
-	if data.Key != "" {
-		res.Where("sm_ask_log.content like ?", "%"+data.Key+"%")
-	}
-
-	if data.Type != "" {
-		res.Where("sm_ask_log.Type = ?", data.Type)
-	}
+	res := ay.Db.Table("sm_ask_reply").
+		Select("sm_ask_reply.id,sm_ask_reply.content,sm_ask_reply.created_at,sm_ask_reply.adopt,sm_user.nickname as master_name,sm_user.phone as master_phone").
+		Joins("left join sm_user on sm_ask_reply.master_id=sm_user.id").
+		Where("sm_ask_reply.ask_id = ?", data.Key)
 
 	row := res
 
 	row.Count(&count)
 
-	res.Order("id desc").
+	res.Order("sm_ask_reply.created_at desc").
 		Limit(data.PageSize).
 		Offset((data.Page - 1) * data.PageSize).
+		Debug().
 		Find(&list)
 
 	ay.Json{}.Msg(c, 200, "success", gin.H{
@@ -65,12 +69,8 @@ func (con AskLogController) List(c *gin.Context) {
 	})
 }
 
-//type orderDetailForm struct {
-//	Id int `form:"id"`
-//}
-
 // Detail 用户详情
-func (con AskLogController) Detail(c *gin.Context) {
+func (con AskReplyController) Detail(c *gin.Context) {
 	var data orderDetailForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
@@ -82,7 +82,7 @@ func (con AskLogController) Detail(c *gin.Context) {
 		return
 	}
 
-	var user models.AskLog
+	var user models.AskReply
 
 	ay.Db.First(&user, data.Id)
 
@@ -91,15 +91,16 @@ func (con AskLogController) Detail(c *gin.Context) {
 	})
 }
 
-type askLogOptionForm struct {
-	Id      int    `form:"id"`
-	Type    int    `form:"type"`
-	Content string `form:"content"`
+type askReplyOptionForm struct {
+	Id       int    `form:"id"`
+	AskId    string `form:"ask_id"`
+	Content  string `form:"content"`
+	MasterId int64  `form:"master_id"`
 }
 
 // Option 添加 编辑
-func (con AskLogController) Option(c *gin.Context) {
-	var data askLogOptionForm
+func (con AskReplyController) Option(c *gin.Context) {
+	var data askReplyOptionForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
 		return
@@ -110,13 +111,14 @@ func (con AskLogController) Option(c *gin.Context) {
 		return
 	}
 
-	var res models.AskLog
+	var res models.AskReply
 	ay.Db.First(&res, data.Id)
 
 	if data.Id != 0 {
 
 		res.Content = data.Content
-		res.Type = data.Type
+		res.AskId = data.AskId
+		res.MasterId = data.MasterId
 
 		if err := ay.Db.Save(&res).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
@@ -124,9 +126,10 @@ func (con AskLogController) Option(c *gin.Context) {
 			ay.Json{}.Msg(c, 200, "修改成功", gin.H{})
 		}
 	} else {
-		ay.Db.Create(&models.AskLog{
-			Content: data.Content,
-			Type:    data.Type,
+		ay.Db.Create(&models.AskReply{
+			Content:  data.Content,
+			MasterId: data.MasterId,
+			AskId:    data.AskId,
 		})
 		ay.Json{}.Msg(c, 200, "创建成功", gin.H{})
 
@@ -134,7 +137,7 @@ func (con AskLogController) Option(c *gin.Context) {
 
 }
 
-func (con AskLogController) Delete(c *gin.Context) {
+func (con AskReplyController) Delete(c *gin.Context) {
 	var data orderDeleteForm
 	if err := c.ShouldBind(&data); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
@@ -149,7 +152,7 @@ func (con AskLogController) Delete(c *gin.Context) {
 	idArr := strings.Split(data.Id, ",")
 
 	for _, v := range idArr {
-		var order models.AskLog
+		var order models.AskReply
 		ay.Db.Delete(&order, v)
 	}
 

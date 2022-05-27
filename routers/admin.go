@@ -131,9 +131,16 @@ func AdminRouters(r *gin.RouterGroup) {
 	adminGroup.POST("master/upload", admin.MasterController{}.Upload)
 
 	adminGroup.GET("master/type", admin.MasterController{}.AllType)
+	adminGroup.GET("master/all", admin.MasterController{}.All)
 
 	// 系统
 	adminGroup.POST("config/detail", admin.ConfigController{}.Detail)
 	adminGroup.POST("config/option", admin.ConfigController{}.Option)
+
+	// 提问回复
+	adminGroup.POST("ask_reply/detail", admin.AskReplyController{}.Detail)
+	adminGroup.POST("ask_reply/option", admin.AskReplyController{}.Option)
+	adminGroup.GET("ask_reply/list", admin.AskReplyController{}.List)
+	adminGroup.POST("ask_reply/delete", admin.AskReplyController{}.Delete)
 
 }

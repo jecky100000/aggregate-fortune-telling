@@ -155,3 +155,20 @@ func (con MasterController) AllType(c *gin.Context) {
 		"list": l,
 	})
 }
+
+func (con MasterController) All(c *gin.Context) {
+	if Auth() == false {
+		ay.Json{}.Msg(c, 401, "请登入", gin.H{})
+		return
+	}
+	type list struct {
+		Label string `gorm:"column:nickname" json:"label"`
+		Value int64  `gorm:"column:id" json:"value"`
+	}
+	var l []list
+	ay.Db.Table("sm_user").Where("type = 1").Find(&l)
+
+	ay.Json{}.Msg(c, 200, "success", gin.H{
+		"list": l,
+	})
+}
