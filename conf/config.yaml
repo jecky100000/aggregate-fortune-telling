@@ -7,8 +7,8 @@ mysql:
   database: console_xmml_clu
 
 im:
-  appid: 1400610903
-  key: 154578a41c96270911ac670aff55c92a8c82a511e70673411e91f46602144009
+  appid: 1400678422
+  key: 779d45c0318a4ad9867f317bc0ead586cbd3035d35d338b56c06ddc7b7aca7b5
   root: administrator
 
 sms:
@@ -16,6 +16,7 @@ sms:
   sk: D4lBRNzFvWW5ysNxtDVd0x7aHTIxxJ
   sign: 玄机文化
   template_code: SMS_232177328
+  count: 300
 
-domain: http://192.168.2.116:8082
+domain: http://console.xmml.club
 

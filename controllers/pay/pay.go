@@ -8,11 +8,11 @@
 package pay
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/controllers/api"
+	"aggregate-fortune-telling/models"
 	"context"
 	"encoding/json"
-	"gin/ay"
-	"gin/controllers/api"
-	"gin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"
@@ -27,11 +27,11 @@ import (
 	"time"
 )
 
-type Controller struct {
+type PayController struct {
 }
 
 // AliPay 支付宝
-func (con Controller) AliPay(c *gin.Context) {
+func (con PayController) AliPay(c *gin.Context) {
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", c.Query("oid"))
 	if order.Id == 0 {
@@ -73,7 +73,7 @@ type OpenId struct {
 }
 
 // GetOpenid jsapi获取openid
-func (con Controller) GetOpenid(c *gin.Context) {
+func (con PayController) GetOpenid(c *gin.Context) {
 
 	oid := c.Query("oid")
 	code := c.Query("code")
@@ -90,7 +90,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", oid)
 
-	config := models.ConfigModel{}.GetId(1)
+	//config := models.ConfigModel{}.GetId(1)
 
 	var pay models.Pay
 	ay.Db.First(&pay, "id = ?", 6)
@@ -120,9 +120,10 @@ func (con Controller) GetOpenid(c *gin.Context) {
 	client.SetCountry(wechat.China)
 
 	bm := make(gopay.BodyMap)
-	v := strconv.FormatFloat(order.Amount*config.Rate, 'g', -1, 64)
+	//v := strconv.FormatFloat(order.Amount*config.Rate, "g", -1, 64)
+	//v := order.Amount * config.Rate
 	bm.Set("nonce_str", util.RandomString(32)).
-		Set("body", "消费"+v+"元").
+		Set("body", order.Des).
 		Set("out_trade_no", order.OutTradeNo).
 		Set("total_fee", order.Amount*100).
 		Set("spbill_create_ip", api.GetRequestIP(c)).
@@ -146,7 +147,7 @@ func (con Controller) GetOpenid(c *gin.Context) {
 <script type="text/javascript">
 function onBridgeReady(){
    WeixinJSBridge.invoke(
-      'getBrandWCPayRequest', {
+      "getBrandWCPayRequest", {
          "appId":"`+wxRsp.Appid+`",     //公众号名称，由商户传入     
          "timeStamp":"`+timeStamp+`",         //时间戳，自1970年以来的秒数     
          "nonceStr":"`+wxRsp.NonceStr+`", //随机串     
@@ -164,10 +165,10 @@ function onBridgeReady(){
 }
 if (typeof WeixinJSBridge == "undefined"){
    if( document.addEventListener ){
-       document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+       document.addEventListener("WeixinJSBridgeReady", onBridgeReady, false);
    }else if (document.attachEvent){
-       document.attachEvent('WeixinJSBridgeReady', onBridgeReady); 
-       document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+       document.attachEvent("WeixinJSBridgeReady", onBridgeReady); 
+       document.attachEvent("onWeixinJSBridgeReady", onBridgeReady);
    }
 }else{
    onBridgeReady();
@@ -178,7 +179,7 @@ if (typeof WeixinJSBridge == "undefined"){
 }
 
 // Wechat 微信支付
-func (con Controller) Wechat(c *gin.Context) {
+func (con PayController) Wechat(c *gin.Context) {
 
 	oid := c.Query("oid")
 
@@ -240,7 +241,7 @@ func (con Controller) Wechat(c *gin.Context) {
 }
 
 // IsWechat 微信ua判断
-func (con Controller) IsWechat(c *gin.Context) bool {
+func (con PayController) IsWechat(c *gin.Context) bool {
 	ua := c.GetHeader("User-Agent")
 	if strings.Contains(ua, "MicroMessenger") == false && strings.Contains(ua, "Windows Phone") == false {
 		return false
@@ -250,7 +251,7 @@ func (con Controller) IsWechat(c *gin.Context) bool {
 }
 
 // Web web支付 1支付宝 2微信
-func (con Controller) Web(outTradeNo string, payType int, amount float64, returnUrl string, ip string, msg string) (int, string) {
+func (con PayController) Web(outTradeNo string, payType int, amount float64, returnUrl string, ip string, msg string) (int, string) {
 
 	ctx, _ := context.WithCancel(context.Background())
 

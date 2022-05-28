@@ -8,11 +8,11 @@
 package api
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
+	"aggregate-fortune-telling/models/login"
 	"encoding/json"
 	"fmt"
-	"gin/ay"
-	"gin/models"
-	"gin/models/login"
 	"github.com/gin-gonic/gin"
 	"log"
 	"math/rand"

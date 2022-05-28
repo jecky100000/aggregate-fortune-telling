@@ -8,8 +8,8 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -44,14 +44,15 @@ func (con RechargeController) Main(c *gin.Context) {
 		return
 	}
 
-	if Appid == 1 {
-		// web支付
-		res, order := con.MakeOrder(user.Id, getForm.Amount, getForm.ReturnUrl, GetRequestIP(c), getForm.Type)
+	// web支付
+	res, order := con.MakeOrder(user.Id, getForm.Amount, getForm.ReturnUrl, GetRequestIP(c), getForm.Type)
 
-		if res == 0 {
-			ay.Json{}.Msg(c, 400, "订单创建失败", gin.H{})
-			return
-		}
+	if res == 0 {
+		ay.Json{}.Msg(c, 400, "订单创建失败", gin.H{})
+		return
+	}
+
+	if Appid == 1 {
 		if getForm.Type == 1 {
 			ay.Json{}.Msg(c, 200, "success", gin.H{
 				"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order,
@@ -61,7 +62,19 @@ func (con RechargeController) Main(c *gin.Context) {
 				"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order,
 			})
 		}
+	} else if Appid == 2 {
+		// 百度支付
+		is, msg, rj := BaiDuController{}.Baidu(order)
 
+		if is {
+			ay.Json{}.Msg(c, 200, "success", gin.H{
+				"info": rj,
+			})
+			return
+		} else {
+			ay.Json{}.Msg(c, 400, msg, gin.H{})
+			return
+		}
 	}
 }
 

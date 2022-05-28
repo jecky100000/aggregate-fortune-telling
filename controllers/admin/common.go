@@ -1,10 +1,10 @@
 package admin
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/controllers/api"
+	"aggregate-fortune-telling/models"
 	"fmt"
-	"gin/ay"
-	"gin/controllers/api"
-	"gin/models"
 	"github.com/gin-gonic/gin"
 	"log"
 	"path"

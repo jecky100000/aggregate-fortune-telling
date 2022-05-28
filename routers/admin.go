@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"gin/controllers/admin"
+	"aggregate-fortune-telling/controllers/admin"
 	"github.com/gin-gonic/gin"
 )
 

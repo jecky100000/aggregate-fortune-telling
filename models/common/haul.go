@@ -8,9 +8,9 @@
 package common
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"fmt"
-	"gin/ay"
-	"gin/models"
 	"github.com/6tail/lunar-go/calendar"
 	"log"
 	"strconv"

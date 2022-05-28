@@ -8,9 +8,9 @@
 package api
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"encoding/json"
-	"gin/ay"
-	"gin/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-pay/gopay"
 	"github.com/go-pay/gopay/alipay"

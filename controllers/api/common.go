@@ -1,9 +1,9 @@
 package api
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"fmt"
-	"gin/ay"
-	"gin/models"
 	"github.com/gin-gonic/gin"
 	qrcode "github.com/skip2/go-qrcode"
 	"strconv"

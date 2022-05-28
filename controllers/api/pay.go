@@ -8,15 +8,15 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type PayController struct {
+type PayDoController struct {
 }
 
 type GetPayDoForm struct {
@@ -29,7 +29,7 @@ type GetPayDoForm struct {
 }
 
 // Do 统一支付
-func (con PayController) Do(c *gin.Context) {
+func (con PayDoController) Do(c *gin.Context) {
 	var getForm GetPayDoForm
 	if err := c.ShouldBind(&getForm); err != nil {
 		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
@@ -144,14 +144,15 @@ func (con PayController) Do(c *gin.Context) {
 			ay.Json{}.Msg(c, 400, "修改失败", gin.H{})
 			return
 		}
-		if getForm.Type == 1 || getForm.Type == 2 {
 
-			v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
-			order.Des = "八字测算" + v + "元"
-			if err := ay.Db.Save(&order).Error; err != nil {
-				ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
-				return
-			}
+		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
+		order.Des = "八字测算" + v + "元"
+		if err := ay.Db.Save(&order).Error; err != nil {
+			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+			return
+		}
+
+		if (getForm.Type == 1 || getForm.Type == 2) && Appid == 1 {
 			if getForm.Type == 1 {
 				ay.Json{}.Msg(c, 200, "success", gin.H{
 					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
@@ -163,7 +164,18 @@ func (con PayController) Do(c *gin.Context) {
 				})
 				return
 			}
+		} else if Appid == 2 {
+			is, msg, rj := BaiDuController{}.Baidu(order.Oid)
 
+			if is {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"info": rj,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
 		} else {
 			ay.Json{}.Msg(c, 400, "支付类型错误", gin.H{})
 			return

@@ -7,7 +7,7 @@
 
 package models
 
-import "gin/ay"
+import "aggregate-fortune-telling/ay"
 
 type ConsultModel struct {
 }

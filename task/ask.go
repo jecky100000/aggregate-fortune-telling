@@ -8,8 +8,8 @@
 package task
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"log"
 )
 

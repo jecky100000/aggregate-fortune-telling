@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"gin/controllers/pay"
+	"aggregate-fortune-telling/controllers/pay"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,8 +16,8 @@ func PayRouters(r *gin.RouterGroup) {
 
 	payGroup := r.Group("/pay/")
 
-	payGroup.GET("alipay", pay.Controller{}.AliPay)
-	payGroup.GET("wechat", pay.Controller{}.Wechat)
-	payGroup.GET("open", pay.Controller{}.GetOpenid)
+	payGroup.GET("alipay", pay.PayController{}.AliPay)
+	payGroup.GET("wechat", pay.PayController{}.Wechat)
+	payGroup.GET("open", pay.PayController{}.GetOpenid)
 
 }

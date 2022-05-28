@@ -8,7 +8,7 @@
 package models
 
 import (
-	"gin/ay"
+	"aggregate-fortune-telling/ay"
 	"log"
 	"strings"
 )

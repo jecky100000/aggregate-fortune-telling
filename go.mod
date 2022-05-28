@@ -1,4 +1,4 @@
-module gin
+module aggregate-fortune-telling
 
 go 1.18
 
@@ -19,6 +19,7 @@ require (
 	github.com/spf13/viper v1.11.0
 	github.com/stretchr/testify v1.7.1
 	github.com/w3liu/go-common v0.0.0-20210108072342-826b2f3582be
+	github.com/yuchenfw/gocrypt v0.0.0-20201117020417-b36b23ab462e
 	gorm.io/driver/mysql v1.3.3
 	gorm.io/gorm v1.23.4
 )

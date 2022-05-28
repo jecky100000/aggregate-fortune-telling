@@ -8,7 +8,7 @@
 package models
 
 import (
-	"gin/ay"
+	"aggregate-fortune-telling/ay"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/client"
 	dysmsapi20170525 "github.com/alibabacloud-go/dysmsapi-20170525/v2/client"
 	"github.com/alibabacloud-go/tea/tea"

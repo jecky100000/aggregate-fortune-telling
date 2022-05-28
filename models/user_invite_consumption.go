@@ -8,8 +8,8 @@
 package models
 
 import (
+	"aggregate-fortune-telling/ay"
 	"fmt"
-	"gin/ay"
 	"strconv"
 )
 

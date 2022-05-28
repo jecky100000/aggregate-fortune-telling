@@ -8,8 +8,8 @@
 package common
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 )
 
 type NaYinModel struct {

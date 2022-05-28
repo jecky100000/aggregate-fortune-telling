@@ -8,10 +8,10 @@
 package api
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
+	"aggregate-fortune-telling/models/common"
 	"fmt"
-	"gin/ay"
-	"gin/models"
-	"gin/models/common"
 	"github.com/6tail/lunar-go/calendar"
 	"github.com/gin-gonic/gin"
 	"strconv"

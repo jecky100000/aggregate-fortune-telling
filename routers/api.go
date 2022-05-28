@@ -8,7 +8,7 @@
 package routers
 
 import (
-	"gin/controllers/api"
+	"aggregate-fortune-telling/controllers/api"
 	"github.com/gin-gonic/gin"
 )
 
@@ -103,7 +103,7 @@ func ApiRouters(r *gin.RouterGroup) {
 
 	// 支付
 	apiGroup.POST("pay/recharge", api.RechargeController{}.Main)
-	apiGroup.POST("pay/do", api.PayController{}.Do)
+	apiGroup.POST("pay/do", api.PayDoController{}.Do)
 
 	// 异步
 	apiGroup.Any("notify/alipay", api.NotifyController{}.AliPay)

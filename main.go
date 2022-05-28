@@ -1,10 +1,10 @@
 package main
 
 import (
-	"gin/ay"
-	"gin/routers"
-	"gin/service"
-	"gin/task"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/routers"
+	"aggregate-fortune-telling/service"
+	"aggregate-fortune-telling/task"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 	"net/http"

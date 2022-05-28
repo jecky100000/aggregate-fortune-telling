@@ -8,9 +8,9 @@
 package admin
 
 import (
-	"gin/ay"
-	"gin/controllers/api"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/controllers/api"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"strings"
 )

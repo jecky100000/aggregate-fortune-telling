@@ -8,7 +8,7 @@
 package service
 
 import (
-	"gin/controllers/api"
+	"aggregate-fortune-telling/controllers/api"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )

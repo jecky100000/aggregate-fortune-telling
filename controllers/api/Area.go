@@ -8,8 +8,8 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 )
 

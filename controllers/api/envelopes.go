@@ -8,8 +8,8 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -97,21 +97,37 @@ func (con EnvelopesController) Send(c *gin.Context) {
 			"remark": getForm.Remark,
 		})
 	} else {
-		if getForm.PayType == 1 {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url":    ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
-				"oid":    oid,
-				"remark": getForm.Remark,
-			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url":    ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
-				"oid":    oid,
-				"remark": getForm.Remark,
-			})
-			return
+		if Appid == 1 {
+			if getForm.PayType == 1 {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url":    ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+					"oid":    oid,
+					"remark": getForm.Remark,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url":    ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+					"oid":    oid,
+					"remark": getForm.Remark,
+				})
+				return
+			}
+		} else if Appid == 2 {
+			// 百度支付
+			is, msg, rj := BaiDuController{}.Baidu(order.Oid)
+
+			if is {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"info": rj,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
 		}
+
 	}
 }
 
@@ -228,17 +244,33 @@ func (con EnvelopesController) Reward(c *gin.Context) {
 			ay.Json{}.Msg(c, 400, "数据错误", gin.H{})
 		}
 	} else {
-		if getForm.PayType == 1 {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
-			})
-			return
+		if Appid == 1 {
+			if getForm.PayType == 1 {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+				})
+				return
+			}
 		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
-			})
-			return
+			//百度支付
+			is, msg, rj := BaiDuController{}.Baidu(order.Oid)
+
+			if is {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"info": rj,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
 		}
+
 	}
 
 }

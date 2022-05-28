@@ -8,9 +8,9 @@
 package models
 
 import (
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/sdk/tencentyun"
 	"bytes"
-	"gin/ay"
-	"gin/sdk/tencentyun"
 	"io/ioutil"
 	"net/http"
 )

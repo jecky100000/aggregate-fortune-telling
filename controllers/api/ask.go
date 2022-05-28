@@ -8,8 +8,8 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"strconv"
@@ -225,7 +225,7 @@ func (con AskController) Submit(c *gin.Context) {
 	ay.Db.Create(order)
 
 	if getForm.PayType != 3 {
-		if getForm.PayType == 1 || getForm.PayType == 2 {
+		if (getForm.PayType == 1 || getForm.PayType == 2) && Appid == 1 {
 			// 支付宝 微信
 			v := strconv.FormatFloat(order.Amount, 'g', -1, 64)
 			order.Des = "在线提问" + v + "元"
@@ -243,6 +243,19 @@ func (con AskController) Submit(c *gin.Context) {
 				return
 			}
 
+		} else if Appid == 2 {
+			// 百度支付
+			is, msg, rj := BaiDuController{}.Baidu(order.Oid)
+
+			if is {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"info": rj,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
 		} else {
 			ay.Json{}.Msg(c, 400, "支付类型错误", gin.H{})
 			return

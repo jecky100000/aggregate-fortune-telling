@@ -8,8 +8,8 @@
 package api
 
 import (
-	"gin/ay"
-	"gin/models"
+	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
@@ -161,17 +161,32 @@ func (con ForceController) Do(c *gin.Context) {
 		order.ReturnUrl = getForm.ReturnUrl
 		ay.Db.Save(&order)
 
-		if getForm.PayType == 1 {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
-			})
-			return
-		} else {
-			ay.Json{}.Msg(c, 200, "success", gin.H{
-				"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
-			})
-			return
+		if Appid == 1 {
+			if getForm.PayType == 1 {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/alipay?oid=" + order.Oid,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"url": ay.Yaml.GetString("domain") + "/pay/wechat?oid=" + order.Oid,
+				})
+				return
+			}
+		} else if Appid == 2 {
+			is, msg, rj := BaiDuController{}.Baidu(order.Oid)
+
+			if is {
+				ay.Json{}.Msg(c, 200, "success", gin.H{
+					"info": rj,
+				})
+				return
+			} else {
+				ay.Json{}.Msg(c, 400, msg, gin.H{})
+				return
+			}
 		}
+
 	}
 
 }
