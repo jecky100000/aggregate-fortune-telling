@@ -1,21 +1,21 @@
 # conf/config.yaml
 mysql:
-  localhost: 111.229.109.208
+  localhost: 127.0.0.1
   port: 3306
-  user: console_xmml_clu
-  password: BN8sX3ePPjjt6a8e
+  user: root
+  password: root
   database: console_xmml_clu
 
 im:
-  appid: 1400678422
-  key: 779d45c0318a4ad9867f317bc0ead586cbd3035d35d338b56c06ddc7b7aca7b5
-  root: administrator
+  appid: 
+  key: 
+  root: 
 
 sms:
-  ak: LTAI5tKXgdMz57vnjpTRMX6H
-  sk: D4lBRNzFvWW5ysNxtDVd0x7aHTIxxJ
-  sign: 玄机文化
-  template_code: SMS_232177328
+  ak: 
+  sk: 
+  sign: 
+  template_code: 
   count: 300
 
 domain: http://console.xmml.club
