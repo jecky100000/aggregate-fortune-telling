@@ -108,6 +108,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	// 异步
 	apiGroup.Any("notify/alipay", api.NotifyController{}.AliPay)
 	apiGroup.Any("notify/wechat", api.NotifyController{}.WeChat)
+	apiGroup.Any("notify/baidu", api.NotifyController{}.Baidu)
 
 	// 提问
 	apiGroup.GET("ask/main", api.AskController{}.Main)
