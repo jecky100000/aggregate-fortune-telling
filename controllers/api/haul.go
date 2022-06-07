@@ -245,7 +245,7 @@ func (con HaulController) Main(c *gin.Context) {
 	config := models.ConfigModel{}.GetId(1)
 
 	var order []models.Order
-	ay.Db.Where("type = 1 and status = 1 and amount > 5").Limit(20).Order("RAND()").Find(&order)
+	ay.Db.Where("type = 1 and status = 1 and amount >= 5").Limit(20).Order("RAND()").Find(&order)
 
 	var notice []string
 	for _, v := range order {
