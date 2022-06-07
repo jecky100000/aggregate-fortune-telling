@@ -1,9 +1,9 @@
 # aggregate-fortune-telling
-聚合算命
+
 
 👉 http://console.xmml.club
 
-# 编译
+# Compile
 ```shell
     git clone https://github.com/Anderyly/aggregate-fortune-telling.git gin
     cd gin
@@ -11,13 +11,13 @@
     go build
 ```
 
-# 数据库
+# SQL
 
-### 导入
+### Import
 
-### config.yaml 配置数据库信息
+### config.yaml configure database info
 
-# 运行
+# Run
 
 ```shell
     chomd +x gin
