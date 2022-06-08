@@ -32,6 +32,8 @@ type PayController struct {
 
 // AliPay 支付宝
 func (con PayController) AliPay(c *gin.Context) {
+
+	log.Println(c.GetHeader("Referer"))
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", c.Query("oid"))
 	if order.Id == 0 {
@@ -56,6 +58,7 @@ func (con PayController) AliPay(c *gin.Context) {
 	code, msg := con.Web(order.OutTradeNo, 1, order.Amount, returnUrl, api.GetRequestIP(c), order.Des)
 
 	if code == 1 {
+		models.AdvertLogModel{}.Add(1, order.Oid, c.GetHeader("Referer"), order.Amount, c.Query("request_id"), c.Query("ad_id"))
 		c.Redirect(http.StatusMovedPermanently, msg)
 		return
 	} else {
@@ -216,6 +219,8 @@ func (con PayController) Wechat(c *gin.Context) {
 
 	var pay models.Pay
 	ay.Db.First(&pay, "id = ?", 6)
+
+	models.AdvertLogModel{}.Add(1, order.Oid, c.GetHeader("Referer"), order.Amount, c.Query("request_id"), c.Query("ad_id"))
 
 	if con.IsWechat(c) {
 

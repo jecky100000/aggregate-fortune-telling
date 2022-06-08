@@ -8,6 +8,7 @@
 package routers
 
 import (
+	"aggregate-fortune-telling/controllers/advert"
 	"aggregate-fortune-telling/controllers/api"
 	"github.com/gin-gonic/gin"
 )
@@ -124,5 +125,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("invite/share", api.InviteController{}.Share)
 
 	apiGroup.Any("im/notify", api.ImController{}.Notify)
+
+	apiGroup.Any("advert/vivo", advert.Vivo{}.GetCode)
 
 }

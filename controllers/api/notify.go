@@ -9,6 +9,7 @@ package api
 
 import (
 	"aggregate-fortune-telling/ay"
+	"aggregate-fortune-telling/controllers/advert"
 	"aggregate-fortune-telling/models"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
@@ -17,6 +18,7 @@ import (
 	"github.com/go-pay/gopay/wechat"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -104,6 +106,14 @@ func (con NotifyController) AliPay(c *gin.Context) {
 			var user models.User
 			ay.Db.First(&user, order.Uid)
 			models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, order.Amount, order.Oid)
+		}
+
+		var advertLog models.AdvertLog
+		ay.Db.Where("type = ? and oid = ?", 1, order.Oid).First(&advertLog)
+		if advertLog.Id != 0 {
+			advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
+			advertLog.Status = 1
+			ay.Db.Save(&advertLog)
 		}
 
 		c.String(http.StatusOK, "%s", "success")
