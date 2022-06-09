@@ -35,15 +35,21 @@ func (AdvertLogModel) Add(vType int, oid string, urlx string, amount float64, re
 	f, _ := url.Parse(urlx)
 	log.Println(f.Hostname())
 	var advVivo AdvertVivo
-	ay.Db.Where("url = ?", f.Hostname()).First(&advVivo)
+	//ay.Db.Where("url = ?", f.Hostname()).First(&advVivo)
+	ay.Db.Where("id = ?", 1).First(&advVivo)
 
-	ay.Db.Create(&AdvertLog{
-		Type:      vType,
-		Oid:       oid,
-		Cid:       advVivo.Id,
-		Amount:    amount,
-		RequestId: requestId,
-		AdId:      adId,
-		Status:    0,
-	})
+	var adv AdvertLog
+	ay.Db.Where("oid = ?", oid).First(&adv)
+	if adv.Id == 0 && requestId != "" && adId != "" {
+		ay.Db.Create(&AdvertLog{
+			Type:      vType,
+			Oid:       oid,
+			Cid:       advVivo.Id,
+			Amount:    amount,
+			RequestId: requestId,
+			AdId:      adId,
+			Status:    0,
+		})
+	}
+
 }

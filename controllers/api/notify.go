@@ -109,11 +109,13 @@ func (con NotifyController) AliPay(c *gin.Context) {
 		}
 
 		var advertLog models.AdvertLog
-		ay.Db.Where("type = ? and oid = ?", 1, order.Oid).First(&advertLog)
+		ay.Db.Where("type = ? and oid = ? and status = 0", 1, order.Oid).First(&advertLog)
 		if advertLog.Id != 0 {
-			advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
-			advertLog.Status = 1
-			ay.Db.Save(&advertLog)
+			if advertLog.Type == 1 {
+				advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
+				advertLog.Status = 1
+				ay.Db.Save(&advertLog)
+			}
 		}
 
 		c.String(http.StatusOK, "%s", "success")
@@ -217,11 +219,14 @@ func (con NotifyController) WeChat(c *gin.Context) {
 		}
 
 		var advertLog models.AdvertLog
-		ay.Db.Where("type = ? and oid = ?", 1, order.Oid).First(&advertLog)
+		ay.Db.Where("type = ? and oid = ? and status = 0", 1, order.Oid).First(&advertLog)
 		if advertLog.Id != 0 {
-			advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
-			advertLog.Status = 1
-			ay.Db.Save(&advertLog)
+			if advertLog.Type == 1 {
+				advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
+				advertLog.Status = 1
+				ay.Db.Save(&advertLog)
+			}
+
 		}
 
 		rsp := new(wechat.NotifyResponse) // 回复微信的数据
@@ -392,14 +397,6 @@ func (con NotifyController) Baidu(c *gin.Context) {
 			var user models.User
 			ay.Db.First(&user, order.Uid)
 			models.UserInviteConsumptionModel{}.Set(user.Id, user.Pid, order.Amount, order.Oid)
-		}
-
-		var advertLog models.AdvertLog
-		ay.Db.Where("type = ? and oid = ?", 1, order.Oid).First(&advertLog)
-		if advertLog.Id != 0 {
-			advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
-			advertLog.Status = 1
-			ay.Db.Save(&advertLog)
 		}
 
 		rj.Errno = 0

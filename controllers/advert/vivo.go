@@ -84,7 +84,10 @@ func (con Vivo) GetAccessToken(clientId int, code string) {
 
 }
 
-func (con Vivo) Up(cid int64, amount string, requestId, addId string) {
+func (con Vivo) Up(cid int64, amount string, requestId, addId string) bool {
+	if requestId == "" || addId == "" {
+		return false
+	}
 	var vivo models.AdvertVivo
 	ay.Db.Where("id = ?", cid).First(&vivo)
 
@@ -120,4 +123,5 @@ func (con Vivo) Up(cid int64, amount string, requestId, addId string) {
 	body, _ := ioutil.ReadAll(resp.Body)
 
 	log.Println(string(body))
+	return true
 }

@@ -62,10 +62,10 @@ func (con HaulController) Submit(c *gin.Context) {
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
-	if user.Id == 0 {
-		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
-		return
-	}
+	//if user.Id == 0 {
+	//	ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+	//	return
+	//}
 
 	// 返回支付优惠
 	coupon := ay.MakeCoupon(config.HaulDiscount)
@@ -122,10 +122,10 @@ func (con HaulController) Detail(c *gin.Context) {
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
-	if user.Id == 0 {
-		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
-		return
-	}
+	//if user.Id == 0 {
+	//	ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+	//	return
+	//}
 
 	var order models.Order
 

@@ -39,10 +39,10 @@ func (con PayDoController) Do(c *gin.Context) {
 	var user models.User
 	ay.Db.First(&user, "id = ?", GetToken(Token))
 
-	if user.Id == 0 {
-		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
-		return
-	}
+	//if user.Id == 0 {
+	//	ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+	//	return
+	//}
 
 	var order models.Order
 	ay.Db.First(&order, "oid = ?", getForm.Oid)
