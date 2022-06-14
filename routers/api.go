@@ -22,6 +22,8 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.GET("home/adv", api.HomeController{}.Adv)
 	apiGroup.GET("home/getAllMaster", api.HomeController{}.GetMasterPhone)
 
+	apiGroup.POST("home/channel", api.HomeController{}.Channel)
+
 	// 登入
 	apiGroup.POST("user/login", api.LoginController{}.Login)
 	apiGroup.POST("user/send", api.LoginController{}.Send)

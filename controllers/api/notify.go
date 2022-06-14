@@ -109,10 +109,13 @@ func (con NotifyController) AliPay(c *gin.Context) {
 		}
 
 		var advertLog models.AdvertLog
-		ay.Db.Where("type = ? and oid = ? and status = 0", 1, order.Oid).First(&advertLog)
+		ay.Db.Where("oid = ? and status = 0", order.Oid).First(&advertLog)
 		if advertLog.Id != 0 {
 			if advertLog.Type == 1 {
 				advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
+				advertLog.Status = 1
+				ay.Db.Save(&advertLog)
+			} else {
 				advertLog.Status = 1
 				ay.Db.Save(&advertLog)
 			}
@@ -219,10 +222,13 @@ func (con NotifyController) WeChat(c *gin.Context) {
 		}
 
 		var advertLog models.AdvertLog
-		ay.Db.Where("type = ? and oid = ? and status = 0", 1, order.Oid).First(&advertLog)
+		ay.Db.Where("oid = ? and status = 0", order.Oid).First(&advertLog)
 		if advertLog.Id != 0 {
 			if advertLog.Type == 1 {
 				advert.Vivo{}.Up(advertLog.Cid, strconv.FormatFloat(order.Amount, 'g', -1, 64), advertLog.RequestId, advertLog.AdId)
+				advertLog.Status = 1
+				ay.Db.Save(&advertLog)
+			} else {
 				advertLog.Status = 1
 				ay.Db.Save(&advertLog)
 			}

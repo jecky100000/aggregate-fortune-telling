@@ -200,7 +200,7 @@ func (con LoginController) xcx(code string, appid int64) (int, string, string) {
 
 	var user models.UserOpenid
 	ay.Db.First(&user, "openid = ? AND appid = ?", openid, Appid)
-	uid := user.Id
+	uid := user.Uid
 	// 用户不存在
 	if uid == 0 {
 		return 201, openid, session_key
