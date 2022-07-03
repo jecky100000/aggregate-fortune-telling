@@ -46,6 +46,7 @@ func ApiRouters(r *gin.RouterGroup) {
 	apiGroup.POST("user/withdrawal", api.UserController{}.Withdrawal)
 	apiGroup.POST("user/log", api.UserController{}.Log)
 	apiGroup.POST("user/ask", api.UserController{}.Ask)
+	apiGroup.POST("user/haul_bind", api.UserController{}.HaulBind)
 
 	// 红包
 	apiGroup.POST("envelopes/send", api.EnvelopesController{}.Send)

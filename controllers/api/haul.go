@@ -195,7 +195,7 @@ func (con HaulController) Detail(c *gin.Context) {
 
 	if order.Status != 1 {
 		res["isPay"] = false
-		res["text"] = string([]rune(res["text"].(string))[:1500])
+		res["text"] = string([]rune(res["text"].(string))[:300])
 		ay.Json{}.Msg(c, 200, "未支付", res)
 	} else {
 		res["isPay"] = true

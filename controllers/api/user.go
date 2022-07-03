@@ -714,3 +714,38 @@ func (con UserController) Ask(c *gin.Context) {
 		})
 	}
 }
+
+type haulBindUserControllerForm struct {
+	TradeNo string `form:"trade_no" binding:"required" label:"交易号"`
+}
+
+func (con UserController) HaulBind(c *gin.Context) {
+	var data haulBindUserControllerForm
+	if err := c.ShouldBind(&data); err != nil {
+		ay.Json{}.Msg(c, 400, ay.Validator{}.Translate(err), gin.H{})
+		return
+	}
+	var user models.User
+	ay.Db.First(&user, "id = ?", GetToken(Token))
+
+	if user.Id == 0 {
+		ay.Json{}.Msg(c, 401, "Token错误", gin.H{})
+		return
+	}
+
+	var order models.Order
+	ay.Db.Where("trade_no = ?", data.TradeNo).First(&order)
+	if order.Id == 0 {
+		ay.Json{}.Msg(c, 400, "交易不存在", gin.H{})
+		return
+	}
+
+	order.Uid = user.Id
+	if err := ay.Db.Save(&order).Error; err != nil {
+		ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
+		return
+	} else {
+		ay.Json{}.Msg(c, 200, "订单绑定成功", gin.H{})
+		return
+	}
+}

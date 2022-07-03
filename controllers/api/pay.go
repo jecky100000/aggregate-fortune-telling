@@ -145,8 +145,8 @@ func (con PayDoController) Do(c *gin.Context) {
 			return
 		}
 
-		v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
-		order.Des = "八字测算" + v + "元"
+		//v := strconv.FormatFloat(amount*config.Rate, 'g', -1, 64)
+		//order.Des = "八字测算" + v + "元"
 		if err := ay.Db.Save(&order).Error; err != nil {
 			ay.Json{}.Msg(c, 400, "请联系管理员", gin.H{})
 			return
