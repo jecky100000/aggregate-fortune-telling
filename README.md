@@ -5,9 +5,9 @@
 
 # Compile
 ```shell
-    git clone https://github.com/Anderyly/aggregate-fortune-telling.git gin
-    cd gin
-    go mod init && go mod tidy
+    git clone https://github.com/Anderyly/aggregate-fortune-telling.git
+    cd aggregate-fortune-telling
+    go mod tidy
     go build
 ```
 
@@ -20,6 +20,6 @@
 # Run
 
 ```shell
-    chomd +x gin
+    chomd +x aggregate-fortune-telling
     ./gin
 ```
