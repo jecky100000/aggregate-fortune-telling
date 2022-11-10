@@ -26,13 +26,14 @@ func main() {
 	c.AddFunc("@every 10m", task.Start)
 	c.Start()
 
+	gin.SetMode(gin.ReleaseMode)
+
 	r = gin.Default()
-	gin.SetMode(gin.DebugMode)
 	r = service.Set(r)
 	r.StaticFS("/static/", http.Dir("./static"))
 	r = routers.GinRouter(r)
 
-	err := r.Run(":8080")
+	err := r.Run(":" + ay.Yaml.GetString("server.port"))
 	if err != nil {
 		panic(err.Error())
 	}

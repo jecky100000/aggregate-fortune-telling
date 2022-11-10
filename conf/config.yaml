@@ -4,12 +4,15 @@ mysql:
   port: 3306
   user: root
   password: root
-  database: console_xmml_clu
+  database: aggregate
 
 im:
   appid: 
   key: 
-  root: 
+  root:
+
+server:
+  port: 8080
 
 sms:
   ak: 
